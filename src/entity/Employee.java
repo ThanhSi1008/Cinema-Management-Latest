@@ -1,7 +1,6 @@
 package entity;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 
 public class Employee {
 	private String employeeID;
@@ -13,15 +12,16 @@ public class Employee {
 	private String role;
 	private LocalDate startingDate;
 	private double salary;
-	private byte[] imageSource;
+	private String imageSource;
 
 	public Employee() {
 		super();
 	}
 
-	public Employee(String fullName, boolean gender, LocalDate dateOfBirth, String email, String phoneNumber,
-			String role, LocalDate startingDate, double salary, byte[] imageSource) {
+	public Employee(String employeeID, String fullName, boolean gender, LocalDate dateOfBirth, String email,
+			String phoneNumber, String role, LocalDate startingDate, double salary, String imageSource) {
 		super();
+		this.employeeID = employeeID;
 		this.fullName = fullName;
 		this.gender = gender;
 		this.dateOfBirth = dateOfBirth;
@@ -101,11 +101,11 @@ public class Employee {
 		this.salary = salary;
 	}
 
-	public byte[] getImageSource() {
+	public String getImageSource() {
 		return imageSource;
 	}
 
-	public void setImageSource(byte[] imageSource) {
+	public void setImageSource(String imageSource) {
 		this.imageSource = imageSource;
 	}
 
@@ -113,8 +113,7 @@ public class Employee {
 	public String toString() {
 		return "Employee [employeeID=" + employeeID + ", fullName=" + fullName + ", gender=" + gender + ", dateOfBirth="
 				+ dateOfBirth + ", email=" + email + ", phoneNumber=" + phoneNumber + ", role=" + role
-				+ ", startingDate=" + startingDate + ", salary=" + salary + ", imageSource="
-				+ Arrays.toString(imageSource) + "]";
+				+ ", startingDate=" + startingDate + ", salary=" + salary + ", imageSource=" + imageSource + "]";
 	}
 
 }

@@ -18,11 +18,14 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 
+import dao.AccountDAO;
+import entity.Employee;
 import gui.application.Application;
 import gui.application.form.other.DefaultForm;
 import gui.application.form.other.FormCustomerManagement;
 import gui.application.form.other.FormDashboard;
 import gui.application.form.other.FormMovieManagement;
+import gui.application.form.other.FormProfileInfo;
 import gui.application.form.other.FormScreeningManagement;
 import gui.application.form.other.FormStaffManagement;
 import gui.menu.Menu;
@@ -33,13 +36,15 @@ public class MainForm extends JLayeredPane {
 	private Menu menu;
 	private JPanel panelBody;
 	private JButton menuButton;
+	private AccountDAO accountDAO;
 
-	public MainForm(String role) {
-		System.out.println(role);
-		init(role);
+	public MainForm(String username) {
+		accountDAO = new AccountDAO();
+		init(accountDAO.getRoleByUsername(username), accountDAO.getEmployeeByUsername(username));
+		System.out.println(accountDAO.getEmployeeByUsername(username));
 	}
 
-	private void init(String role) {
+	private void init(String role, Employee employee) {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new MainFormLayout());
 		menu = new Menu(role);
@@ -50,7 +55,7 @@ public class MainForm extends JLayeredPane {
 		menuButton.addActionListener((ActionEvent e) -> {
 			setMenuFull(!menu.isMenuFull());
 		});
-		initMenuEvent(role);
+		initMenuEvent(role, employee);
 		setLayer(menuButton, JLayeredPane.POPUP_LAYER);
 		add(menuButton);
 		add(menu);
@@ -71,7 +76,7 @@ public class MainForm extends JLayeredPane {
 		menuButton.setIcon(new FlatSVGIcon("gui/icon/svg/" + icon, 0.8f));
 	}
 
-	private void initMenuEvent(String role) {
+	private void initMenuEvent(String role, Employee employee) {
 		menu.addMenuEvent((int index, int subIndex, MenuAction action) -> {
 			switch (index) {
 			case 0:
@@ -161,7 +166,7 @@ public class MainForm extends JLayeredPane {
 				} else {
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new DefaultForm("Profile - infomation"));
+						Application.showMainForm(new FormProfileInfo(employee));
 						break;
 					case 2:
 						Application.showMainForm(new DefaultForm("Profile - change password"));
@@ -176,7 +181,7 @@ public class MainForm extends JLayeredPane {
 				if (role.equalsIgnoreCase("Manager")) {
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new DefaultForm("Profile - infomation"));
+						Application.showMainForm(new FormProfileInfo(employee));
 						break;
 					case 2:
 						Application.showMainForm(new DefaultForm("Profile - change password"));

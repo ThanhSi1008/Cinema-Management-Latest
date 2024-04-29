@@ -55,8 +55,8 @@ public class Application extends JFrame {
 		return loginForm;
 	}
 
-	public void createMainForm(String role) {
-		mainForm = new MainForm(role);
+	public void createMainForm(String username) {
+		mainForm = new MainForm(username);
 	}
 
 	public static void showMainForm(Component component) {

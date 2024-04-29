@@ -73,19 +73,21 @@ public class LoginForm extends JPanel {
 			String username = txtUser.getText().trim();
 			String password = new String(txtPass.getPassword());
 			boolean isValid = ctrl_LoginForm.checkCredentials(username, password);
-			String role = ctrl_LoginForm.getRole(username);
 			Application app = Application.getInstance();
 
 			if (!isValid) {
 				JOptionPane.showMessageDialog(this, "User name or password is incorrect!", "Error", 0);
 				Application.getInstance().getLoginForm().resetLogin();
 			} else {
-				System.out.println("Role: " + role);
-				app.createMainForm(role);
+				app.createMainForm(username);
 				FlatAnimatedLafChange.showSnapshot();
 				app.setContentPane(app.getMainForm());
 				app.getMainForm().applyComponentOrientation(app.getComponentOrientation());
-				Application.setSelectedMenu(0, 0);
+				if (ctrl_LoginForm.getRole(username).equalsIgnoreCase("Manager")) {
+					Application.setSelectedMenu(6, 1);
+				} else {
+					Application.setSelectedMenu(5, 1);
+				}
 				app.getMainForm().hideMenu();
 				SwingUtilities.updateComponentTreeUI(app.getMainForm());
 				FlatAnimatedLafChange.hideSnapshotWithAnimation();
