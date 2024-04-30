@@ -38,6 +38,8 @@ import entity.Movie;
 import net.miginfocom.swing.MigLayout;
 
 public class FormMovieManagement extends JPanel implements ActionListener {
+	
+	// in movie adding dialog, show the image when the user choose the image
 	private static final long serialVersionUID = 1L;
 	private JTextField searchTextField;
 	private JButton addNewButton;

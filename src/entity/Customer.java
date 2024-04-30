@@ -1,5 +1,6 @@
 package entity;
 
+import java.sql.Date;
 import java.time.LocalDate;
 
 public class Customer {
@@ -24,6 +25,15 @@ public class Customer {
 	public Customer() {
 		super();
 	}
+
+	public Customer(String customerID, String fullName, String phoneNumber, String email, LocalDate regDate) {
+		this.customerID = customerID;
+		this.fullName = fullName;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.regDate = regDate;
+	}
+
 
 	public String getCustomerID() {
 		return customerID;

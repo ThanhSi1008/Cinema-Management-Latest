@@ -155,6 +155,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		descriptionTextArea.setBorder(BorderFactory.createLineBorder(new Color(217, 217, 217), 2));
 		errorMessageLabel.setForeground(Color.RED);
 
+		// set layout
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
 
 		container.add(title, "wrap, span, al center, gapbottom 8");
