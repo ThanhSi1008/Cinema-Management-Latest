@@ -76,9 +76,21 @@ public class MovieTableModel extends AbstractTableModel {
 		return null;
 	}
 
-	public void refresh() {
-		movieList = movieDAO.getAllMovie();
-		this.fireTableDataChanged();
+	public void setMovieList(List<Movie> movieList) {
+		this.movieList = movieList;		
+	}
+
+	public void removeMovieShownByID(String movieID) {
+		for (Movie movie : movieList) {
+			if (movie.getMovieID().equals(movieID)) {
+				movieList.remove(movie);
+				return;
+			}
+		}
+	}
+
+	public void addMovieShown(Movie newMovie) {
+		movieList.add(newMovie);
 	}
 
 }

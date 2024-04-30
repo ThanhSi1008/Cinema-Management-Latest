@@ -2,12 +2,19 @@ package gui.application.form.other;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -15,11 +22,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import dao.MovieDAO;
 import entity.Movie;
@@ -53,8 +65,9 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		updateButton = new JButton("Update");
 		deleteButton = new JButton("Delete");
 		filterComboBox = new JComboBox<String>();
-		filterComboBox.addItem("Airing");
-		filterComboBox.addItem("Stopped");
+		filterComboBox.addItem("All");
+		filterComboBox.addItem("Released");
+		filterComboBox.addItem("Unreleased");
 		container1.setLayout(new MigLayout("", "[]push[][][][]", ""));
 		container1.add(searchTextField, "w 200!");
 		container1.add(filterComboBox);
@@ -96,6 +109,20 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		addNewButton.addActionListener(this);
 		updateButton.addActionListener(this);
 		deleteButton.addActionListener(this);
+		filterComboBox.addActionListener(this);
+		
+		// when user type something in the search text field, take out the value that users type in 
+		searchTextField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                	searchAndFilter();
+                }
+            }
+		});
+		// select all the movie with that has that text in it and show it into the table
+		
+		
 
 		add(container0);
 
@@ -134,7 +161,7 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		if (e.getSource().equals(addNewButton)) {
 			Thread thread = new Thread(() -> {
 				movieAddingDialog = new MovieAddingDialog();
-				movieAddingDialog.setMovieTableModel(movieTableModel);
+				movieAddingDialog.setFormMovieManagement(this);
 				movieAddingDialog.setModal(true);
 				movieAddingDialog.setVisible(true);
 			});
@@ -145,13 +172,16 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 			if (selectedRow == -1) {
 				JOptionPane.showMessageDialog(this, "Please select a row to delete.");
 			} else {
-				String movieID = (String) movieTable.getValueAt(selectedRow, 0);
-				System.out.println(movieID);
-				int rowsAffected = movieDAO.deleteMovieByID(movieID);
-				if (rowsAffected > 0) {
-					movieTableModel.refresh();
-				} else {
-					JOptionPane.showMessageDialog(this, "Cannot delete movie", "Failed", JOptionPane.ERROR_MESSAGE);
+				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this movie?", "Warning", JOptionPane.YES_NO_OPTION);
+				if (option == JOptionPane.YES_OPTION) {
+					String movieID = (String) movieTable.getValueAt(selectedRow, 0);
+					System.out.println(movieID);
+					int rowsAffected = movieDAO.deleteMovieByID(movieID);
+					if (rowsAffected > 0) {
+						searchAndFilter();
+					} else {
+						JOptionPane.showMessageDialog(this, "Cannot delete movie", "Failed", JOptionPane.ERROR_MESSAGE);
+					}
 				}
 			}
 		}
@@ -164,13 +194,30 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 					String movieID = (String) movieTable.getValueAt(selectedRow, 0);
 					Movie movie = movieDAO.getMovieByID(movieID);
 					movieUpdateDialog = new MovieUpdateDialog(movie);
-					movieUpdateDialog.setMovieTableModel(movieTableModel);
+					movieUpdateDialog.setFormMovieManagement(this);
 					movieUpdateDialog.setModal(true);
 					movieUpdateDialog.setVisible(true);
 				}
 			});
 			thread.start();
 		}
+		if (e.getSource().equals(filterComboBox)) {
+			searchAndFilter();
+		}
+	}
+
+	public void searchAndFilter() {
+		String statusToFind = (String) filterComboBox.getSelectedItem();
+		String nameToFind = searchTextField.getText();
+		if (statusToFind.equals("All")) {
+			List<Movie> movieList = movieDAO.findMovieByName(nameToFind);
+	        movieTableModel.setMovieList(movieList);
+	        movieTableModel.fireTableDataChanged();	
+		} else {
+			List<Movie> movieList = movieDAO.findMovieByNameAndStatus(nameToFind, statusToFind);
+	        movieTableModel.setMovieList(movieList);
+	        movieTableModel.fireTableDataChanged();	
+		}         
 	}
 
 }

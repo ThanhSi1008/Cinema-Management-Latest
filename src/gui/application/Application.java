@@ -32,15 +32,6 @@ public class Application extends JFrame {
 		loginForm = new LoginForm();
 		setContentPane(loginForm);
 		app = this;
-
-//		app.createManagerForm();
-//		FlatAnimatedLafChange.showSnapshot();
-//		app.setContentPane(app.getManagerForm());
-//		app.getManagerForm().applyComponentOrientation(app.getComponentOrientation());
-//		Application.setSelectedMenuForManager(0, 0);
-//		app.getManagerForm().hideMenu();
-//		SwingUtilities.updateComponentTreeUI(app.getManagerForm());
-//		FlatAnimatedLafChange.hideSnapshotWithAnimation();
 	}
 
 	public static Application getInstance() {

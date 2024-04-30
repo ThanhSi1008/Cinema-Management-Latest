@@ -149,5 +149,72 @@ public class MovieDAO {
 			return 0;
 		}
 	}
-	
+
+	public List<Movie> getMovieByStatus(String statusToFind) {
+		Connection connection = connectDB.getConnection();
+		String querySQL = "SELECT MovieID, MovieName, Status, Duration FROM Movie WHERE STATUS = ?";
+		List<Movie> movieList = new ArrayList<Movie>();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(querySQL);
+			preparedStatement.setString(1, statusToFind);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				String movieID = resultSet.getString(1);
+				String movieName = resultSet.getString(2);
+				String status = resultSet.getString(3);
+				int duration = resultSet.getInt(4);
+				movieList.add(new Movie(movieID, movieName, status, duration));
+			}
+			return movieList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+	}
+
+	public List<Movie> findMovieByName(String movieNameToFind) {
+		Connection connection = connectDB.getConnection();
+		String querySQL = "SELECT MovieID, MovieName, Status, Duration FROM Movie WHERE MovieName LIKE ?";
+		List<Movie> movieList = new ArrayList<Movie>();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(querySQL);
+			preparedStatement.setString(1, "%" + movieNameToFind + "%");
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				String movieID = resultSet.getString(1);
+				String movieName = resultSet.getString(2);
+				String status = resultSet.getString(3);
+				int duration = resultSet.getInt(4);
+				movieList.add(new Movie(movieID, movieName, status, duration));
+			}
+			return movieList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public List<Movie> findMovieByNameAndStatus(String nameToFind, String statusToFind) {
+		Connection connection = connectDB.getConnection();
+		String querySQL = "SELECT MovieID, MovieName, Status, Duration FROM Movie WHERE MovieName LIKE ? AND STATUS = ?";
+		List<Movie> movieList = new ArrayList<Movie>();
+		try {
+			PreparedStatement preparedStatement = connection.prepareStatement(querySQL);
+			preparedStatement.setString(1, "%" + nameToFind + "%");
+			preparedStatement.setString(2, statusToFind);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				String movieID = resultSet.getString(1);
+				String movieName = resultSet.getString(2);
+				String status = resultSet.getString(3);
+				int duration = resultSet.getInt(4);
+				movieList.add(new Movie(movieID, movieName, status, duration));
+			}
+			return movieList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}		
+	}	
 }
