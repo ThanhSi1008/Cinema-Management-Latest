@@ -70,11 +70,11 @@ public class FormProfileInfo extends JPanel {
 		employeeIDTextField.setText(employee.getEmployeeID());
 		fullNameTextField.setText(employee.getFullName());
 		genderTextField.setText(employee.isGender() ? "Male" : "FeMale");
-		dateOfBirthTextField.setText(employee.getDateOfBirth().toString());
+//		dateOfBirthTextField.setText(employee.getDateOfBirth().toString());
 		emailTextField.setText(employee.getEmail());
 		phoneNumberTextField.setText(employee.getPhoneNumber());
 		roleTextField.setText(employee.getRole());
-		startingDateTextField.setText(employee.getStartingDate().toString());
+//		startingDateTextField.setText(employee.getStartingDate().toString());
 		salaryTextField.setText(Double.toString(employee.getSalary()));
 
 		employeeIDLabel = new JLabel("EmployeeID: ");

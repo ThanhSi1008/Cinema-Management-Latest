@@ -33,6 +33,16 @@ public class Application extends JFrame {
 		loginForm = new LoginForm();
 		setContentPane(loginForm);
 		app = this;
+
+		// test
+		app.createMainForm(new Employee("Manager"));
+		FlatAnimatedLafChange.showSnapshot();
+		app.setContentPane(app.getMainForm());
+		app.getMainForm().applyComponentOrientation(app.getComponentOrientation());
+		Application.setSelectedMenu(6, 1);
+		app.getMainForm().hideMenu();
+		SwingUtilities.updateComponentTreeUI(app.getMainForm());
+		FlatAnimatedLafChange.hideSnapshotWithAnimation();
 	}
 
 	public static Application getInstance() {
