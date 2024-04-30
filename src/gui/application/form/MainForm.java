@@ -18,7 +18,6 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 
-import dao.AccountDAO;
 import entity.Employee;
 import gui.application.Application;
 import gui.application.form.other.DefaultForm;
@@ -36,18 +35,16 @@ public class MainForm extends JLayeredPane {
 	private Menu menu;
 	private JPanel panelBody;
 	private JButton menuButton;
-	private AccountDAO accountDAO;
 
-	public MainForm(String username) {
-		accountDAO = new AccountDAO();
-		init(accountDAO.getRoleByUsername(username), accountDAO.getEmployeeByUsername(username));
-		System.out.println(accountDAO.getEmployeeByUsername(username));
+	public MainForm(Employee employee) {
+		init(employee);
+		System.out.println(employee);
 	}
 
-	private void init(String role, Employee employee) {
+	private void init(Employee employee) {
 		setBorder(new EmptyBorder(5, 5, 5, 5));
 		setLayout(new MainFormLayout());
-		menu = new Menu(role);
+		menu = new Menu(employee.getRole());
 		panelBody = new JPanel(new BorderLayout());
 		initMenuArrowIcon();
 		menuButton.putClientProperty(FlatClientProperties.STYLE,
@@ -55,7 +52,7 @@ public class MainForm extends JLayeredPane {
 		menuButton.addActionListener((ActionEvent e) -> {
 			setMenuFull(!menu.isMenuFull());
 		});
-		initMenuEvent(role, employee);
+		initMenuEvent(employee);
 		setLayer(menuButton, JLayeredPane.POPUP_LAYER);
 		add(menuButton);
 		add(menu);
@@ -76,7 +73,7 @@ public class MainForm extends JLayeredPane {
 		menuButton.setIcon(new FlatSVGIcon("gui/icon/svg/" + icon, 0.8f));
 	}
 
-	private void initMenuEvent(String role, Employee employee) {
+	private void initMenuEvent(Employee employee) {
 		menu.addMenuEvent((int index, int subIndex, MenuAction action) -> {
 			switch (index) {
 			case 0:
@@ -86,14 +83,14 @@ public class MainForm extends JLayeredPane {
 				Application.showMainForm(new FormScreeningManagement());
 				break;
 			case 2:
-				if (role.equalsIgnoreCase("Manager")) {
+				if (employee.getRole().equalsIgnoreCase("Manager")) {
 					Application.showMainForm(new FormStaffManagement());
 				} else {
 					Application.showMainForm(new FormCustomerManagement());
 				}
 				break;
 			case 3:
-				if (role.equalsIgnoreCase("Manager")) {
+				if (employee.getRole().equalsIgnoreCase("Manager")) {
 					Application.showMainForm(new FormCustomerManagement());
 				} else {
 					switch (subIndex) {
@@ -110,7 +107,7 @@ public class MainForm extends JLayeredPane {
 				}
 				break;
 			case 4:
-				if (role.equalsIgnoreCase("Manager")) {
+				if (employee.getRole().equalsIgnoreCase("Manager")) {
 					switch (subIndex) {
 					case 1:
 						Application.showMainForm(new DefaultForm("Product - Foods"));
@@ -144,7 +141,7 @@ public class MainForm extends JLayeredPane {
 					break;
 				}
 			case 5:
-				if (role.equalsIgnoreCase("Manager")) {
+				if (employee.getRole().equalsIgnoreCase("Manager")) {
 					switch (subIndex) {
 					case 1:
 						Application.showMainForm(new FormDashboard());
@@ -178,7 +175,7 @@ public class MainForm extends JLayeredPane {
 					break;
 				}
 			case 6:
-				if (role.equalsIgnoreCase("Manager")) {
+				if (employee.getRole().equalsIgnoreCase("Manager")) {
 					switch (subIndex) {
 					case 1:
 						Application.showMainForm(new FormProfileInfo(employee));

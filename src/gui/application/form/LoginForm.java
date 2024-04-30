@@ -12,7 +12,6 @@ import java.awt.event.KeyListener;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
@@ -24,7 +23,11 @@ import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import com.formdev.flatlaf.util.UIScale;
 
 import controller.Ctrl_LoginForm;
+import entity.Employee;
 import gui.application.Application;
+import raven.toast.Notifications;
+import raven.toast.Notifications.Location;
+import raven.toast.Notifications.Type;
 
 public class LoginForm extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -72,18 +75,19 @@ public class LoginForm extends JPanel {
 		cmdLogin.addActionListener(e -> {
 			String username = txtUser.getText().trim();
 			String password = new String(txtPass.getPassword());
-			boolean isValid = ctrl_LoginForm.checkCredentials(username, password);
+			Employee employee = ctrl_LoginForm.getEmployeeByAccount(username, password);
 			Application app = Application.getInstance();
 
-			if (!isValid) {
-				JOptionPane.showMessageDialog(this, "User name or password is incorrect!", "Error", 0);
-				Application.getInstance().getLoginForm().resetLogin();
+			if (employee == null) {
+				Notifications.getInstance().show(Type.ERROR, Location.TOP_CENTER,
+						"User name or password is incorrect!");
+				app.getLoginForm().resetLogin();
 			} else {
-				app.createMainForm(username);
+				app.createMainForm(employee);
 				FlatAnimatedLafChange.showSnapshot();
 				app.setContentPane(app.getMainForm());
 				app.getMainForm().applyComponentOrientation(app.getComponentOrientation());
-				if (ctrl_LoginForm.getRole(username).equalsIgnoreCase("Manager")) {
+				if (employee.getRole().equalsIgnoreCase("Manager")) {
 					Application.setSelectedMenu(6, 1);
 				} else {
 					Application.setSelectedMenu(5, 1);

@@ -16,6 +16,7 @@ import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
+import entity.Employee;
 import gui.application.form.LoginForm;
 import gui.application.form.MainForm;
 
@@ -46,8 +47,8 @@ public class Application extends JFrame {
 		return loginForm;
 	}
 
-	public void createMainForm(String username) {
-		mainForm = new MainForm(username);
+	public void createMainForm(Employee employee) {
+		mainForm = new MainForm(employee);
 	}
 
 	public static void showMainForm(Component component) {
