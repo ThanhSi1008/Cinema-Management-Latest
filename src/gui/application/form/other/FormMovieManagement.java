@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -18,6 +16,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
@@ -29,7 +29,7 @@ import entity.Movie;
 import net.miginfocom.swing.MigLayout;
 
 public class FormMovieManagement extends JPanel implements ActionListener {
-	
+
 	// in movie adding dialog, show the image when the user choose the image
 	private static final long serialVersionUID = 1L;
 	private JTextField searchTextField;
@@ -103,19 +103,27 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		updateButton.addActionListener(this);
 		deleteButton.addActionListener(this);
 		filterComboBox.addActionListener(this);
-		
-		// when user type something in the search text field, take out the value that users type in 
-		searchTextField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                	searchAndFilter();
-                }
-            }
+
+		// when user type something in the search text field, take out the value that
+		// users type in
+		searchTextField.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				searchAndFilter();
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				searchAndFilter();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				searchAndFilter();
+			}
 		});
 		// select all the movie with that has that text in it and show it into the table
-		
-		
 
 		add(container0);
 
@@ -165,7 +173,8 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 			if (selectedRow == -1) {
 				JOptionPane.showMessageDialog(this, "Please select a row to delete.");
 			} else {
-				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this movie?", "Warning", JOptionPane.YES_NO_OPTION);
+				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this movie?",
+						"Warning", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
 					String movieID = (String) movieTable.getValueAt(selectedRow, 0);
 					System.out.println(movieID);
@@ -204,13 +213,13 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		String nameToFind = searchTextField.getText();
 		if (statusToFind.equals("All")) {
 			List<Movie> movieList = movieDAO.findMovieByName(nameToFind);
-	        movieTableModel.setMovieList(movieList);
-	        movieTableModel.fireTableDataChanged();	
+			movieTableModel.setMovieList(movieList);
+			movieTableModel.fireTableDataChanged();
 		} else {
 			List<Movie> movieList = movieDAO.findMovieByNameAndStatus(nameToFind, statusToFind);
-	        movieTableModel.setMovieList(movieList);
-	        movieTableModel.fireTableDataChanged();	
-		}         
+			movieTableModel.setMovieList(movieList);
+			movieTableModel.fireTableDataChanged();
+		}
 	}
 
 }

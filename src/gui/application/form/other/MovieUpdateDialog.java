@@ -37,6 +37,8 @@ import dao.MovieDAO;
 import entity.Movie;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
+import raven.toast.Notifications;
+import raven.toast.Notifications.Location;
 
 public class MovieUpdateDialog extends JDialog implements ActionListener {
 
@@ -154,6 +156,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		descriptionTextArea.setWrapStyleWord(true);
 		descriptionTextArea.setBorder(BorderFactory.createLineBorder(new Color(217, 217, 217), 2));
 		errorMessageLabel.setForeground(Color.RED);
+		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.ITALIC));
 
 		// set layout
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
@@ -190,7 +193,8 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		container.add(statusComboBox);
 		container.add(descriptionLabel);
 		container.add(descriptionTextArea);
-		container.add(errorMessageLabel, "span 2, al center");
+		container.add(new JLabel(""));
+		container.add(errorMessageLabel, "al left");
 		container.add(updateButton, "span 2, al trail");
 
 		ImageIcon calendarIcon = new ImageIcon("images/calendar.png");
@@ -438,7 +442,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 			if (rowsAffected <= 0) {
 				JOptionPane.showMessageDialog(this, "Update unsuccessfully", "Failed", JOptionPane.ERROR_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(this, "Update successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+				Notifications.getInstance().show(Notifications.Type.INFO, Location.BOTTOM_LEFT, "Update successfully");
 				// refresh the table
 				formMovieManagement.searchAndFilter();
 				// clear textfields

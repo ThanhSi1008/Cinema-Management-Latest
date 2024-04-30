@@ -33,10 +33,6 @@ public class Employee {
 		this.imageSource = imageSource;
 	}
 
-	public Employee(String role) {
-		this.role = role;
-	}
-
 	public String getEmployeeID() {
 		return employeeID;
 	}

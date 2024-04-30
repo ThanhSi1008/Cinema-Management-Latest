@@ -21,6 +21,7 @@ import com.formdev.flatlaf.util.UIScale;
 import entity.Employee;
 import gui.application.Application;
 import gui.application.form.other.DefaultForm;
+import gui.application.form.other.FormChangePassword;
 import gui.application.form.other.FormCustomerManagement;
 import gui.application.form.other.FormDashboard;
 import gui.application.form.other.FormMovieManagement;
@@ -166,7 +167,7 @@ public class MainForm extends JLayeredPane {
 						Application.showMainForm(new FormProfileInfo(employee));
 						break;
 					case 2:
-						Application.showMainForm(new DefaultForm("Profile - change password"));
+						Application.showMainForm(new FormChangePassword(employee));
 						break;
 					default:
 						action.cancel();
@@ -181,7 +182,7 @@ public class MainForm extends JLayeredPane {
 						Application.showMainForm(new FormProfileInfo(employee));
 						break;
 					case 2:
-						Application.showMainForm(new DefaultForm("Profile - change password"));
+						Application.showMainForm(new FormChangePassword(employee));
 						break;
 					default:
 						action.cancel();

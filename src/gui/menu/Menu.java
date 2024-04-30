@@ -111,7 +111,7 @@ public class Menu extends JPanel {
 				if (role.equalsIgnoreCase("Employee") && i == 3) {
 					continue;
 				}
-				MenuItem menuItem = new MenuItem(this, menuItems[i], index++, events);
+				MenuItem menuItem = new MenuItem(this, menuItems[i], index++, events, role);
 				panelMenu.add(menuItem);
 			}
 		}

@@ -28,6 +28,7 @@ import raven.crazypanel.CrazyPanel;
 
 public class CustomerUpdateDialog extends JDialog implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
 	private Customer customer;
 	private CustomerDAO customerDAO;
 	private CrazyPanel container;

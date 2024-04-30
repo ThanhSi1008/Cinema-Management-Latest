@@ -21,7 +21,6 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -37,6 +36,8 @@ import dao.MovieDAO;
 import entity.Movie;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
+import raven.toast.Notifications;
+import raven.toast.Notifications.Location;
 
 public class MovieAddingDialog extends JDialog implements ActionListener {
 
@@ -135,6 +136,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		descriptionTextArea.setWrapStyleWord(true);
 		descriptionTextArea.setBorder(BorderFactory.createLineBorder(new Color(217, 217, 217), 2));
 		errorMessageLabel.setForeground(Color.RED);
+		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.ITALIC));
 
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
 
@@ -170,7 +172,8 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		container.add(statusComboBox);
 		container.add(descriptionLabel);
 		container.add(descriptionTextArea);
-		container.add(errorMessageLabel, "span 2, al center");
+		container.add(new JLabel(""));
+		container.add(errorMessageLabel, "al left");
 		container.add(saveButton, "span 2, al trail");
 
 		ImageIcon calendarIcon = new ImageIcon("images/calendar.png");
@@ -422,7 +425,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 					country, trailer, startDateLocalDate, status, importPriceDouble, imagePath);
 			// add a record in the database
 			movieDAO.addNewMovie(newMovie);
-			JOptionPane.showMessageDialog(this, "Add successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+			Notifications.getInstance().show(Notifications.Type.INFO, Location.BOTTOM_LEFT, "Add successfully");
 			// refresh the table
 			// clear textfields
 			// close 10 fas tfingers
