@@ -25,6 +25,8 @@ import dao.CustomerDAO;
 import entity.Customer;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
+import raven.toast.Notifications;
+import raven.toast.Notifications.Location;
 
 public class CustomerUpdateDialog extends JDialog implements ActionListener {
 
@@ -70,20 +72,21 @@ public class CustomerUpdateDialog extends JDialog implements ActionListener {
 		regDateDateChooserButton = new JButton();
 		errorMessageLabel = new JLabel();
 		updateButton = new JButton("Update");
-		
+
 		// fill text fields with existing data
 		fullNameTextField.setText(customer.getFullName());
 		phoneNumberTextField.setText(customer.getPhoneNumber());
 		emailTextField.setText(customer.getEmail());
-		regDateDateChooser.setSelectedDate(new SelectedDate(customer.getRegDate().getDayOfMonth(), customer.getRegDate().getMonthValue(), customer.getRegDate().getYear()));
-		
+		regDateDateChooser.setSelectedDate(new SelectedDate(customer.getRegDate().getDayOfMonth(),
+				customer.getRegDate().getMonthValue(), customer.getRegDate().getYear()));
+
 		// styles
 		title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 18));
 		errorMessageLabel.setForeground(Color.RED);
 
 		// set layout
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
-		
+
 		container.add(title, "wrap, span, al center, gapbottom 8");
 		container.add(fullNameLabel);
 		container.add(fullNameTextField);
@@ -116,10 +119,10 @@ public class CustomerUpdateDialog extends JDialog implements ActionListener {
 				}
 			}
 		});
-		
+
 		// assign events
 		updateButton.addActionListener(this);
-		
+
 		add(container);
 		pack();
 		setLocationRelativeTo(null);
@@ -129,7 +132,7 @@ public class CustomerUpdateDialog extends JDialog implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(updateButton)) {
-			// get all the value 
+			// get all the value
 			String fullName = fullNameTextField.getText().trim();
 			String phoneNumber = phoneNumberTextField.getText().trim();
 			String email = emailTextField.getText().trim();
@@ -172,11 +175,12 @@ public class CustomerUpdateDialog extends JDialog implements ActionListener {
 				regDateTextField.requestFocus();
 				return;
 			}
-			Customer updatedCustomer = new Customer(customer.getCustomerID(), fullName, phoneNumber, email, regDateLocalDate);
+			Customer updatedCustomer = new Customer(customer.getCustomerID(), fullName, phoneNumber, email,
+					regDateLocalDate);
 			// write an update query to the database with the id of this customer
 			boolean isSuccessful = customerDAO.updateCustomer(updatedCustomer);
 			if (isSuccessful) {
-				JOptionPane.showMessageDialog(this, "Update successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+				Notifications.getInstance().show(Notifications.Type.INFO, Location.BOTTOM_LEFT, "Update successfully");
 				formCustomerManagement.handleSearch();
 				this.dispose();
 			} else {

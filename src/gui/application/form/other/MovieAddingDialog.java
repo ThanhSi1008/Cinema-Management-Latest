@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -72,7 +73,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 	private JButton saveButton;
 	private JTextArea descriptionTextArea;
 	private JButton imageSourceButton;
-	private JLabel fileNameLabel;
+	private JLabel displaypPosterLabel;
 	private JButton releasedDateDateChooserButton;
 	private JButton startDateDateChooserButton;
 	private DateChooser releasedDateDateChooser;
@@ -107,7 +108,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		languageTextField = new JTextField(20);
 		imageSourceLabel = new JLabel("Image: ");
 		imageSourceButton = new JButton("Choose Image");
-		fileNameLabel = new JLabel();
+		displaypPosterLabel = new JLabel();
 		releasedDateLabel = new JLabel("Released Date: ");
 		releasedDateTextField = new JTextField();
 		statusLabel = new JLabel("Status: ");
@@ -155,7 +156,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		container.add(languageTextField);
 		container.add(imageSourceLabel);
 		container.add(imageSourceButton, "grow 0, split 2");
-		container.add(fileNameLabel);
+		container.add(displaypPosterLabel);
 		container.add(releasedDateLabel);
 		container.add(releasedDateTextField, "grow 0, split 3, gapright 0");
 		container.add(releasedDateDateChooserButton, "grow 0");
@@ -235,7 +236,9 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 			int returnValue = fileChooser.showOpenDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				selectedFile = fileChooser.getSelectedFile();
-				fileNameLabel.setText(selectedFile.getName());
+				String path = String.format("images/%s", selectedFile.getName());
+				Image icon = new ImageIcon(path).getImage();
+				displaypPosterLabel.setIcon(new ImageIcon(icon.getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
 			}
 		}
 		if (e.getSource().equals(saveButton)) {
@@ -246,7 +249,13 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 			String price = importPriceTextField.getText().trim();
 			String country = countryTextField.getText().trim();
 			String language = languageTextField.getText().trim();
-			String imagePath = fileNameLabel.getText().trim();
+			String imagePath = "";
+			Icon icon = displaypPosterLabel.getIcon();
+			if (icon == null) {
+				System.out.println("icon is null");
+			} else {
+				System.out.println("icon is not null");
+			}
 			String releasedDate = releasedDateTextField.getText().trim();
 			String startDate = startDateTextField.getText().trim();
 			String trailer = trailerTextField.getText().trim();
@@ -337,7 +346,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 				return;
 			}
 
-			if (imagePath.equals("")) {
+			if (icon == null) {
 				errorMessageLabel.setText("Poster image is required");
 				imageSourceButton.requestFocus();
 				return;
