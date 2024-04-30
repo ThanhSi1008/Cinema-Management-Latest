@@ -1,4 +1,5 @@
-USE master
+/*
+USE Master
 go
 
 CREATE DATABASE CinemaManagement
@@ -6,10 +7,9 @@ go
 
 USE CinemaManagement
 go
+*/
 
 /*
-- Bảng Employee
-
 1. Tạo Sequence (MySequence):
    - Sequence được tạo với tên là `MySequence`.
    - Nó bắt đầu với giá trị 1 (START WITH 1).
@@ -22,7 +22,7 @@ go
    theo tên của Sequence (MySequence), sau đó chuyển đổi giá trị này thành một chuỗi ký tự có độ dài 3 và điền vào 
    đuôi của chuỗi 'Emp' bằng cách sử dụng hàm `RIGHT` và chuyển đổi thành kiểu VARCHAR.
 */
-go
+
 CREATE SEQUENCE EmployeeSequence
     START WITH 1
     INCREMENT BY 1;
@@ -36,12 +36,12 @@ CREATE TABLE Employee
     Gender bit NOT NULL,
     DateOfBirth SMALLDATETIME NOT NULL,
     Email VARCHAR(100) NOT NULL,
-    PhoneNumber VARCHAR(20) NOT NULL,
+    PhoneNumber VARCHAR(20) NOT NULL UNIQUE,
     Role NVARCHAR(30) NOT NULL,
+			CONSTRAINT CK_Role CHECK (Role in ('Manager', 'Employee')),
     StartingDate SMALLDATETIME NOT NULL,
     Salary MONEY NOT NULL,
-    ImageSource VARBINARY(MAX),
-	CONSTRAINT CK_Role CHECK (Role in ('Manager', 'Employee'))
+    ImageSource NVARCHAR(100)
 );
 go
 --ảnh thẻ(sẽ dùng ảnh mặc định khi nhân viên vừa vào làm)
@@ -102,9 +102,10 @@ CREATE TABLE Movie
     Country NVARCHAR(20) NOT NULL,
     Trailer NVARCHAR(200) NOT NULL,
     StartDate SMALLDATETIME NOT NULL,
-    Status NVARCHAR(50) NOT NULL,
+    Status NVARCHAR(50) NOT NULL
+        CONSTRAINT CK_Status CHECK (Status IN ('Released', 'Unreleased')),
     ImportPrice MONEY NOT NULL,
-    ImageSource VARBINARY(MAX) NOT NULL
+    ImageSource NVARCHAR(100) NOT NULL
 );
 go
 
@@ -122,8 +123,10 @@ CREATE TABLE Product
     Price MONEY NULL,
     Quantity INT NOT NULL,
     PurchasePrice MONEY NOT NULL,
-    ImageSource VARBINARY(MAX) NOT NULL,
+    ImageSource NVARCHAR(100) NOT NULL,
     ProductType CHAR(6) NOT NULL
+			CONSTRAINT CK_ProductType CHECK (ProductType in ('Drink', 'Food'))
+		
 );
 go
 -- Giá bán sẽ được tự động set cao hơn giá nhập 20%
@@ -627,34 +630,80 @@ ON e.EmployeeID = a.EmployeeID
 WHERE a.Username = @username;
 go
 
+CREATE FUNCTION getEmployeeByAccount(@user VARCHAR(40))
+RETURNS TABLE
+AS
+RETURN
+SELECT e.*
+FROM Employee e JOIN Account a 
+ON e.EmployeeID = a.EmployeeID
+WHERE a.Username = @user;
+go
+
+
 -- Thêm dữ liệu cho Movie
 INSERT INTO Movie (MovieName, Description, Genre, Director, Duration, ReleasedDate, Language, Country, Trailer, StartDate, Status, ImportPrice, ImageSource)
 VALUES
-('The Shawshank Redemption', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', 'https://www.youtube.com/watch?v=6hB3S9bIaco', '1994-09-23', 'Active', 10.99, 0x),
-('The Godfather', 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.', 'Crime', 'Francis Ford Coppola', 175, '1972-03-24', 'English', 'USA', 'https://www.youtube.com/watch?v=5DO-nDW43Ik', '1972-03-24', 'Active', 12.99, 0x),
-('The Dark Knight', 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.', 'Action', 'Christopher Nolan', 152, '2008-07-18', 'English', 'USA', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', '2008-07-18', 'Active', 14.99, 0x),
-('Pulp Fiction', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', '1994-10-14', 'Active', 11.99, 0x),
-('Schindler''s List', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.', 'Biography', 'Steven Spielberg', 195, '1994-02-04', 'English', 'USA', 'https://www.youtube.com/watch?v=gG22XNhtnoY', '1994-02-04', 'Active', 13.99, 0x),
-('The Lord of the Rings: The Return of the King', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.', 'Adventure', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', '2003-12-17', 'Active', 16.99, 0x),
-('Fight Club', 'An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.', 'Drama', 'David Fincher', 139, '1999-10-15', 'English', 'USA', 'https://www.youtube.com/watch?v=SUXWAEX2jlg', '1999-10-15', 'Active', 10.49, 0x),
-('Forrest Gump', 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.', 'Drama', 'Robert Zemeckis', 142, '1994-07-06', 'English', 'USA', 'https://www.youtube.com/watch?v=uPIEn0M8su0', '1994-07-06', 'Active', 9.99, 0x),
-('Inception', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.', 'Action', 'Christopher Nolan', 148, '2010-07-16', 'English', 'USA', 'https://www.youtube.com/watch?v=YoHD9XEInc0', '2010-07-16', 'Active', 15.49, 0x),
-('The Matrix', 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.', 'Action', 'Lana Wachowski, Lilly Wachowski', 136, '1999-03-31', 'English', 'USA', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', '1999-03-31', 'Active', 11.99, 0x);
+('The Shawshank Redemption', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', 'https://www.youtube.com/watch?v=6hB3S9bIaco', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg'),
+('The Godfather', 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.', 'Crime', 'Francis Ford Coppola', 175, '1972-03-24', 'English', 'USA', 'https://www.youtube.com/watch?v=5DO-nDW43Ik', '1972-03-24', 'Released', 12.99, 'images/the_godfather.jpg'),
+('The Dark Knight', 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.', 'Action', 'Christopher Nolan', 152, '2008-07-18', 'English', 'USA', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', '2008-07-18', 'Released', 14.99, 'images/the_dark_knight.jpg'),
+('Pulp Fiction', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', '1994-10-14', 'Released', 11.99, 'images/pulp_fiction.jpg'),
+('Schindler''s List', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.', 'Biography', 'Steven Spielberg', 195, '1994-02-04', 'English', 'USA', 'https://www.youtube.com/watch?v=gG22XNhtnoY', '1994-02-04', 'Released', 13.99, 'images/schindlers_list.jpg'),
+('The Lord of the Rings: The Return of the King', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.', 'Adventure', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', '2003-12-17', 'Released', 16.99, 'images/lotr_return_of_the_king.jpg'),
+('Fight Club', 'An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.', 'Drama', 'David Fincher', 139, '1999-10-15', 'English', 'USA', 'https://www.youtube.com/watch?v=SUXWAEX2jlg', '1999-10-15', 'Released', 10.49, 'images/fight_club.jpg'),
+('Forrest Gump', 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.', 'Drama', 'Robert Zemeckis', 142, '1994-07-06', 'English', 'USA', 'https://www.youtube.com/watch?v=uPIEn0M8su0', '1994-07-06', 'Released', 9.99, 'images/forrest_gump.jpg'),
+('Inception', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.', 'Action', 'Christopher Nolan', 148, '2010-07-16', 'English', 'USA', 'https://www.youtube.com/watch?v=YoHD9XEInc0', '2010-07-16', 'Released', 15.49, 'images/inception.jpg'),
+('The Matrix', 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.', 'Action', 'Lana Wachowski, Lilly Wachowski', 136, '1999-03-31', 'English', 'USA', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', '1999-03-31', 'Released', 11.99, 'images/the_matrix.jpg');
 go
 
--- Thêm dữ liệu cho Employee và Account
-INSERT INTO Employee (FullName, DateOfBirth, Gender, Email, PhoneNumber, Salary, Role, StartingDate)
-VALUES ('admin', '2004-08-10', 1, 'lathanhsi100804@gmail.com', '0398999999', 0, 'Manager', GETDATE());
+-- Thêm dữ liệu cho bảng Employee
+INSERT INTO Employee (FullName, Gender, DateOfBirth, Email, PhoneNumber, Role, StartingDate, Salary, ImageSource)
+VALUES
+('admin', 1, '2004-08-10', 'lathanhsi100804@gmail.com', '0398999999', 'Manager', GETDATE(), 0, 'images/profile.png'),
+('Thanh Sĩ', 1, '2004-08-10', 'lathanhsi100804@gmail.com', '0398888888', 'Employee', GETDATE(), 0, 'images/thanhsi108.png'),
+('Tai Lionel', 1, '2003-10-27', 'tailionel@example.com', '1234567899', 'Employee', GETDATE(), 0, NULL),
+('Alice Smith', 0, '1995-05-15', 'alicesmith@example.com', '9876543210', 'Employee', '2024-04-30', 1800, NULL),
+('Bob Johnson', 1, '1988-11-20', 'bjohnson@example.com', '1357924680', 'Employee', '2024-04-30', 2200, NULL),
+('Emily Davis', 0, '1993-09-10', 'emilydavis@example.com', '2468013579', 'Employee', '2024-04-30', 1900, NULL),
+('Michael Wilson', 1, '1992-04-05', 'mwilson@example.com', '0123456789', 'Employee', '2024-04-30', 2100, NULL),
+('Jennifer Brown', 0, '1985-12-25', 'jbrown@example.com', '9870123456', 'Employee', '2024-04-30', 2300, NULL),
+('David Miller', 1, '1998-07-30', 'dmiller@example.com', '9876543211', 'Employee', '2024-04-30', 2000, NULL),
+('Sarah Anderson', 0, '1994-08-10', 'sanderson@example.com', '0123456788', 'Employee', '2024-04-30', 1900, NULL);
 go
 
 INSERT INTO Account (Username, Password, EmployeeID)
-VALUES ('admin', '$2a$10$TBId43wSoxr9Itgr.g8R0u2XZbuY7o98yBBCO6LqgqTSHj/HWYiqG', 'Emp001');
+VALUES 
+('admin', '$2a$10$TBId43wSoxr9Itgr.g8R0u2XZbuY7o98yBBCO6LqgqTSHj/HWYiqG', 'Emp001'), 
+('thanhsi108', '$2a$10$Wk3Bw8CxJfhy0an/lZTlxeQOMj5h7x0HFmatxJNLbcXJ7PRdjI1Fm', 'Emp002'),
+('tailionel', '$2a$10$TBId43wSoxr9Itgr.g8R0u2XZbuY7o98yBBCO6LqgqTSHj/HWYiqG', 'Emp003');
 go
 
-INSERT INTO Employee (FullName, DateOfBirth, Gender, Email, PhoneNumber, Salary, Role, StartingDate)
-VALUES ('thanhsi108', '2004-08-10', 1, 'lathanhsi100804@gmail.com', '0398999999', 0, 'Employee', GETDATE());
+-- Thêm dữ liệu cho bảng Customer
+INSERT INTO Customer (FullName, Gender, DateOfBirth, PhoneNumber, Email, RegDate)
+VALUES
+('Emma Johnson', 'Female', '1993-01-15', '1234567890', 'emma@example.com', '2024-04-30'),
+('William Smith', 'Male', '1988-05-20', '9876543212', 'william@example.com', '2024-04-30'),
+('Olivia Brown', 'Female', '1990-11-10', '1357924681', 'olivia@example.com', '2024-04-30'),
+('James Wilson', 'Male', '1985-09-05', '2468013578', 'james@example.com', '2024-04-30'),
+('Sophia Taylor', 'Female', '1995-04-30', '0123456787', 'sophia@example.com', '2024-04-30'),
+('Alexander Martinez', 'Male', '1989-12-25', '9870123455', 'alexander@example.com', '2024-04-30'),
+('Ava Anderson', 'Female', '1992-07-10', '9876543213', 'ava@example.com', '2024-04-30'),
+('Michael Thomas', 'Male', '1996-03-15', '1234567898', 'michael@example.com', '2024-04-30'),
+('Isabella Garcia', 'Female', '1987-06-20', '2468013570', 'isabella@example.com', '2024-04-30'),
+('Ethan Rodriguez', 'Male', '1994-08-10', '0123456786', 'ethan@example.com', '2024-04-30');
 go
 
-INSERT INTO Account (Username, Password, EmployeeID)
-VALUES ('thanhsi108', '$2a$10$Wk3Bw8CxJfhy0an/lZTlxeQOMj5h7x0HFmatxJNLbcXJ7PRdjI1Fm', 'Emp002');
+INSERT INTO Product (ProductName, Price, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Popcorn', 5.99, 100, 3.50, 'images/sample.png', 'Food'),
+('Large Popcorn', 7.99, 70, 4.50, 'images/sample.png', 'Food'),
+('Medium Popcorn', 6.99, 80, 4.00, 'images/sample.png', 'Food');
+go
+
+INSERT INTO Product (ProductName, Price, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Pepsi', 3.49, 150, 1.99, 'images/sample.png', 'Drink'),
+('Coca-Cola', 3.49, 150, 1.99, 'images/sample.png', 'Drink'),
+('Mineral Water', 2.99, 200, 1.50, 'images/sample.png', 'Drink'),
+('7 Up', 3.49, 150, 1.99, 'images/sample.png', 'Drink');
 go

@@ -65,61 +65,39 @@ public class AccountDAO {
 		return n > 0;
 	}
 
-	public String getRoleByUsername(String username) {
-		String role = null;
-		Connection connection = connectDB.getConnection();
-		PreparedStatement statement = null;
-		ResultSet resultSet = null;
-
-		try {
-			String sqlQuery = "SELECT * FROM Emp_Acc(?)";
-			statement = connection.prepareStatement(sqlQuery);
-			statement.setString(1, username);
-			resultSet = statement.executeQuery();
-
-			if (resultSet.next()) {
-				role = resultSet.getString("Role");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			connectDB.close(statement, resultSet);
-		}
-
-		return role;
-	}
-
-	public Employee getEmployeeByUsername(String username) {
+	public Employee getEmployeeByUsername(String username, boolean authentication) {
 		Employee employee = null;
 		Connection connection = connectDB.getConnection();
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		String sqlQuery = "SELECT * FROM getEmployeeByAccount(?)";
 
-		try {
-			statement = connection.prepareStatement(sqlQuery);
-			statement.setString(1, username);
-			resultSet = statement.executeQuery();
+		if (getAccountByUsername(username) != null && authentication) {
+			try {
+				statement = connection.prepareStatement(sqlQuery);
+				statement.setString(1, username);
+				resultSet = statement.executeQuery();
 
-			if (resultSet.next()) {
-				String id = resultSet.getString("EmployeeID");
-				String name = resultSet.getString("FullName");
-				boolean gender = resultSet.getBoolean("Gender");
-				LocalDate dob = resultSet.getDate("DateOfBirth").toLocalDate();
-				String email = resultSet.getString("Email");
-				String phone = resultSet.getString("PhoneNumber");
-				String role = resultSet.getString("Role");
-				LocalDate starting = resultSet.getDate("StartingDate").toLocalDate();
-				double salary = resultSet.getDouble("Salary");
-				String image = resultSet.getString("ImageSource");
+				if (resultSet.next()) {
+					String id = resultSet.getString("EmployeeID");
+					String name = resultSet.getString("FullName");
+					boolean gender = resultSet.getBoolean("Gender");
+					LocalDate dob = resultSet.getDate("DateOfBirth").toLocalDate();
+					String email = resultSet.getString("Email");
+					String phone = resultSet.getString("PhoneNumber");
+					String role = resultSet.getString("Role");
+					LocalDate starting = resultSet.getDate("StartingDate").toLocalDate();
+					double salary = resultSet.getDouble("Salary");
+					String image = resultSet.getString("ImageSource");
 
-				employee = new Employee(id, name, gender, dob, email, phone, role, starting, salary, image);
+					employee = new Employee(id, name, gender, dob, email, phone, role, starting, salary, image);
 
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				connectDB.close(statement, resultSet);
 			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			connectDB.close(statement, resultSet);
 		}
 
 		return employee;

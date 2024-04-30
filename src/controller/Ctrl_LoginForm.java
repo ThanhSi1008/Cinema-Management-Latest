@@ -4,6 +4,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import dao.AccountDAO;
 import entity.Account;
+import entity.Employee;
 
 public class Ctrl_LoginForm {
 
@@ -21,8 +22,8 @@ public class Ctrl_LoginForm {
 		return true;
 	}
 
-	public String getRole(String username) {
-		return accountDAO.getRoleByUsername(username);
+	public Employee getEmployeeByAccount(String username, String password) {
+		return accountDAO.getEmployeeByUsername(username, checkCredentials(username, password));
 	}
 
 }
