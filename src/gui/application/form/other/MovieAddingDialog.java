@@ -9,9 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -26,6 +26,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.raven.datechooser.DateChooser;
 import com.raven.datechooser.EventDateChooser;
 import com.raven.datechooser.SelectedAction;
@@ -38,6 +40,7 @@ import raven.crazypanel.CrazyPanel;
 
 public class MovieAddingDialog extends JDialog implements ActionListener {
 
+	private static final long serialVersionUID = 1L;
 	final JFileChooser fc = new JFileChooser();
 	private CrazyPanel container;
 	private JLabel movieNameLabel;
@@ -56,22 +59,18 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 	private JLabel releasedDateLabel;
 	private JTextField releasedDateTextField;
 	private JLabel statusLabel;
-	private JTextField statusTextField;
 	private JLabel trailerLabel;
 	private JTextField trailerTextField;
 	private JLabel genreLabel;
 	private JTextField genreTextField;
 	private JLabel descriptionLabel;
 	private File selectedFile;
-	private JFileChooser fileChooser;
 	private JLabel startDateLabel;
 	private JTextField startDateTextField;
 	private JLabel title;
 	private JButton saveButton;
 	private JTextArea descriptionTextArea;
-	private JTextField filePathField;
 	private JButton imageSourceButton;
-	private BufferedImage originalBI;
 	private JLabel fileNameLabel;
 	private JButton releasedDateDateChooserButton;
 	private JButton startDateDateChooserButton;
@@ -81,6 +80,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 	private MovieDAO movieDAO;
 	private FormMovieManagement formMovieManagement;
 	private JLabel errorMessageLabel;
+	private FileNameExtensionFilter filter;
 
 	public MovieAddingDialog() {
 		movieDAO = new MovieDAO();
@@ -110,7 +110,6 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		releasedDateLabel = new JLabel("Released Date: ");
 		releasedDateTextField = new JTextField();
 		statusLabel = new JLabel("Status: ");
-		statusTextField = new JTextField(20);
 		startDateLabel = new JLabel("Start Date: ");
 		startDateTextField = new JTextField();
 		trailerLabel = new JLabel("Trailer: ");
@@ -227,7 +226,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 			fileChooser.setAcceptAllFileFilterUsed(false);
 
-			FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp");
+			filter = new FileNameExtensionFilter("Images", "jpg", "png", "gif", "bmp");
 			fileChooser.addChoosableFileFilter(filter);
 
 			int returnValue = fileChooser.showOpenDialog(null);
@@ -251,7 +250,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 			String genre = genreTextField.getText().trim();
 			String status = (String) statusComboBox.getSelectedItem();
 			String description = descriptionTextArea.getText().trim();
-			
+
 			// all fields must not be empty
 			// name must start with capital letters
 			// directors must start with capital letters
@@ -262,85 +261,85 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 			// start date must be before today
 			// trailer must be in the right format
 			// description must have at least 200 letter long
-			
+
 			if (name.equals("")) {
 				errorMessageLabel.setText("Name must not be empty");
 				movieNameTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!name.matches("^[A-Z][a-zA-Z]*(\\s[A-Z][a-zA-Z]*)*$")) {
 				errorMessageLabel.setText("Name must start with capital letters");
 				movieNameTextField.requestFocus();
 				return;
 			}
-			
+
 			if (director.equals("")) {
 				errorMessageLabel.setText("Director must not be empty");
 				directorTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!director.matches("^[A-Z][a-zA-Z]*(\\s[A-Z][a-zA-Z]*)*$")) {
 				errorMessageLabel.setText("Director must start with capital letters");
 				directorTextField.requestFocus();
 				return;
 			}
-			
+
 			if (duration.equals("")) {
 				errorMessageLabel.setText("Director must not be empty");
 				durationTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!duration.matches("^\\d+$")) {
 				errorMessageLabel.setText("Duration must be number");
 				durationTextField.requestFocus();
 				return;
-			}	
-			
+			}
+
 			if (price.equals("")) {
 				errorMessageLabel.setText("Import price must not be empty");
 				importPriceTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!price.matches("^[0-9]+(\\.[0-9]+)?$")) {
-			    errorMessageLabel.setText("Import price must be a number");
-			    importPriceTextField.requestFocus();
-			    return;
+				errorMessageLabel.setText("Import price must be a number");
+				importPriceTextField.requestFocus();
+				return;
 			}
-			
+
 			if (language.equals("")) {
 				errorMessageLabel.setText("Language must not be empty");
 				languageTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!language.matches("^[A-Z][a-zA-Z]*$")) {
 				errorMessageLabel.setText("Language must sart with a capital letter");
 				languageTextField.requestFocus();
 				return;
 			}
-			
+
 			if (country.equals("")) {
 				errorMessageLabel.setText("Country must not be empty");
 				countryTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!country.matches("^[A-Z][a-zA-Z]*(\\\\s[A-Z][a-zA-Z]*)*$")) {
 				errorMessageLabel.setText("Country must sart with a capital letters");
 				countryTextField.requestFocus();
 				return;
 			}
-			
+
 			if (imagePath.equals("")) {
 				errorMessageLabel.setText("Poster image is required");
 				imageSourceButton.requestFocus();
 				return;
 			}
-			
+
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 			LocalDate releasedDateLocalDate = LocalDate.parse(releasedDate, formatter);
 			if (!releasedDateLocalDate.isBefore(LocalDate.now())) {
@@ -348,76 +347,86 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 				releasedDateTextField.requestFocus();
 				return;
 			}
-			
+
 			LocalDate startDateLocalDate = LocalDate.parse(startDate, formatter);
 			if (!startDateLocalDate.isBefore(LocalDate.now())) {
 				errorMessageLabel.setText("Start date must be before today");
 				startDateTextField.requestFocus();
 				return;
 			}
-			
+
 			if (trailer.equals("")) {
 				errorMessageLabel.setText("Trailer must not be empty");
 				trailerTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!trailer.matches("^https?://(?:www\\.)?[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}(?:/[^\\s]*)?$")) {
-			    errorMessageLabel.setText("Trailer must be a valid URL");
-			    trailerTextField.requestFocus();
-			    return;
+				errorMessageLabel.setText("Trailer must be a valid URL");
+				trailerTextField.requestFocus();
+				return;
 			}
-			
+
 			if (genre.equals("")) {
 				errorMessageLabel.setText("Genre must not be empty");
 				genreTextField.requestFocus();
 				return;
 			}
-			
+
 			if (!genre.matches("^[A-Z][a-zA-Z]*(?:, ?[A-Z][a-zA-Z]*)*$")) {
 				errorMessageLabel.setText("Genre must start with capital letters and seperated by commas");
 				genreTextField.requestFocus();
 				return;
 			}
-			
+
 			if (description.equals("")) {
 				errorMessageLabel.setText("Description must not be empty");
 				descriptionTextArea.requestFocus();
 				return;
-			}		
-			
+			}
+
 			if (!description.matches("^.{20,}$")) {
 				errorMessageLabel.setText("Description must be at least 20 characters long");
 				descriptionTextArea.requestFocus();
 				return;
 			}
-			
+
 			try {
 				BufferedImage image = ImageIO.read(selectedFile);
 				imagePath = String.format("images/%s", selectedFile.getName());
 				File destinationFile = new File(imagePath);
-				ImageIO.write(image, "jpg", destinationFile);
-				System.out.println("Image saved successfully!");
+				String extension = FilenameUtils.getExtension(selectedFile.getName()).toLowerCase();
+				boolean isValidExtension = Arrays.asList(filter.getExtensions()).contains(extension);
+				if (isValidExtension) {
+					try {
+						ImageIO.write(image, extension, destinationFile);
+						System.out.println("File has been written successfully with path: " + imagePath);
+					} catch (IOException exc) {
+						exc.printStackTrace();
+					}
+				} else {
+					System.out.println("Invalid file extension!");
+				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
 				System.out.println("Error saving image: " + ex.getMessage());
 				return;
 			}
-			
+
 			int durationInt = Integer.parseInt(duration);
-			
+
 			double importPriceDouble = Double.parseDouble(price);
-			
-			
+
 			// create a new movie object
-			Movie newMovie = new Movie(name, description, genre, director, durationInt, releasedDateLocalDate, language, country, trailer, startDateLocalDate, status, importPriceDouble, imagePath);
+			Movie newMovie = new Movie(name, description, genre, director, durationInt, releasedDateLocalDate, language,
+					country, trailer, startDateLocalDate, status, importPriceDouble, imagePath);
 			// add a record in the database
 			movieDAO.addNewMovie(newMovie);
 			JOptionPane.showMessageDialog(this, "Add successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
 			// refresh the table
 			// clear textfields
 			// close 10 fas tfingers
-			
+
 			this.dispose();
 			formMovieManagement.searchAndFilter();
 		}
