@@ -6,6 +6,14 @@ public class Account {
 	private String password;
 	private Employee emp;
 
+	public Account(String accountID, String username, String password, Employee emp) {
+		super();
+		this.accountID = accountID;
+		this.username = username;
+		this.password = password;
+		this.emp = emp;
+	}
+
 	public Account(String username, String password, Employee emp) {
 		super();
 		this.username = username;

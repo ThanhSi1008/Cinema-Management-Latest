@@ -33,8 +33,53 @@ public class Employee {
 		this.imageSource = imageSource;
 	}
 
+	public Employee(String fullName, boolean gender, LocalDate dateOfBirth, String email, String phoneNumber,
+			String role, LocalDate startingDate, double salary) {
+		super();
+		this.fullName = fullName;
+		this.gender = gender;
+		this.dateOfBirth = dateOfBirth;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+		this.startingDate = startingDate;
+		this.salary = salary;
+	}
+
+	public Employee(String employeeID, String fullName, boolean gender, String phoneNumber, String email, String role) {
+		super();
+		this.employeeID = employeeID;
+		this.fullName = fullName;
+		this.gender = gender;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+	}
+
+	public Employee(String employeeID, String fullName, boolean gender, LocalDate dateOfBirth, String email,
+			String phoneNumber, String role, LocalDate startingDate, double salary) {
+		super();
+		this.employeeID = employeeID;
+		this.fullName = fullName;
+		this.gender = gender;
+		this.dateOfBirth = dateOfBirth;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+		this.startingDate = startingDate;
+		this.salary = salary;
+	}
+
 	public String getEmployeeID() {
 		return employeeID;
+	}
+
+	public void setEmployeeID(String employeeID) {
+		if (this.employeeID == null) {
+			this.employeeID = employeeID;
+		} else {
+			System.out.println("EmployeeID is already set and cannot be changed.");
+		}
 	}
 
 	public String getFullName() {

@@ -14,8 +14,10 @@ import entity.Employee;
 
 public class AccountDAO {
 	private ConnectDB connectDB;
+	private EmployeeDAO employeeDAO;
 
 	public AccountDAO() {
+		this.employeeDAO = new EmployeeDAO();
 		connectDB = ConnectDB.getInstance();
 		connectDB.connect();
 	}
@@ -153,6 +155,75 @@ public class AccountDAO {
 		}
 
 		return username;
+	}
+
+	public boolean checkAvalibility(String username) {
+		Connection connection = connectDB.getConnection();
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+
+		try {
+			statement = connection.prepareStatement("SELECT * FROM Account WHERE Username = ?");
+			statement.setString(1, username);
+			resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				return false;
+			} else {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			connectDB.close(statement, resultSet);
+		}
+		return false;
+	}
+
+	public Account getAccountByEmployeeID(String employeeIDToFind) {
+		Account account = null;
+		Connection connection = connectDB.getConnection();
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		String sqlQuery = "SELECT * FROM Account WHERE EmployeeID = ?";
+
+		try {
+			statement = connection.prepareStatement(sqlQuery);
+			statement.setString(1, employeeIDToFind);
+			resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				String accountID = resultSet.getString(1);
+				String username = resultSet.getString(2);
+				String password = resultSet.getString(3);
+				String employeeID = resultSet.getString(4);
+
+				return new Account(accountID, username, password, employeeDAO.getEmployeeByID(employeeID));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			connectDB.close(statement, resultSet);
+		}
+		return account;
+	}
+
+	// what's it???
+	public boolean updateAccount(String employeeID, String username, String password) {
+		Connection connection = connectDB.getConnection();
+		// update the account with employeeID, username, and new password
+		String updateSQL = "UPDATE Account SET username = ?, password = ? WHERE employeeID = ?";
+		try {
+			PreparedStatement s = connection.prepareStatement(updateSQL);
+			s.setString(1, username);
+			s.setString(2, BCrypt.hashpw(password, BCrypt.gensalt()));
+			s.setString(3, employeeID);
+			int rowsAffected = s.executeUpdate();
+			return rowsAffected > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }
