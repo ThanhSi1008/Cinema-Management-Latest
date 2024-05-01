@@ -29,7 +29,7 @@ public class MenuItem extends JPanel {
 	private final List<MenuEvent> events;
 	private Menu menu;
 	private final String menus[];
-	private final int menuIndex;
+	private int menuIndex;
 	private final int menuItemHeight = 38;
 	private final int subMenuItemHeight = 35;
 	private final int subMenuLeftGap = 34;
@@ -39,12 +39,12 @@ public class MenuItem extends JPanel {
 	private float animate;
 	private PopupSubmenu popup;
 
-	public MenuItem(Menu menu, String menus[], int menuIndex, List<MenuEvent> events) {
+	public MenuItem(Menu menu, String menus[], int menuIndex, List<MenuEvent> events, String role) {
 		this.menu = menu;
 		this.menus = menus;
 		this.menuIndex = menuIndex;
 		this.events = events;
-		init();
+		init(role);
 	}
 
 	public boolean isMenuShow() {
@@ -71,7 +71,10 @@ public class MenuItem extends JPanel {
 		return menuIndex;
 	}
 
-	private Icon getIcon() {
+	private Icon getIcon(String role) {
+		if (role.equalsIgnoreCase("Employee") && menuIndex >= 2) {
+			menuIndex++;
+		}
 		Color lightColor = FlatUIUtils.getUIColor("Menu.icon.lightColor", Color.red);
 		Color darkColor = FlatUIUtils.getUIColor("Menu.icon.darkColor", Color.red);
 		FlatSVGIcon icon = new FlatSVGIcon("gui/menu/icon/" + menuIndex + ".svg");
@@ -81,7 +84,7 @@ public class MenuItem extends JPanel {
 		return icon;
 	}
 
-	private void init() {
+	private void init(String role) {
 		setLayout(new MenuLayout());
 		putClientProperty(FlatClientProperties.STYLE,
 				"" + "background:$Menu.background;" + "foreground:$Menu.lineColor");
@@ -90,7 +93,7 @@ public class MenuItem extends JPanel {
 			menuItem.setHorizontalAlignment(
 					menuItem.getComponentOrientation().isLeftToRight() ? JButton.LEADING : JButton.TRAILING);
 			if (i == 0) {
-				menuItem.setIcon(getIcon());
+				menuItem.setIcon(getIcon(role));
 				menuItem.addActionListener((ActionEvent e) -> {
 					if (menus.length > 1) {
 						if (menu.isMenuFull()) {

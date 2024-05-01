@@ -15,6 +15,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -37,6 +38,8 @@ import dao.MovieDAO;
 import entity.Movie;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
+import raven.toast.Notifications;
+import raven.toast.Notifications.Location;
 
 public class MovieUpdateDialog extends JDialog implements ActionListener {
 
@@ -71,7 +74,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 	private JButton updateButton;
 	private JTextArea descriptionTextArea;
 	private JButton imageSourceButton;
-	private JLabel fileNameLabel;
+	private JLabel displaypPosterLabel;
 	private JButton releasedDateDateChooserButton;
 	private JButton startDateDateChooserButton;
 	private DateChooser releasedDateDateChooser;
@@ -108,7 +111,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		languageTextField = new JTextField(20);
 		imageSourceLabel = new JLabel("Image: ");
 		imageSourceButton = new JButton("Choose Image");
-		fileNameLabel = new JLabel();
+		displaypPosterLabel = new JLabel();
 		releasedDateLabel = new JLabel("Released Date: ");
 		releasedDateTextField = new JTextField();
 		statusLabel = new JLabel("Status: ");
@@ -138,7 +141,22 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		importPriceTextField.setText(movie.getImportPrice() + "");
 		countryTextField.setText(movie.getCountry());
 		languageTextField.setText(movie.getLanguage());
-		fileNameLabel.setText(movie.getImageSource());
+
+		boolean isValid = false;
+		String path = movie.getImageSource();
+		System.out.println("image path is: " + path);
+		if (path != null && !path.trim().isEmpty()) {
+			File file = new File(path);
+			isValid = file.exists();
+		}
+
+		if (!isValid) {
+			displaypPosterLabel.setIcon(null);
+		} else {
+			Image imageIcon = new ImageIcon(path).getImage();
+			displaypPosterLabel.setIcon(new ImageIcon(imageIcon.getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+		}
+
 		releasedDateDateChooser.setSelectedDate(new SelectedDate(movie.getReleasedDate().getDayOfMonth(),
 				movie.getReleasedDate().getMonthValue(), movie.getReleasedDate().getYear()));
 		startDateDateChooser.setSelectedDate(new SelectedDate(movie.getStartDate().getDayOfMonth(),
@@ -154,6 +172,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		descriptionTextArea.setWrapStyleWord(true);
 		descriptionTextArea.setBorder(BorderFactory.createLineBorder(new Color(217, 217, 217), 2));
 		errorMessageLabel.setForeground(Color.RED);
+		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.ITALIC));
 
 		// set layout
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
@@ -173,7 +192,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		container.add(languageTextField);
 		container.add(imageSourceLabel);
 		container.add(imageSourceButton, "grow 0, split 2");
-		container.add(fileNameLabel);
+		container.add(displaypPosterLabel);
 		container.add(releasedDateLabel);
 		container.add(releasedDateTextField, "grow 0, split 3, gapright 0");
 		container.add(releasedDateDateChooserButton, "grow 0");
@@ -190,7 +209,8 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		container.add(statusComboBox);
 		container.add(descriptionLabel);
 		container.add(descriptionTextArea);
-		container.add(errorMessageLabel, "span 2, al center");
+		container.add(new JLabel(""));
+		container.add(errorMessageLabel, "al left");
 		container.add(updateButton, "span 2, al trail");
 
 		ImageIcon calendarIcon = new ImageIcon("images/calendar.png");
@@ -252,7 +272,9 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 			int returnValue = fileChooser.showOpenDialog(null);
 			if (returnValue == JFileChooser.APPROVE_OPTION) {
 				selectedFile = fileChooser.getSelectedFile();
-				fileNameLabel.setText(selectedFile.getName());
+				String path = String.format("images/%s", selectedFile.getName());
+				Image icon = new ImageIcon(path).getImage();
+				displaypPosterLabel.setIcon(new ImageIcon(icon.getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
 			}
 		}
 		if (e.getSource().equals(updateButton)) {
@@ -263,7 +285,16 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 			String price = importPriceTextField.getText().trim();
 			String country = countryTextField.getText().trim();
 			String language = languageTextField.getText().trim();
-			String imagePath = fileNameLabel.getText().trim();
+
+			// check image path
+			String imagePath = "";
+			Icon icon = displaypPosterLabel.getIcon();
+			if (icon != null) {
+				System.out.println("JLabel is contain the image");
+			} else {
+				System.out.println("JLabel is not contain the image");
+			}
+
 			String releasedDate = releasedDateTextField.getText().trim();
 			String startDate = startDateTextField.getText().trim();
 			String trailer = trailerTextField.getText().trim();
@@ -343,7 +374,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 				return;
 			}
 
-			if (imagePath.equals("")) {
+			if (icon == null) {
 				errorMessageLabel.setText("Poster image is required");
 				imageSourceButton.requestFocus();
 				return;
@@ -420,7 +451,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 						System.out.println("Invalid file extension!");
 					}
 				} else {
-					imagePath = movie.getImageSource();
+//					imagePath = movie.getImageSource();
 				}
 			} catch (IOException ex) {
 				ex.printStackTrace();
@@ -431,6 +462,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 			double importPriceDouble = Double.parseDouble(price);
 
 			// create a new movie object
+			System.out.println("image path: " + imagePath);
 			Movie updatedMovie = new Movie(name, description, genre, director, durationInt, releasedDateLocalDate,
 					language, country, trailer, startDateLocalDate, status, importPriceDouble, imagePath);
 			// update the movie record with this id
@@ -438,7 +470,7 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 			if (rowsAffected <= 0) {
 				JOptionPane.showMessageDialog(this, "Update unsuccessfully", "Failed", JOptionPane.ERROR_MESSAGE);
 			} else {
-				JOptionPane.showMessageDialog(this, "Update successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+				Notifications.getInstance().show(Notifications.Type.INFO, Location.BOTTOM_LEFT, "Update successfully");
 				// refresh the table
 				formMovieManagement.searchAndFilter();
 				// clear textfields

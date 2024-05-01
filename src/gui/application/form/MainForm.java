@@ -21,9 +21,11 @@ import com.formdev.flatlaf.util.UIScale;
 import entity.Employee;
 import gui.application.Application;
 import gui.application.form.other.DefaultForm;
+import gui.application.form.other.FormChangePassword;
 import gui.application.form.other.FormCustomerManagement;
 import gui.application.form.other.FormDashboard;
 import gui.application.form.other.FormMovieManagement;
+import gui.application.form.other.FormProductManagement;
 import gui.application.form.other.FormProfileInfo;
 import gui.application.form.other.FormScreeningManagement;
 import gui.application.form.other.FormStaffManagement;
@@ -75,42 +77,24 @@ public class MainForm extends JLayeredPane {
 
 	private void initMenuEvent(Employee employee) {
 		menu.addMenuEvent((int index, int subIndex, MenuAction action) -> {
-			switch (index) {
-			case 0:
-				Application.showMainForm(new FormMovieManagement());
-				break;
-			case 1:
-				Application.showMainForm(new FormScreeningManagement());
-				break;
-			case 2:
-				if (employee.getRole().equalsIgnoreCase("Manager")) {
+			if (employee.getRole().equalsIgnoreCase("Manager")) {
+				switch (index) {
+				case 0:
+					Application.showMainForm(new FormMovieManagement());
+					break;
+				case 1:
+					Application.showMainForm(new FormScreeningManagement());
+					break;
+				case 2:
 					Application.showMainForm(new FormStaffManagement());
-				} else {
+					break;
+				case 3:
 					Application.showMainForm(new FormCustomerManagement());
-				}
-				break;
-			case 3:
-				if (employee.getRole().equalsIgnoreCase("Manager")) {
-					Application.showMainForm(new FormCustomerManagement());
-				} else {
+					break;
+				case 4:
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new DefaultForm("Product - Foods"));
-						break;
-					case 2:
-						Application.showMainForm(new DefaultForm("Product - Drinks"));
-						break;
-					default:
-						action.cancel();
-						break;
-					}
-				}
-				break;
-			case 4:
-				if (employee.getRole().equalsIgnoreCase("Manager")) {
-					switch (subIndex) {
-					case 1:
-						Application.showMainForm(new DefaultForm("Product - Foods"));
+						Application.showMainForm(new FormProductManagement());
 						break;
 					case 2:
 						Application.showMainForm(new DefaultForm("Product - Drinks"));
@@ -120,7 +104,7 @@ public class MainForm extends JLayeredPane {
 						break;
 					}
 					break;
-				} else {
+				case 5:
 					switch (subIndex) {
 					case 1:
 						Application.showMainForm(new FormDashboard());
@@ -139,67 +123,92 @@ public class MainForm extends JLayeredPane {
 						break;
 					}
 					break;
-				}
-			case 5:
-				if (employee.getRole().equalsIgnoreCase("Manager")) {
-					switch (subIndex) {
-					case 1:
-						Application.showMainForm(new FormDashboard());
-						break;
-					case 2:
-						Application.showMainForm(new DefaultForm("Statistics - customer"));
-						break;
-					case 3:
-						Application.showMainForm(new DefaultForm("Statistics - movie"));
-						break;
-					case 4:
-						Application.showMainForm(new DefaultForm("Statistics - product"));
-						break;
-					default:
-						action.cancel();
-						break;
-					}
-					break;
-				} else {
+				case 6:
 					switch (subIndex) {
 					case 1:
 						Application.showMainForm(new FormProfileInfo(employee));
 						break;
 					case 2:
-						Application.showMainForm(new DefaultForm("Profile - change password"));
+						Application.showMainForm(new FormChangePassword(employee));
 						break;
 					default:
 						action.cancel();
 						break;
 					}
 					break;
-				}
-			case 6:
-				if (employee.getRole().equalsIgnoreCase("Manager")) {
-					switch (subIndex) {
-					case 1:
-						Application.showMainForm(new FormProfileInfo(employee));
-						break;
-					case 2:
-						Application.showMainForm(new DefaultForm("Profile - change password"));
-						break;
-					default:
-						action.cancel();
-						break;
-					}
-					break;
-				} else {
+				case 7:
 					Application.logout();
 					break;
+				default:
+					action.cancel();
+					break;
 				}
-			case 7:
-				Application.logout();
-				break;
-			default:
-				action.cancel();
-				break;
+			} else {
+				switch (index) {
+				case 0:
+					Application.showMainForm(new FormMovieManagement());
+					break;
+				case 1:
+					Application.showMainForm(new FormScreeningManagement());
+					break;
+				case 3:
+					Application.showMainForm(new FormCustomerManagement());
+					break;
+				case 4:
+					switch (subIndex) {
+					case 1:
+						Application.showMainForm(new FormProductManagement());
+						break;
+					case 2:
+						Application.showMainForm(new DefaultForm("Product - Drinks"));
+						break;
+					default:
+						action.cancel();
+						break;
+					}
+					break;
+				case 5:
+					switch (subIndex) {
+					case 1:
+						Application.showMainForm(new FormDashboard());
+						break;
+					case 2:
+						Application.showMainForm(new DefaultForm("Statistics - customer"));
+						break;
+					case 3:
+						Application.showMainForm(new DefaultForm("Statistics - movie"));
+						break;
+					case 4:
+						Application.showMainForm(new DefaultForm("Statistics - product"));
+						break;
+					default:
+						action.cancel();
+						break;
+					}
+					break;
+				case 6:
+					switch (subIndex) {
+					case 1:
+						Application.showMainForm(new FormProfileInfo(employee));
+						break;
+					case 2:
+						Application.showMainForm(new FormChangePassword(employee));
+						break;
+					default:
+						action.cancel();
+						break;
+					}
+					break;
+				case 7:
+					Application.logout();
+					break;
+				default:
+					action.cancel();
+					break;
+				}
 			}
 		});
+
 	}
 
 	private void setMenuFull(boolean full) {

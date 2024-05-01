@@ -1,18 +1,12 @@
 package gui.application.form.other;
 
-import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.FlatLaf;
-import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
-import com.formdev.flatlaf.themes.FlatMacDarkLaf;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.text.DecimalFormat;
 import java.util.Random;
+
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -23,6 +17,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
+import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
+
 /**
  *
  * @author RAVEN
@@ -30,6 +32,10 @@ import javax.swing.table.TableCellRenderer;
 public class Test extends javax.swing.JFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
      * Creates new form Test
      */
     public Test() {
@@ -94,7 +100,8 @@ public class Test extends javax.swing.JFrame {
         table.setDefaultRenderer(Object.class, getAlignmentCellRender(table.getDefaultRenderer(Object.class), false));
     }
 
-    private TableCellRenderer getAlignmentCellRender(TableCellRenderer oldRender, boolean header) {
+    @SuppressWarnings("serial")
+	private TableCellRenderer getAlignmentCellRender(TableCellRenderer oldRender, boolean header) {
         return new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -130,7 +137,7 @@ public class Test extends javax.swing.JFrame {
         };
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "serial" })
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
@@ -202,14 +209,16 @@ public class Test extends javax.swing.JFrame {
                 "", "Name", "Balance", "Other", "Status"
             }
         ) {
-            Class[] types = new Class [] {
+            @SuppressWarnings("rawtypes")
+			Class[] types = new Class [] {
                 java.lang.Boolean.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
                 true, false, false, false, false
             };
 
-            public Class getColumnClass(int columnIndex) {
+            @SuppressWarnings("rawtypes")
+			public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
 

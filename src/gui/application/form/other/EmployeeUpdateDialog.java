@@ -131,6 +131,9 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 		startDateDateChooser.setSelectedDate(new SelectedDate(employee.getStartingDate().getDayOfMonth(), employee.getStartingDate().getMonthValue(), employee.getStartingDate().getYear()));
 		salaryTextField.setText(employee.getSalary() + "");
 		usernameTextField.setText(account.getUsername());
+		passwordPasswordField.setText(account.getPassword());
+		reenterPasswordPasswordField.setText(account.getPassword());
+		
 		// styles
 		title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 24));
 		errorMessageLabel.setForeground(Color.RED);
@@ -290,39 +293,44 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 				salaryTextField.requestFocus();
 				return;
 			}
-			if (username.equals("")) {
-				errorMessageLabel.setText("Username must not be empty");
-				usernameTextField.requestFocus();
-				return;
-			}
-			if (!accountDAO.checkAvalibility(username)) {
-				errorMessageLabel.setText("This username is not available");
-				usernameTextField.requestFocus();
-				return;
-			}
-			if (password.equals("")) {
-				errorMessageLabel.setText("Password must not be empty");
-				passwordPasswordField.requestFocus();
-				return;
-			}
-			if (!password.matches("^.{8,}$")) {
-				errorMessageLabel.setText("Password must be at least 8 character long");
-				passwordPasswordField.requestFocus();
-				return;
-			}
-			if (!reenterPassword.equals(password)) {
-				errorMessageLabel.setText("Re-enter password must be the same as password");
-				reenterPasswordPasswordField.requestFocus();
-				return;
-			}
 			// update it to the database
 			boolean genderBoolean = gender.equals("Male") ? true : false;
 			double salaryDouble = Double.parseDouble(salary);
+			
 			Employee newEmployee = new Employee(employee.getEmployeeID() ,fullName, genderBoolean, dateOfBirthLocalDate, email, phoneNumber, role, startDateLocalDate, salaryDouble);
 			employeeDAO.updateEmployee(newEmployee);
-			accountDAO.updateAccount(employee.getEmployeeID(), username, password);
+			
+			if (!(username.equals(account.getUsername()) && password.equals(account.getPassword()))) {
+				if (username.equals("")) {
+					errorMessageLabel.setText("Username must not be empty");
+					usernameTextField.requestFocus();
+					return;
+				}
+				if (!accountDAO.checkAvalibility(username)) {
+					errorMessageLabel.setText("This username is not available");
+					usernameTextField.requestFocus();
+					return;
+				}
+				if (password.equals("")) {
+					errorMessageLabel.setText("Password must not be empty");
+					passwordPasswordField.requestFocus();
+					return;
+				}
+				if (!password.matches("^.{8,}$")) {
+					errorMessageLabel.setText("Password must be at least 8 character long");
+					passwordPasswordField.requestFocus();
+					return;
+				}
+				if (!reenterPassword.equals(password)) {
+					errorMessageLabel.setText("Re-enter password must be the same as password");
+					reenterPasswordPasswordField.requestFocus();
+					return;
+				}
+				accountDAO.updateAccount(employee.getEmployeeID(), username, password);
+			}
+			
 			// refresh the table
-			JOptionPane.showMessageDialog(this, "Employee has been added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Employee has been updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
 			this.dispose();
 			formStaffManagement.handleSearch();
 		}

@@ -45,10 +45,6 @@ public class LoginForm extends JPanel {
 		initComponents();
 		init();
 		addEvents();
-
-		// test
-//		txtUser.setText("admin");
-//		txtPass.setText("123");
 	}
 
 	public void resetLogin() {
@@ -87,7 +83,7 @@ public class LoginForm extends JPanel {
 				FlatAnimatedLafChange.showSnapshot();
 				app.setContentPane(app.getMainForm());
 				app.getMainForm().applyComponentOrientation(app.getComponentOrientation());
-				if (employee.getRole().equalsIgnoreCase("Manager")) {
+				if (employee.getRole().equals("Manager")) {
 					Application.setSelectedMenu(6, 1);
 				} else {
 					Application.setSelectedMenu(5, 1);

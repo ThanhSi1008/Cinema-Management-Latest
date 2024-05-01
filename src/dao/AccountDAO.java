@@ -156,8 +156,20 @@ public class AccountDAO {
 		return account;
 	}
 
-	public void updateAccount(String employeeID, String username, String password) {
-			
+	public boolean updateAccount(String employeeID, String username, String password) {
+		Connection connection = connectDB.getConnection();
+		// update the account with this employeeID with the new username and password
+		String updateSQL = "UPDATE Account SET username = ?, password = ?";
+		try {
+			PreparedStatement s = connection.prepareStatement(updateSQL);
+			s.setString(1, username);
+			s.setString(2, password);
+			int rowsAffected = s.executeUpdate();
+			return rowsAffected > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }

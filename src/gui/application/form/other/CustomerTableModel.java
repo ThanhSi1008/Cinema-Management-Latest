@@ -1,14 +1,11 @@
 package gui.application.form.other;
 
-import java.time.Duration;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import dao.CustomerDAO;
-import dao.MovieDAO;
 import entity.Customer;
-import entity.Movie;
 
 public class CustomerTableModel extends AbstractTableModel {
 	
