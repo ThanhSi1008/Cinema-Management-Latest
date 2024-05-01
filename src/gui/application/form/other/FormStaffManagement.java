@@ -34,7 +34,7 @@ import dao.EmployeeDAO;
 import entity.Employee;
 import net.miginfocom.swing.MigLayout;
 
-public class FormStaffManagement extends JFrame implements ActionListener {
+public class FormStaffManagement extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField searchTextField;
@@ -44,7 +44,6 @@ public class FormStaffManagement extends JFrame implements ActionListener {
 	private JPanel container1;
 
 	private EmployeeDAO employeeDAO;
-	private CustomerUpdateDialog customerUpdateDialog;
 	private JButton addNewButton;
 	private EmployeeTableModel employeeTableModel;
 	private JTable employeeTable;
@@ -125,9 +124,6 @@ public class FormStaffManagement extends JFrame implements ActionListener {
 		
 		add(container0);
 
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		this.setUndecorated(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setVisible(true);
 
 	}
@@ -211,14 +207,5 @@ public class FormStaffManagement extends JFrame implements ActionListener {
 		employeeTableModel.fireTableDataChanged();
 	}
 
-	public static void main(String[] args) {
-		FlatRobotoFont.install();
-		FlatLaf.registerCustomDefaultsSource("gui.theme");
-		UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 16));
-		FlatMacLightLaf.setup();
-		SwingUtilities.invokeLater(() -> {
-			new FormStaffManagement().setVisible(true);
-		});
-	}
 
 }
