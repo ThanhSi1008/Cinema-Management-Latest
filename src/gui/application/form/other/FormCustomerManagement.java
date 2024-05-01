@@ -46,10 +46,8 @@ public class FormCustomerManagement extends JPanel implements ActionListener {
 	private JComboBox<String> filterComboBox;
 	private JPanel container0;
 	private JPanel container1;
-	private MovieAddingDialog movieAddingDialog;
 
 	private CustomerDAO customerDAO;
-	private MovieUpdateDialog movieUpdateDialog;
 	private CustomerTableModel customerTableModel;
 	private JTable customerTable;
 	private CustomerUpdateDialog customerUpdateDialog;

@@ -5,6 +5,14 @@ public class Account {
 	private String username;
 	private String password;
 	private Employee emp;
+	
+	public Account(String accountID, String username, String password, Employee emp) {
+		super();
+		this.accountID = accountID;
+		this.username = username;
+		this.password = password;
+		this.emp = emp;
+	}
 
 	public Account(String username, String password, Employee emp) {
 		super();
@@ -15,6 +23,10 @@ public class Account {
 
 	public Account() {
 		super();
+	}
+
+	public void setAccountID(String accountID) {
+		this.accountID = accountID;
 	}
 
 	public String getAccountID() {

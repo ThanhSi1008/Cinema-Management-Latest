@@ -14,8 +14,10 @@ import entity.Employee;
 
 public class AccountDAO {
 	private ConnectDB connectDB;
+	private EmployeeDAO employeeDAO;
 
 	public AccountDAO() {
+		this.employeeDAO = new EmployeeDAO();
 		connectDB = ConnectDB.getInstance();
 		connectDB.connect();
 	}
@@ -101,6 +103,61 @@ public class AccountDAO {
 		}
 
 		return employee;
+	}
+
+	public boolean checkAvalibility(String username) {
+		Connection connection = connectDB.getConnection();
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+
+		try {
+			statement = connection.prepareStatement("SELECT * FROM Account WHERE Username = ?");
+			statement.setString(1, username);
+			resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				return false;
+			} else {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			connectDB.close(statement, resultSet);
+		}
+		return false;
+	}
+
+	public Account getAccountByEmployeeID(String employeeIDToFind) {
+		Account account = null;
+		Connection connection = connectDB.getConnection();
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		String sqlQuery = "SELECT * FROM Account WHERE EmployeeID = ?";
+
+		try {
+			statement = connection.prepareStatement(sqlQuery);
+			statement.setString(1, employeeIDToFind);
+			resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				String accountID = resultSet.getString(1);
+				String username = resultSet.getString(2);
+				String password = resultSet.getString(3);
+				String employeeID = resultSet.getString(4);
+				return new Account(accountID, username, password, employeeDAO.getEmployeeByID(employeeID));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			connectDB.close(statement, resultSet);
+		}
+
+		return account;
+	}
+
+	public void updateAccount(String employeeID, String username, String password) {
+			
 	}
 
 }

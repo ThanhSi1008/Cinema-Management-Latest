@@ -37,6 +37,41 @@ public class Employee {
 		this.role = role;
 	}
 
+	public Employee(String employeeID, String fullName, boolean gender, String phoneNumber, String email,
+			String role) {
+		this.employeeID = employeeID;
+		this.fullName = fullName;
+		this.gender = gender;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.role = role;
+	}
+
+	public Employee(String fullName, boolean gender, LocalDate dateOfBirthLocalDate, String email,
+			String phoneNumber, String role, LocalDate startDateLocalDate, Double salary) {
+		this.fullName = fullName;
+		this.gender = gender;
+		this.dateOfBirth = dateOfBirthLocalDate;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+		this.startingDate = startDateLocalDate;
+		this.salary = salary;
+	}
+
+	public Employee(String employeeID, String fullName, boolean genderBoolean, LocalDate dateOfBirthLocalDate,
+			String email, String phoneNumber, String role, LocalDate startDateLocalDate, double salaryDouble) {
+		this.employeeID = employeeID;
+		this.fullName = fullName;
+		this.gender = gender;
+		this.dateOfBirth = dateOfBirthLocalDate;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+		this.startingDate = startDateLocalDate;
+		this.salary = salary;
+	}
+
 	public String getEmployeeID() {
 		return employeeID;
 	}
@@ -118,6 +153,11 @@ public class Employee {
 		return "Employee [employeeID=" + employeeID + ", fullName=" + fullName + ", gender=" + gender + ", dateOfBirth="
 				+ dateOfBirth + ", email=" + email + ", phoneNumber=" + phoneNumber + ", role=" + role
 				+ ", startingDate=" + startingDate + ", salary=" + salary + ", imageSource=" + imageSource + "]";
+	}
+
+
+	public void setEmployeeID(String generatedEmployeeID) {
+		this.employeeID = generatedEmployeeID;
 	}
 
 }
