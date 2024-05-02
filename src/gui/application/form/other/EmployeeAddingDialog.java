@@ -30,7 +30,7 @@ import entity.Employee;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
 
-public class StaffAddingDialog extends JDialog implements ActionListener {
+public class EmployeeAddingDialog extends JDialog implements ActionListener {
 	
 	// Note: remember to add clear button
 	private EmployeeDAO employeeDAO;
@@ -69,7 +69,7 @@ public class StaffAddingDialog extends JDialog implements ActionListener {
 	private JLabel errorMessageLabel;
 	private AccountDAO accountDAO;
 
-	public StaffAddingDialog() {
+	public EmployeeAddingDialog() {
 		employeeDAO = new EmployeeDAO();
 		accountDAO = new AccountDAO();
 		setLayout(new BorderLayout());

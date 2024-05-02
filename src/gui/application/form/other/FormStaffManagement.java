@@ -47,7 +47,7 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 	private JButton addNewButton;
 	private EmployeeTableModel employeeTableModel;
 	private JTable employeeTable;
-	private StaffAddingDialog staffAddingDialog;
+	private EmployeeAddingDialog staffAddingDialog;
 	private EmployeeUpdateDialog employeeUpdateDialog;
 
 	public FormStaffManagement() {
@@ -156,7 +156,7 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(addNewButton)) {
 			Thread thread = new Thread(() -> {
-				staffAddingDialog = new StaffAddingDialog();
+				staffAddingDialog = new EmployeeAddingDialog();
 				staffAddingDialog.setFormStaffManagement(this);
 				staffAddingDialog.setModal(true);
 				staffAddingDialog.setVisible(true);

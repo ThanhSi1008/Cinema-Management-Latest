@@ -15,6 +15,12 @@ public class Room {
 		this.numberOfSeats = numberOfSeats;
 	}
 
+	public Room(String roomID, String roomName, int numberOfSeats) {
+		this.roomID = roomID;
+		this.roomName = roomName;
+		this.numberOfSeats = numberOfSeats;
+	}
+
 	public String getRoomID() {
 		return roomID;
 	}

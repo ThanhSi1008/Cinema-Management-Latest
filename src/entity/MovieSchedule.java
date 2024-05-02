@@ -1,5 +1,6 @@
 package entity;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class MovieSchedule {
@@ -8,6 +9,7 @@ public class MovieSchedule {
 	private LocalDateTime endTime;
 	private Movie movie;
 	private Room room;
+	private double ticketPrice;
 
 	public MovieSchedule(LocalDateTime screeningTime, Movie movie, Room room) {
 		super();
@@ -17,10 +19,15 @@ public class MovieSchedule {
 		this.room = room;
 	}
 
-	public MovieSchedule() {
-		super();
+	public MovieSchedule(String movieScheduleID, LocalDateTime screeningTime, LocalDateTime endTime, Movie movie,
+			Room room) {
+		this.scheduleID = movieScheduleID;
+		this.screeningTime = screeningTime;
+		this.endTime = endTime;
+		this.movie = movie;
+		this.room = room;
 	}
-
+	
 	public String getScheduleID() {
 		return scheduleID;
 	}
