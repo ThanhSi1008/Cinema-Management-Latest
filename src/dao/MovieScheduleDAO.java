@@ -30,7 +30,7 @@ public class MovieScheduleDAO {
 		Connection connection = connectDB.getConnection();
 		List<MovieSchedule> movieScheduletList = new ArrayList<MovieSchedule>();
 		try {
-			PreparedStatement s = connection.prepareStatement("SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID from MovieSchedule");
+			PreparedStatement s = connection.prepareStatement("SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PerSeatPrice from MovieSchedule");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				String movieScheduleID = rs.getString(1);
@@ -38,7 +38,8 @@ public class MovieScheduleDAO {
 				LocalDateTime endTime = rs.getTimestamp(3).toLocalDateTime();
 				Movie movie = movieDAO.getMovieByID(rs.getString(3));
 				Room room = roomDAO.getRoomByID(rs.getString(4));
-				movieScheduletList.add(new MovieSchedule(movieScheduleID, screeningTime, endTime, movie, room));
+				Double perSeatPrice = rs.getDouble(5);
+				movieScheduletList.add(new MovieSchedule(movieScheduleID, screeningTime, endTime, movie, room, perSeatPrice));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
