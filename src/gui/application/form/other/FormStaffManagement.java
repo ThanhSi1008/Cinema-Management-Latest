@@ -2,14 +2,12 @@ package gui.application.form.other;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -17,18 +15,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import com.formdev.flatlaf.FlatClientProperties;
-import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
-import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
-import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import dao.EmployeeDAO;
 import entity.Employee;
@@ -47,8 +40,8 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 	private JButton addNewButton;
 	private EmployeeTableModel employeeTableModel;
 	private JTable employeeTable;
-	private EmployeeAddingDialog staffAddingDialog;
-	private EmployeeUpdateDialog employeeUpdateDialog;
+	private StaffAddingDialog staffAddingDialog;
+	private StaffUpdateDialog staffUpdateDialog;
 
 	public FormStaffManagement() {
 
@@ -121,7 +114,7 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 		addNewButton.addActionListener(this);
 		updateButton.addActionListener(this);
 		deleteButton.addActionListener(this);
-		
+
 		add(container0);
 
 		this.setVisible(true);
@@ -156,7 +149,7 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(addNewButton)) {
 			Thread thread = new Thread(() -> {
-				staffAddingDialog = new EmployeeAddingDialog();
+				staffAddingDialog = new StaffAddingDialog();
 				staffAddingDialog.setFormStaffManagement(this);
 				staffAddingDialog.setModal(true);
 				staffAddingDialog.setVisible(true);
@@ -171,10 +164,10 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 				} else {
 					String employeeID = (String) employeeTable.getValueAt(selectedRow, 0);
 					Employee employee = employeeDAO.getEmployeeByID(employeeID);
-					employeeUpdateDialog = new EmployeeUpdateDialog(employee);
-					employeeUpdateDialog.setFormStaffManagement(this);
-					employeeUpdateDialog.setModal(true);
-					employeeUpdateDialog.setVisible(true);
+					staffUpdateDialog = new StaffUpdateDialog(employee);
+					staffUpdateDialog.setFormStaffManagement(this);
+					staffUpdateDialog.setModal(true);
+					staffUpdateDialog.setVisible(true);
 				}
 			});
 			thread.start();
@@ -184,7 +177,8 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 			if (selectedRow == -1) {
 				JOptionPane.showMessageDialog(this, "Please select a row to delete.");
 			} else {
-				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this employee?", "Warning", JOptionPane.YES_NO_OPTION);
+				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this employee?",
+						"Warning", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
 					String employeeID = (String) employeeTable.getValueAt(selectedRow, 0);
 					boolean isSuccessful = employeeDAO.removeEmployeeByID(employeeID);
@@ -199,13 +193,12 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 			}
 		}
 	}
-	
+
 	public void handleSearch() {
 		String nameToFind = searchTextField.getText().trim();
 		List<Employee> employeeList = employeeDAO.findEmployeByName(nameToFind);
 		employeeTableModel.setEmployeeList(employeeList);
 		employeeTableModel.fireTableDataChanged();
 	}
-
 
 }

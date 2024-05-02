@@ -1,7 +1,6 @@
 package gui.application.form.other;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -79,18 +78,17 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		movieTable = new JTable(movieTableModel);
 		container0.setLayout(new MigLayout("wrap, fill, insets 15", "[fill]", "[grow 0][fill]"));
 		container0.add(container1);
+		container0.add(new JScrollPane(movieTable));
 
 		if (movieTable.getColumnModel().getColumnCount() > 0) {
 			movieTable.getColumnModel().getColumn(1).setPreferredWidth(300);
 		}
 
-		container0.add(new JScrollPane(movieTable));
 		// Change scroll style
 		JScrollPane scroll = (JScrollPane) movieTable.getParent().getParent();
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
-//		scroll.setBorder(BorderFactory.createLineBorder(Color.BLACK, 10));
 
 		movieTable.getTableHeader().putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");
 		movieTable.putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");

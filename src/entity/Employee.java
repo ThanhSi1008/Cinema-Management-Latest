@@ -33,47 +33,53 @@ public class Employee {
 		this.imageSource = imageSource;
 	}
 
-	public Employee(String role) {
-		this.role = role;
-	}
-
-	public Employee(String employeeID, String fullName, boolean gender, String phoneNumber, String email,
-			String role) {
-		this.employeeID = employeeID;
+	public Employee(String fullName, boolean gender, LocalDate dateOfBirth, String email, String phoneNumber,
+			String role, LocalDate startingDate, double salary) {
+		super();
 		this.fullName = fullName;
 		this.gender = gender;
-		this.phoneNumber = phoneNumber;
-		this.email = email;
-		this.role = role;
-	}
-
-	public Employee(String fullName, boolean gender, LocalDate dateOfBirthLocalDate, String email,
-			String phoneNumber, String role, LocalDate startDateLocalDate, Double salary) {
-		this.fullName = fullName;
-		this.gender = gender;
-		this.dateOfBirth = dateOfBirthLocalDate;
+		this.dateOfBirth = dateOfBirth;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.role = role;
-		this.startingDate = startDateLocalDate;
+		this.startingDate = startingDate;
 		this.salary = salary;
 	}
 
-	public Employee(String employeeID, String fullName, boolean genderBoolean, LocalDate dateOfBirthLocalDate,
-			String email, String phoneNumber, String role, LocalDate startDateLocalDate, double salaryDouble) {
+	public Employee(String employeeID, String fullName, boolean gender, String phoneNumber, String email, String role) {
+		super();
 		this.employeeID = employeeID;
 		this.fullName = fullName;
 		this.gender = gender;
-		this.dateOfBirth = dateOfBirthLocalDate;
 		this.email = email;
 		this.phoneNumber = phoneNumber;
 		this.role = role;
-		this.startingDate = startDateLocalDate;
+	}
+
+	public Employee(String employeeID, String fullName, boolean gender, LocalDate dateOfBirth, String email,
+			String phoneNumber, String role, LocalDate startingDate, double salary) {
+		super();
+		this.employeeID = employeeID;
+		this.fullName = fullName;
+		this.gender = gender;
+		this.dateOfBirth = dateOfBirth;
+		this.email = email;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+		this.startingDate = startingDate;
 		this.salary = salary;
 	}
 
 	public String getEmployeeID() {
 		return employeeID;
+	}
+
+	public void setEmployeeID(String employeeID) {
+		if (this.employeeID == null) {
+			this.employeeID = employeeID;
+		} else {
+			System.out.println("EmployeeID is already set and cannot be changed.");
+		}
 	}
 
 	public String getFullName() {
@@ -153,11 +159,6 @@ public class Employee {
 		return "Employee [employeeID=" + employeeID + ", fullName=" + fullName + ", gender=" + gender + ", dateOfBirth="
 				+ dateOfBirth + ", email=" + email + ", phoneNumber=" + phoneNumber + ", role=" + role
 				+ ", startingDate=" + startingDate + ", salary=" + salary + ", imageSource=" + imageSource + "]";
-	}
-
-
-	public void setEmployeeID(String generatedEmployeeID) {
-		this.employeeID = generatedEmployeeID;
 	}
 
 }

@@ -14,7 +14,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
@@ -29,9 +28,15 @@ import entity.Account;
 import entity.Employee;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
+import raven.toast.Notifications;
+import raven.toast.Notifications.Location;
 
-public class EmployeeAddingDialog extends JDialog implements ActionListener {
-	
+public class StaffAddingDialog extends JDialog implements ActionListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Note: remember to add clear button
 	private EmployeeDAO employeeDAO;
 	private CrazyPanel container;
@@ -69,7 +74,7 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 	private JLabel errorMessageLabel;
 	private AccountDAO accountDAO;
 
-	public EmployeeAddingDialog() {
+	public StaffAddingDialog() {
 		employeeDAO = new EmployeeDAO();
 		accountDAO = new AccountDAO();
 		setLayout(new BorderLayout());
@@ -80,7 +85,7 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 		this.setTitle("Adding Dialog");
 		container = new CrazyPanel();
 		title = new JLabel("ADD EMPLOYEE");
-		
+
 		basicInfoLabel = new JLabel("Basic Employee Information");
 		fullNameLabel = new JLabel("Full name: ");
 		fullNameTextField = new JTextField(30);
@@ -115,15 +120,15 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 		reenterPasswordPasswordField = new JPasswordField(30);
 		errorMessageLabel = new JLabel();
 		saveButton = new JButton("Save");
-		
+
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
-			
+
 		// styles
 		title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 24));
 		errorMessageLabel.setForeground(Color.RED);
 		basicInfoLabel.setFont(new Font(basicInfoLabel.getFont().getFontName(), Font.BOLD, 20));
 		loginCredentialsLabel.setFont(new Font(basicInfoLabel.getFont().getFontName(), Font.BOLD, 20));
-		
+
 		// add into container
 		container.add(title, "wrap, span, al center, gapbottom 8");
 		container.add(basicInfoLabel, "span 2, al lead, gapbottom 8");
@@ -156,8 +161,8 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 		container.add(reenterPasswordLabel);
 		container.add(reenterPasswordPasswordField);
 		container.add(errorMessageLabel, "span 2, al center");
-		container.add(saveButton, "span 2, al trail");	
-		
+		container.add(saveButton, "span 2, al trail");
+
 		// date chooser
 		ImageIcon calendarIcon = new ImageIcon("images/calendar.png");
 		Image image = calendarIcon.getImage();
@@ -178,7 +183,7 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 				}
 			}
 		});
-		
+
 		startDateDateChooserButton.setIcon(calendarIcon);
 		startDateDateChooserButton.addActionListener(e -> {
 			startDateDateChooser.showPopup();
@@ -193,10 +198,10 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 				}
 			}
 		});
-		
+
 		// event listeners
 		saveButton.addActionListener(this);
-		
+
 		// set up frame
 		add(container);
 		pack();
@@ -204,7 +209,7 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 	}
 
 	public void setFormStaffManagement(FormStaffManagement formStaffManagement) {
-		this.formStaffManagement = formStaffManagement;	
+		this.formStaffManagement = formStaffManagement;
 	}
 
 	@Override
@@ -232,7 +237,7 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 				errorMessageLabel.setText("Full name must start with capital letters");
 				fullNameTextField.requestFocus();
 				return;
-			}		
+			}
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 			LocalDate dateOfBirthLocalDate = LocalDate.parse(dob, formatter);
 			if (!dateOfBirthLocalDate.isBefore(LocalDate.now())) {
@@ -304,13 +309,15 @@ public class EmployeeAddingDialog extends JDialog implements ActionListener {
 			// add it to the database
 			boolean genderBoolean = gender.equals("Male") ? true : false;
 			double salaryDouble = Double.parseDouble(salary);
-			Employee newEmployee = new Employee(fullName, genderBoolean, dateOfBirthLocalDate, email, phoneNumber, role, startDateLocalDate, salaryDouble);
+			Employee newEmployee = new Employee(fullName, genderBoolean, dateOfBirthLocalDate, email, phoneNumber, role,
+					startDateLocalDate, salaryDouble);
 			String employeeID = employeeDAO.addNewEmployee(newEmployee);
 			newEmployee.setEmployeeID(employeeID);
 			Account newAccount = new Account(username, password, newEmployee);
 			accountDAO.createAccount(newAccount);
 			// refresh the table
-			JOptionPane.showMessageDialog(this, "Employee has been added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+			Notifications.getInstance().show(Notifications.Type.INFO, Location.BOTTOM_LEFT,
+					"Employee has been added successfully");
 			this.dispose();
 			formStaffManagement.handleSearch();
 		}

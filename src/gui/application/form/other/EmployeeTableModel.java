@@ -5,7 +5,6 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import dao.EmployeeDAO;
-import entity.Customer;
 import entity.Employee;
 
 public class EmployeeTableModel extends AbstractTableModel {

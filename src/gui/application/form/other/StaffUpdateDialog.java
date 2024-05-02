@@ -30,8 +30,12 @@ import entity.Employee;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
 
-public class EmployeeUpdateDialog extends JDialog implements ActionListener {
-	
+public class StaffUpdateDialog extends JDialog implements ActionListener {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// Note: remember to add clear button
 	private EmployeeDAO employeeDAO;
 	private CrazyPanel container;
@@ -70,7 +74,8 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 	private AccountDAO accountDAO;
 	private Employee employee;
 	private Account account;
-	public EmployeeUpdateDialog(Employee employee) {
+
+	public StaffUpdateDialog(Employee employee) {
 		this.employee = employee;
 		employeeDAO = new EmployeeDAO();
 		accountDAO = new AccountDAO();
@@ -83,7 +88,7 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 		this.setTitle("Updating Dialog");
 		container = new CrazyPanel();
 		title = new JLabel("UPDATE EMPLOYEE");
-		
+
 		basicInfoLabel = new JLabel("Basic Employee Information");
 		fullNameLabel = new JLabel("Full name: ");
 		fullNameTextField = new JTextField(30);
@@ -118,28 +123,30 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 		reenterPasswordPasswordField = new JPasswordField(30);
 		errorMessageLabel = new JLabel();
 		updateButton = new JButton("Update");
-		
+
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
-		
+
 		// fill text fields with existing data
 		fullNameTextField.setText(employee.getFullName());
 		genderCombobox.setSelectedItem(employee.isGender() ? "Male" : "Female");
-		dateOfBirthDateChooser.setSelectedDate(new SelectedDate(employee.getDateOfBirth().getDayOfMonth(), employee.getDateOfBirth().getMonthValue(), employee.getDateOfBirth().getYear()));
+		dateOfBirthDateChooser.setSelectedDate(new SelectedDate(employee.getDateOfBirth().getDayOfMonth(),
+				employee.getDateOfBirth().getMonthValue(), employee.getDateOfBirth().getYear()));
 		emailTextField.setText(employee.getEmail());
 		phoneNumberTextField.setText(employee.getPhoneNumber());
 		roleCombobox.setSelectedItem(employee.getRole());
-		startDateDateChooser.setSelectedDate(new SelectedDate(employee.getStartingDate().getDayOfMonth(), employee.getStartingDate().getMonthValue(), employee.getStartingDate().getYear()));
+		startDateDateChooser.setSelectedDate(new SelectedDate(employee.getStartingDate().getDayOfMonth(),
+				employee.getStartingDate().getMonthValue(), employee.getStartingDate().getYear()));
 		salaryTextField.setText(employee.getSalary() + "");
 		usernameTextField.setText(account.getUsername());
 		passwordPasswordField.setText(account.getPassword());
 		reenterPasswordPasswordField.setText(account.getPassword());
-		
+
 		// styles
 		title.setFont(new Font(title.getFont().getFontName(), Font.BOLD, 24));
 		errorMessageLabel.setForeground(Color.RED);
 		basicInfoLabel.setFont(new Font(basicInfoLabel.getFont().getFontName(), Font.BOLD, 20));
 		loginCredentialsLabel.setFont(new Font(basicInfoLabel.getFont().getFontName(), Font.BOLD, 20));
-		
+
 		// add into container
 		container.add(title, "wrap, span, al center, gapbottom 8");
 		container.add(basicInfoLabel, "span 2, al lead, gapbottom 8");
@@ -172,9 +179,8 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 		container.add(reenterPasswordLabel);
 		container.add(reenterPasswordPasswordField);
 		container.add(errorMessageLabel, "span 2, al center");
-		container.add(updateButton, "span 2, al trail");	
-		
-		
+		container.add(updateButton, "span 2, al trail");
+
 		// date chooser
 		ImageIcon calendarIcon = new ImageIcon("images/calendar.png");
 		Image image = calendarIcon.getImage();
@@ -195,7 +201,7 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 				}
 			}
 		});
-		
+
 		startDateDateChooserButton.setIcon(calendarIcon);
 		startDateDateChooserButton.addActionListener(e -> {
 			startDateDateChooser.showPopup();
@@ -210,10 +216,10 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 				}
 			}
 		});
-		
+
 		// event listeners
 		updateButton.addActionListener(this);
-		
+
 		// set up frame
 		add(container);
 		pack();
@@ -221,7 +227,7 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 	}
 
 	public void setFormStaffManagement(FormStaffManagement formStaffManagement) {
-		this.formStaffManagement = formStaffManagement;	
+		this.formStaffManagement = formStaffManagement;
 	}
 
 	@Override
@@ -249,7 +255,7 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 				errorMessageLabel.setText("Full name must start with capital letters");
 				fullNameTextField.requestFocus();
 				return;
-			}		
+			}
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 			LocalDate dateOfBirthLocalDate = LocalDate.parse(dob, formatter);
 			if (!dateOfBirthLocalDate.isBefore(LocalDate.now())) {
@@ -296,31 +302,36 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 			// update it to the database
 			boolean genderBoolean = gender.equals("Male") ? true : false;
 			double salaryDouble = Double.parseDouble(salary);
-			
-			Employee newEmployee = new Employee(employee.getEmployeeID() ,fullName, genderBoolean, dateOfBirthLocalDate, email, phoneNumber, role, startDateLocalDate, salaryDouble);
+
+			Employee newEmployee = new Employee(employee.getEmployeeID(), fullName, genderBoolean, dateOfBirthLocalDate,
+					email, phoneNumber, role, startDateLocalDate, salaryDouble);
 			employeeDAO.updateEmployee(newEmployee);
-			
+
 			if (!(username.equals(account.getUsername()) && password.equals(account.getPassword()))) {
 				if (username.equals("")) {
 					errorMessageLabel.setText("Username must not be empty");
 					usernameTextField.requestFocus();
 					return;
 				}
+
 				if (!accountDAO.checkAvalibility(username)) {
 					errorMessageLabel.setText("This username is not available");
 					usernameTextField.requestFocus();
 					return;
 				}
+
 				if (password.equals("")) {
 					errorMessageLabel.setText("Password must not be empty");
 					passwordPasswordField.requestFocus();
 					return;
 				}
+
 				if (!password.matches("^.{8,}$")) {
 					errorMessageLabel.setText("Password must be at least 8 character long");
 					passwordPasswordField.requestFocus();
 					return;
 				}
+
 				if (!reenterPassword.equals(password)) {
 					errorMessageLabel.setText("Re-enter password must be the same as password");
 					reenterPasswordPasswordField.requestFocus();
@@ -328,9 +339,10 @@ public class EmployeeUpdateDialog extends JDialog implements ActionListener {
 				}
 				accountDAO.updateAccount(employee.getEmployeeID(), username, password);
 			}
-			
+
 			// refresh the table
-			JOptionPane.showMessageDialog(this, "Employee has been updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(this, "Employee has been updated successfully", "Success",
+					JOptionPane.INFORMATION_MESSAGE);
 			this.dispose();
 			formStaffManagement.handleSearch();
 		}

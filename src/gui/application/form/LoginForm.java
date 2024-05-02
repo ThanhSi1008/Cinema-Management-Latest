@@ -25,6 +25,7 @@ import com.formdev.flatlaf.util.UIScale;
 import controller.Ctrl_LoginForm;
 import entity.Employee;
 import gui.application.Application;
+import gui.application.form.other.FormProfileInfo;
 import raven.toast.Notifications;
 import raven.toast.Notifications.Location;
 import raven.toast.Notifications.Type;
@@ -83,11 +84,7 @@ public class LoginForm extends JPanel {
 				FlatAnimatedLafChange.showSnapshot();
 				app.setContentPane(app.getMainForm());
 				app.getMainForm().applyComponentOrientation(app.getComponentOrientation());
-				if (employee.getRole().equals("Manager")) {
-					Application.setSelectedMenu(6, 1);
-				} else {
-					Application.setSelectedMenu(5, 1);
-				}
+				Application.showMainForm(new FormProfileInfo(employee));
 				app.getMainForm().hideMenu();
 				SwingUtilities.updateComponentTreeUI(app.getMainForm());
 				FlatAnimatedLafChange.hideSnapshotWithAnimation();

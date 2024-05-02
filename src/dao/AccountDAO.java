@@ -105,6 +105,58 @@ public class AccountDAO {
 		return employee;
 	}
 
+	public boolean updatePassword(String employeeID, String newPassword) {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		boolean success = false;
+
+		try {
+			connection = connectDB.getConnection();
+			String sql = "UPDATE Account SET Password = ? WHERE EmployeeID = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+			preparedStatement.setString(2, employeeID);
+
+			int rowsUpdated = preparedStatement.executeUpdate();
+			if (rowsUpdated > 0) {
+				System.out.println("Password updated successfully.");
+				success = true;
+			} else {
+				System.out.println("Failed to update password.");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error updating password: " + e.getMessage());
+		} finally {
+			connectDB.close(preparedStatement, null);
+		}
+
+		return success;
+	}
+
+	public String getUserByEmployeeID(String employeeID) {
+		Connection connection = null;
+		PreparedStatement preparedStatement = null;
+		String username = null;
+
+		try {
+			connection = connectDB.getConnection();
+			String sql = "SELECT Username FROM Account WHERE EmployeeID = ?";
+			preparedStatement = connection.prepareStatement(sql);
+			preparedStatement.setString(1, employeeID);
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				username = resultSet.getString("Username");
+			}
+		} catch (SQLException e) {
+			System.out.println("Error fetching account information: " + e.getMessage());
+		} finally {
+			connectDB.close(preparedStatement, null);
+		}
+
+		return username;
+	}
+
 	public boolean checkAvalibility(String username) {
 		Connection connection = connectDB.getConnection();
 		PreparedStatement statement = null;
@@ -145,6 +197,7 @@ public class AccountDAO {
 				String username = resultSet.getString(2);
 				String password = resultSet.getString(3);
 				String employeeID = resultSet.getString(4);
+
 				return new Account(accountID, username, password, employeeDAO.getEmployeeByID(employeeID));
 			}
 		} catch (SQLException e) {
@@ -152,18 +205,19 @@ public class AccountDAO {
 		} finally {
 			connectDB.close(statement, resultSet);
 		}
-
 		return account;
 	}
 
+	// what's it???
 	public boolean updateAccount(String employeeID, String username, String password) {
 		Connection connection = connectDB.getConnection();
-		// update the account with this employeeID with the new username and password
-		String updateSQL = "UPDATE Account SET username = ?, password = ?";
+		// update the account with employeeID, username, and new password
+		String updateSQL = "UPDATE Account SET username = ?, password = ? WHERE employeeID = ?";
 		try {
 			PreparedStatement s = connection.prepareStatement(updateSQL);
 			s.setString(1, username);
-			s.setString(2, password);
+			s.setString(2, BCrypt.hashpw(password, BCrypt.gensalt()));
+			s.setString(3, employeeID);
 			int rowsAffected = s.executeUpdate();
 			return rowsAffected > 0;
 		} catch (SQLException e) {
