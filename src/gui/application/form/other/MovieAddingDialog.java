@@ -179,13 +179,14 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 
 		ImageIcon calendarIcon = new ImageIcon("images/calendar.png");
 		Image image = calendarIcon.getImage();
-		Image newimg = image.getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+		Image newimg = image.getScaledInstance(16, 16, Image.SCALE_SMOOTH); // scale it the smooth way
 		calendarIcon = new ImageIcon(newimg);
 
 		releasedDateDateChooserButton.setIcon(calendarIcon);
 		releasedDateDateChooserButton.addActionListener(e -> {
 			releasedDateDateChooser.showPopup();
 		});
+		
 		releasedDateDateChooser.setTextRefernce(releasedDateTextField);
 		releasedDateDateChooser.addEventDateChooser(new EventDateChooser() {
 			@Override

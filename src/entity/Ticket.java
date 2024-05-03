@@ -1,25 +1,34 @@
 package entity;
 
-public class MovieScheduleSeat {
-	private String movieSheduleSeatID;
+public class Ticket {
+	private String ticketID;
+	private double ticketPrice;
 	private boolean sold;
 	private Seat seat;
 	private MovieSchedule schedule;
 
-	public MovieScheduleSeat(String movieSheduleSeatID, boolean sold, Seat seat, MovieSchedule schedule) {
+	public Ticket() {
 		super();
-		this.movieSheduleSeatID = movieSheduleSeatID;
+	}
+
+	public Ticket(double ticketPrice, boolean sold, Seat seat, MovieSchedule schedule) {
+		super();
+		this.ticketPrice = ticketPrice;
 		this.sold = sold;
 		this.seat = seat;
 		this.schedule = schedule;
 	}
 
-	public String getMovieSheduleSeatID() {
-		return movieSheduleSeatID;
+	public String getTicketID() {
+		return ticketID;
 	}
 
-	public void setMovieSheduleSeatID(String movieSheduleSeatID) {
-		this.movieSheduleSeatID = movieSheduleSeatID;
+	public double getTicketPrice() {
+		return ticketPrice;
+	}
+
+	public void setTicketPrice(double ticketPrice) {
+		this.ticketPrice = ticketPrice;
 	}
 
 	public boolean isSold() {
@@ -48,7 +57,7 @@ public class MovieScheduleSeat {
 
 	@Override
 	public String toString() {
-		return "MovieScheduleSeat [movieSheduleSeatID=" + movieSheduleSeatID + ", sold=" + sold + ", seat=" + seat
+		return "Ticket [ticketID=" + ticketID + ", ticketPrice=" + ticketPrice + ", sold=" + sold + ", seat=" + seat
 				+ ", schedule=" + schedule + "]";
 	}
 

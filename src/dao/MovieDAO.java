@@ -53,22 +53,22 @@ public class MovieDAO {
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		try {
 			PreparedStatement preparedStatement = connection.prepareStatement(insertSQL);
-            preparedStatement.setString(1, newMovie.getMovieName());
-            preparedStatement.setString(2, newMovie.getDescription());
-            preparedStatement.setString(3, newMovie.getGenre());
-            preparedStatement.setString(4, newMovie.getDirector());
-            preparedStatement.setInt(5, newMovie.getDuration());
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            preparedStatement.setString(6, newMovie.getReleasedDate().format(formatter));
-            preparedStatement.setString(7, newMovie.getLanguage());
-            preparedStatement.setString(8, newMovie.getCountry());
-            preparedStatement.setString(9, newMovie.getTrailer());
-            preparedStatement.setString(10, newMovie.getStartDate().format(formatter));
-            preparedStatement.setString(11, newMovie.getStatus());
-            preparedStatement.setDouble(12, newMovie.getImportPrice());
-            preparedStatement.setString(13, newMovie.getImageSource());
-            int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println(rowsAffected + " row(s) inserted successfully.");
+			preparedStatement.setString(1, newMovie.getMovieName());
+			preparedStatement.setString(2, newMovie.getDescription());
+			preparedStatement.setString(3, newMovie.getGenre());
+			preparedStatement.setString(4, newMovie.getDirector());
+			preparedStatement.setInt(5, newMovie.getDuration());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			preparedStatement.setString(6, newMovie.getReleasedDate().format(formatter));
+			preparedStatement.setString(7, newMovie.getLanguage());
+			preparedStatement.setString(8, newMovie.getCountry());
+			preparedStatement.setString(9, newMovie.getTrailer());
+			preparedStatement.setString(10, newMovie.getStartDate().format(formatter));
+			preparedStatement.setString(11, newMovie.getStatus());
+			preparedStatement.setDouble(12, newMovie.getImportPrice());
+			preparedStatement.setString(13, newMovie.getImageSource());
+			int rowsAffected = preparedStatement.executeUpdate();
+			System.out.println(rowsAffected + " row(s) inserted successfully.");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -109,9 +109,10 @@ public class MovieDAO {
 				Date startDate = resultSet.getDate(11);
 				String status = resultSet.getString(12);
 				double importPrice = resultSet.getDouble(13);
-				String imageSource = resultSet.getString(14);	
-				System.out.println(releasedDate);	
-				return new Movie(movieID, movieName, description, genre, director, duration, releasedDate.toLocalDate(), language, country, trailer, startDate.toLocalDate(), status, importPrice, imageSource);
+				String imageSource = resultSet.getString(14);
+				System.out.println(releasedDate);
+				return new Movie(movieID, movieName, description, genre, director, duration, releasedDate.toLocalDate(),
+						language, country, trailer, startDate.toLocalDate(), status, importPrice, imageSource);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -139,9 +140,9 @@ public class MovieDAO {
 			preparedStatement.setDouble(12, updatedMovie.getImportPrice());
 			preparedStatement.setString(13, updatedMovie.getImageSource());
 			preparedStatement.setString(14, movieID);
-            int rowsAffected = preparedStatement.executeUpdate();
-            System.out.println(rowsAffected + " row(s) inserted successfully.");
-            return rowsAffected;
+			int rowsAffected = preparedStatement.executeUpdate();
+			System.out.println(rowsAffected + " row(s) inserted successfully.");
+			return rowsAffected;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Database failed");
@@ -169,7 +170,7 @@ public class MovieDAO {
 			e.printStackTrace();
 			return null;
 		}
-		
+
 	}
 
 	public List<Movie> findMovieByName(String movieNameToFind) {
@@ -214,6 +215,6 @@ public class MovieDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
-		}		
-	}	
+		}
+	}
 }

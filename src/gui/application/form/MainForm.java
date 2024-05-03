@@ -24,8 +24,9 @@ import gui.application.form.other.DefaultForm;
 import gui.application.form.other.FormChangePassword;
 import gui.application.form.other.FormCustomerManagement;
 import gui.application.form.other.FormDashboard;
+import gui.application.form.other.FormDrinkManagement;
+import gui.application.form.other.FormFoodManagement;
 import gui.application.form.other.FormMovieManagement;
-import gui.application.form.other.FormProductManagement;
 import gui.application.form.other.FormProfileInfo;
 import gui.application.form.other.FormScreeningManagement;
 import gui.application.form.other.FormStaffManagement;
@@ -94,10 +95,10 @@ public class MainForm extends JLayeredPane {
 				case 4:
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new FormProductManagement());
+						Application.showMainForm(new FormFoodManagement());
 						break;
 					case 2:
-						Application.showMainForm(new DefaultForm("Product - Drinks"));
+						Application.showMainForm(new FormDrinkManagement());
 						break;
 					default:
 						action.cancel();
@@ -157,10 +158,10 @@ public class MainForm extends JLayeredPane {
 				case 4:
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new FormProductManagement());
+						Application.showMainForm(new FormFoodManagement());
 						break;
 					case 2:
-						Application.showMainForm(new DefaultForm("Product - Drinks"));
+						Application.showMainForm(new FormDrinkManagement());
 						break;
 					default:
 						action.cancel();

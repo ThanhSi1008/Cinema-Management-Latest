@@ -1,29 +1,66 @@
 package entity;
 
-import java.util.Arrays;
-
 public class Product {
 	private String productID;
 	private String productName;
 	private double price;
 	private int quantity;
 	private double purchasePrice;
-	private byte[] imageSource;
+	private String imageSource;
 	private String productType;
 
 	public Product() {
 		super();
 	}
 
-	public Product(String productName, int quantity, double purchasePrice,
-			byte[] imageSource, String productType) {
+	public Product(String productID) {
+		super();
+		this.productID = productID;
+	}
+
+	public Product(String productID, String productName, int quantity, double purchasePrice, String imageSource) {
+		super();
+		this.productID = productID;
+		this.productName = productName;
+		this.quantity = quantity;
+		this.purchasePrice = purchasePrice;
+		this.imageSource = imageSource;
+	}
+
+	public Product(String productName, double price, int quantity, double purchasePrice, String imageSource,
+			String productType) {
 		super();
 		this.productName = productName;
-		setPrice();
+		this.price = price;
 		this.quantity = quantity;
 		this.purchasePrice = purchasePrice;
 		this.imageSource = imageSource;
 		this.productType = productType;
+	}
+
+	public Product(String productID, String productName, double price, int quantity, String imageSource) {
+		super();
+		this.productID = productID;
+		this.productName = productName;
+		this.price = price;
+		this.quantity = quantity;
+		this.imageSource = imageSource;
+	}
+
+	public Product(String productName, int quantity, double purchasePrice, String imageSource) {
+		super();
+		this.productName = productName;
+		this.quantity = quantity;
+		this.purchasePrice = purchasePrice;
+		this.imageSource = imageSource;
+	}
+
+	public void setProductID(String productID) {
+		if (this.productID == null) {
+			this.productID = productID;
+		} else {
+			System.out.println("ProductID is already set and cannot be changed.");
+		}
 	}
 
 	public String getProductID() {
@@ -42,8 +79,12 @@ public class Product {
 		return price;
 	}
 
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
 	public void setPrice() {
-		// viet phuong thuc tinh
+		this.price = this.purchasePrice * 2;
 	}
 
 	public int getQuantity() {
@@ -62,11 +103,11 @@ public class Product {
 		this.purchasePrice = purchasePrice;
 	}
 
-	public byte[] getImageSource() {
+	public String getImageSource() {
 		return imageSource;
 	}
 
-	public void setImageSource(byte[] imageSource) {
+	public void setImageSource(String imageSource) {
 		this.imageSource = imageSource;
 	}
 
@@ -81,8 +122,8 @@ public class Product {
 	@Override
 	public String toString() {
 		return "Product [productID=" + productID + ", productName=" + productName + ", price=" + price + ", quantity="
-				+ quantity + ", purchasePrice=" + purchasePrice + ", imageSource=" + Arrays.toString(imageSource)
-				+ ", productType=" + productType + "]";
+				+ quantity + ", purchasePrice=" + purchasePrice + ", imageSource=" + imageSource + ", productType="
+				+ productType + "]";
 	}
 
 }
