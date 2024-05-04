@@ -861,6 +861,7 @@ BEGIN
     SET Total = 0
     FROM [dbo].[Order]
 END;
+go
 
 -- Thêm dữ liệu cho bảng Employee
 INSERT INTO Employee (FullName, Gender, DateOfBirth, Email, PhoneNumber, Role, StartingDate, Salary, ImageSource)
