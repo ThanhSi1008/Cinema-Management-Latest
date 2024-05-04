@@ -8,6 +8,7 @@ public class MovieSchedule {
 	private LocalDateTime endTime;
 	private Movie movie;
 	private Room room;
+	private double perSeatPrice;
 
 	public MovieSchedule(LocalDateTime screeningTime, Movie movie, Room room) {
 		super();
@@ -17,8 +18,51 @@ public class MovieSchedule {
 		this.room = room;
 	}
 
-	public MovieSchedule() {
+	public MovieSchedule(String scheduleID, LocalDateTime screeningTime, LocalDateTime endTime, Movie movie, Room room,
+			double perSeatPrice) {
 		super();
+		this.scheduleID = scheduleID;
+		this.screeningTime = screeningTime;
+		this.endTime = endTime;
+		this.movie = movie;
+		this.room = room;
+		this.perSeatPrice = perSeatPrice;
+	}
+
+	public MovieSchedule(LocalDateTime screeningDateTime, Movie movie, Room room, double perSeatPriceDouble) {
+		this.screeningTime = screeningDateTime;
+		this.movie = movie;
+		this.room = room;
+		this.perSeatPrice = perSeatPriceDouble;
+	}
+
+	public MovieSchedule(String scheduleID, LocalDateTime screeningDateTime, Movie movie, Room room,
+			double perSeatPriceDouble) {
+		this.scheduleID = scheduleID;
+		this.screeningTime = screeningDateTime;
+		this.movie = movie;
+		this.room = room;
+		this.perSeatPrice = perSeatPriceDouble;
+	}
+
+	public MovieSchedule(String scheduleIDToFind) {
+		this.scheduleID = scheduleIDToFind;
+	}
+
+	public double getPerSeatPrice() {
+		return perSeatPrice;
+	}
+
+	public void setPerSeatPrice(double perSeatPrice) {
+		this.perSeatPrice = perSeatPrice;
+	}
+
+	public void setScheduleID(String scheduleID) {
+		this.scheduleID = scheduleID;
+	}
+
+	public void setEndTime(LocalDateTime endTime) {
+		this.endTime = endTime;
 	}
 
 	public String getScheduleID() {
@@ -65,7 +109,7 @@ public class MovieSchedule {
 	@Override
 	public String toString() {
 		return "MovieSchedule [scheduleID=" + scheduleID + ", screeningTime=" + screeningTime + ", endTime=" + endTime
-				+ ", movie=" + movie + ", room=" + room + "]";
+				+ ", movie=" + movie + ", room=" + room + ", perSeatPrice=" + perSeatPrice + "]";
 	}
 
 }

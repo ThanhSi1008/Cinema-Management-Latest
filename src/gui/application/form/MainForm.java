@@ -84,7 +84,7 @@ public class MainForm extends JLayeredPane {
 					Application.showMainForm(new FormMovieManagement());
 					break;
 				case 1:
-					Application.showMainForm(new FormScreeningManagement());
+					Application.showMainForm(new FormScreeningManagement(employee));
 					break;
 				case 2:
 					Application.showMainForm(new FormStaffManagement());
@@ -150,7 +150,7 @@ public class MainForm extends JLayeredPane {
 					Application.showMainForm(new FormMovieManagement());
 					break;
 				case 1:
-					Application.showMainForm(new FormScreeningManagement());
+					Application.showMainForm(new FormScreeningManagement(employee));
 					break;
 				case 3:
 					Application.showMainForm(new FormCustomerManagement());

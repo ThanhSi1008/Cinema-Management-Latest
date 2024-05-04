@@ -51,6 +51,44 @@ public class ProductDAO {
 		}
 		return productList;
 	}
+	
+	public List<Product> getAllProduct() {
+		Connection connection = connectDB.getConnection();
+		List<Product> productList = null;
+		try {
+			PreparedStatement s = connection.prepareStatement("select * from product");
+			ResultSet rs = s.executeQuery();
+			productList = new ArrayList<Product>();
+			while (rs.next()) {
+				String productID = rs.getString(1);
+				String productName = rs.getString(2);
+				double price = rs.getDouble(3);
+				int quantity = rs.getInt(4);
+				double purchasePrice = rs.getDouble(5);
+				String imageSource = rs.getString(6);
+				String productType = rs.getString(7);
+				productList.add(new Product(productID, productName, price, quantity, purchasePrice, imageSource, productType));		
+			}
+			return productList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}	
+		return productList;
+	}
+
+	public void updateQtyById(String productID, int quantity) {
+		Connection connection = connectDB.getConnection();
+		PreparedStatement s;
+		try {
+			s = connection.prepareStatement("update product set quantity = quantity - ? where productid = ?");
+			s.setInt(1, quantity);
+			s.setString(2, productID);
+			s.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
 
 	public List<Product> findFoodByName(String productName) {
 		Connection connection = connectDB.getConnection();

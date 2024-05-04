@@ -5,12 +5,9 @@ public class SeatType {
 	private String seatTypeName;
 	private String descriptionSeat;
 
-	public SeatType() {
+	public SeatType(String seatTypeID, String seatTypeName, String descriptionSeat) {
 		super();
-	}
-
-	public SeatType(String seatTypeName, String descriptionSeat) {
-		super();
+		this.seatTypeID = seatTypeID;
 		this.seatTypeName = seatTypeName;
 		this.descriptionSeat = descriptionSeat;
 	}

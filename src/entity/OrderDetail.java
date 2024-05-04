@@ -1,37 +1,38 @@
 package entity;
 
 public class OrderDetail {
-	private double unitPrice;
-	private double linetotal;
+
+	private int quantity;
+	private double lineTotal;
 	private Order order;
 	private Product product;
 
-	public OrderDetail() {
+	public OrderDetail(int quantity, Order order, Product product) {
 		super();
-	}
-
-	public OrderDetail(double unitPrice, Order order, Product product) {
-		super();
-		this.unitPrice = unitPrice;
-		setLinetotal();
+		this.quantity = quantity;
 		this.order = order;
 		this.product = product;
 	}
 
-	public double getUnitPrice() {
-		return unitPrice;
+	public OrderDetail(Product product, int quantity) {
+		this.product = product;
+		this.quantity = quantity;
 	}
 
-	public void setUnitPrice(double unitPrice) {
-		this.unitPrice = unitPrice;
+	public int getQuantity() {
+		return quantity;
 	}
 
-	public double getLinetotal() {
-		return linetotal;
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
 	}
 
-	public void setLinetotal() {
-		// viết method tính lineTotal
+	public double getTotal() {
+		return lineTotal;
+	}
+
+	public void setTotal() {
+		this.lineTotal = this.quantity * product.getPrice();
 	}
 
 	public Order getOrder() {
@@ -52,7 +53,7 @@ public class OrderDetail {
 
 	@Override
 	public String toString() {
-		return "OrderDetail [unitPrice=" + unitPrice + ", linetotal=" + linetotal + ", order=" + order + ", product="
+		return "OrderDetail [quantity=" + quantity + ", lineTotal=" + lineTotal + ", order=" + order + ", product="
 				+ product + "]";
 	}
 

@@ -165,6 +165,7 @@ public class FormDashboard extends SimpleForm {
 		int randomDate = 30;
 		for (int i = 1; i <= randomDate; i++) {
 			String date = df.format(cal.getTime());
+			System.out.println(date);
 			categoryDataset.addValue(ran.nextInt(700) + 5, "Income", date);
 			categoryDataset.addValue(ran.nextInt(700) + 5, "Expense", date);
 			categoryDataset.addValue(ran.nextInt(700) + 5, "Profit", date);

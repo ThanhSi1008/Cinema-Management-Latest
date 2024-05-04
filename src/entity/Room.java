@@ -5,12 +5,9 @@ public class Room {
 	private String roomName;
 	private int numberOfSeats;
 
-	public Room() {
+	public Room(String roomID, String roomName, int numberOfSeats) {
 		super();
-	}
-
-	public Room(String roomName, int numberOfSeats) {
-		super();
+		this.roomID = roomID;
 		this.roomName = roomName;
 		this.numberOfSeats = numberOfSeats;
 	}
@@ -37,7 +34,7 @@ public class Room {
 
 	@Override
 	public String toString() {
-		return "Room [numberOfSeats=" + numberOfSeats + ", roomID=" + roomID + ", roomName=" + roomName + "]";
+		return roomName;
 	}
 
 }

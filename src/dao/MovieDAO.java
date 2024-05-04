@@ -98,18 +98,18 @@ public class MovieDAO {
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				String movieName = resultSet.getString(2);
-				String description = resultSet.getString(3);
-				String genre = resultSet.getString(4);
-				String director = resultSet.getString(5);
-				int duration = resultSet.getInt(6);
-				Date releasedDate = resultSet.getDate(7);
-				String language = resultSet.getString(8);
-				String country = resultSet.getString(9);
-				String trailer = resultSet.getString(10);
-				Date startDate = resultSet.getDate(11);
-				String status = resultSet.getString(12);
-				double importPrice = resultSet.getDouble(13);
-				String imageSource = resultSet.getString(14);
+				String description = resultSet.getString("Description");
+				String genre = resultSet.getString(3);
+				String director = resultSet.getString(4);
+				int duration = resultSet.getInt("Duration");
+				Date releasedDate = resultSet.getDate("ReleasedDate");
+				String language = resultSet.getString("Language");
+				String country = resultSet.getString("Country");
+				String trailer = resultSet.getString("Trailer");
+				Date startDate = resultSet.getDate("StartDate");
+				String status = resultSet.getString("Status");
+				double importPrice = resultSet.getDouble("ImportPrice");
+				String imageSource = resultSet.getString("ImageSource");
 				System.out.println(releasedDate);
 				return new Movie(movieID, movieName, description, genre, director, duration, releasedDate.toLocalDate(),
 						language, country, trailer, startDate.toLocalDate(), status, importPrice, imageSource);

@@ -9,6 +9,18 @@ public class Product {
 	private String imageSource;
 	private String productType;
 
+	public Product(String productID, String productName, double price, int quantity, double purchasePrice,
+			String imageSource, String productType) {
+		super();
+		this.productID = productID;
+		this.productName = productName;
+		this.price = price;
+		this.quantity = quantity;
+		this.purchasePrice = purchasePrice;
+		this.imageSource = imageSource;
+		this.productType = productType;
+	}
+
 	public Product() {
 		super();
 	}

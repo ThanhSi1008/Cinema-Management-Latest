@@ -13,7 +13,7 @@ import connectDB.ConnectDB;
 import entity.Customer;
 
 public class CustomerDAO {
-	
+
 	private ConnectDB connectDB;
 
 	public CustomerDAO() {
@@ -41,6 +41,58 @@ public class CustomerDAO {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public String addNewCustomer(Customer customer) {
+		Connection connection = connectDB.getConnection();
+		String customerID = null;
+		try {
+			PreparedStatement s = connection.prepareStatement(
+					"insert into customer (fullname, phonenumber, email, regdate) OUTPUT inserted.customerid values (?, ?, ?, ?)");
+			s.setString(1, customer.getFullName());
+			s.setString(2, customer.getPhoneNumber());
+			s.setString(3, customer.getEmail());
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			s.setString(4, customer.getRegDate().format(formatter));
+			ResultSet rs = s.executeQuery();
+			if (rs.next()) {
+				customerID = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return customerID;
+	}
+
+	public String getCustomerByPhoneNumber(String phoneNumber) {
+		Connection connection = connectDB.getConnection();
+		String customerID = "";
+		try {
+			PreparedStatement s = connection.prepareStatement("select customerid from customer where phonenumber = ?");
+			s.setString(1, phoneNumber);
+			ResultSet rs = s.executeQuery();
+			if (rs.next()) {
+				customerID = rs.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return customerID;
+	}
+
+	public boolean checkDuplicatePhoneNumber(String phoneNumber) {
+		Connection connection = connectDB.getConnection();
+		try {
+			PreparedStatement s = connection.prepareStatement("select * from customer where phonenumber = ?");
+			s.setString(1, phoneNumber);
+			ResultSet rs = s.executeQuery();
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public List<Customer> findCustomerByName(String nameToFind) {

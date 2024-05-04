@@ -6,15 +6,12 @@ public class Seat {
 	private Room room;
 	private SeatType seatType;
 
-	public Seat(String seatLocation, Room room, SeatType seatType) {
+	public Seat(String seatID, String seatLocation, Room room, SeatType seatType) {
 		super();
+		this.seatID = seatID;
 		this.seatLocation = seatLocation;
 		this.room = room;
 		this.seatType = seatType;
-	}
-
-	public Seat() {
-		super();
 	}
 
 	public String getSeatID() {

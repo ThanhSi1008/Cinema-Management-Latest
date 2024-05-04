@@ -23,8 +23,29 @@ public class Order {
 		this.schedule = schedule;
 	}
 
-	public Order() {
+	public Order(LocalDateTime orderDate, int quantityTicket, String note, double total, Customer customer,
+			Employee employee, MovieSchedule schedule) {
 		super();
+		this.orderDate = orderDate;
+		this.quantityTicket = quantityTicket;
+		this.note = note;
+		this.total = total;
+		this.customer = customer;
+		this.employee = employee;
+		this.schedule = schedule;
+	}
+
+	public Order(String orderID, LocalDateTime orderDate, int quantityTicket, String note, double total,
+			Customer customer, Employee employee, MovieSchedule schedule) {
+		super();
+		this.orderID = orderID;
+		this.orderDate = orderDate;
+		this.quantityTicket = quantityTicket;
+		this.note = note;
+		this.total = total;
+		this.customer = customer;
+		this.employee = employee;
+		this.schedule = schedule;
 	}
 
 	public String getOrderID() {
@@ -81,6 +102,12 @@ public class Order {
 
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
+	}
+
+	public void setOrderID(String orderID) {
+		if (this.orderID == null) {
+			this.orderID = orderID;
+		}
 	}
 
 	public MovieSchedule getSchedule() {
