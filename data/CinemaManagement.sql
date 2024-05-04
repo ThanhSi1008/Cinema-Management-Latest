@@ -15,12 +15,12 @@ go
    - Nó bắt đầu với giá trị 1 (START WITH 1).
    - Mỗi lần tạo ra một giá trị mới, giá trị sẽ tăng lên một đơn vị (INCREMENT BY 1).
 
-2. Tạo Bảng (Employee):
-   - EmployeeID: Trường này được đặt là khóa chính (PRIMARY KEY).
-   - Trong đó, trường `EmployeeID` được định nghĩa với giá trị mặc định (DEFAULT) là kết hợp giữa chuỗi 'Emp' và một số 
+2. Tạo Bảng (MyTable):
+   - MyTableID: Trường này được đặt là khóa chính (PRIMARY KEY).
+   - Trong đó, trường `MyTableID` được định nghĩa với giá trị mặc định (DEFAULT) là kết hợp giữa chuỗi 'MyT' và một số 
    nguyên được tạo ra từ Sequence `MySequence`. Để lấy giá trị từ Sequence, sử dụng hàm `NEXT VALUE FOR` kèm 
    theo tên của Sequence (MySequence), sau đó chuyển đổi giá trị này thành một chuỗi ký tự có độ dài 3 và điền vào 
-   đuôi của chuỗi 'Emp' bằng cách sử dụng hàm `RIGHT` và chuyển đổi thành kiểu VARCHAR.
+   đuôi của chuỗi 'MyT' bằng cách sử dụng hàm `RIGHT` và chuyển đổi thành kiểu VARCHAR.
 */
 
 CREATE SEQUENCE EmployeeSequence
@@ -28,7 +28,6 @@ CREATE SEQUENCE EmployeeSequence
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE Employee
 (
     EmployeeID CHAR(6) PRIMARY KEY DEFAULT ('Emp' + RIGHT('000' + CAST(NEXT VALUE FOR EmployeeSequence AS VARCHAR(3)), 3)),
@@ -36,7 +35,7 @@ CREATE TABLE Employee
     Gender bit NOT NULL,
     DateOfBirth SMALLDATETIME NOT NULL,
     Email VARCHAR(100) NOT NULL,
-    PhoneNumber VARCHAR(20) NOT NULL UNIQUE,
+    PhoneNumber CHAR(10) NOT NULL UNIQUE,
     Role NVARCHAR(30) NOT NULL,
 			CONSTRAINT CK_Role CHECK (Role in ('Manager', 'Employee')),
     StartingDate SMALLDATETIME NOT NULL,
@@ -46,13 +45,11 @@ CREATE TABLE Employee
 go
 --ảnh thẻ(sẽ dùng ảnh mặc định khi nhân viên vừa vào làm)
 
-go
 CREATE SEQUENCE AccountSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE Account
 (
     AccountID CHAR(6) PRIMARY KEY DEFAULT ('Acc' + RIGHT('000' + CAST(NEXT VALUE FOR AccountSequence AS VARCHAR(3)), 3)),
@@ -63,59 +60,51 @@ CREATE TABLE Account
 );
 go
 
-go
 CREATE SEQUENCE CustomerSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE Customer
 (
-    CustomerID CHAR(6) PRIMARY KEY DEFAULT ('Cus' + RIGHT('000' + CAST(NEXT VALUE FOR CustomerSequence AS VARCHAR(3)), 3)),
+    CustomerID CHAR(7) PRIMARY KEY DEFAULT ('Cus' + RIGHT('0000' + CAST(NEXT VALUE FOR CustomerSequence AS VARCHAR(4)), 4)),
     FullName NVARCHAR(50) NOT NULL,
-    Gender NVARCHAR(20) NOT NULL,
-    DateOfBirth SMALLDATETIME NOT NULL,
-    PhoneNumber VARCHAR(10) NOT NULL UNIQUE,
+    PhoneNumber CHAR(10) NOT NULL UNIQUE,
     Email VARCHAR(50) NOT NULL,
     RegDate SMALLDATETIME NOT NULL
 );  
 go
 
-go
 CREATE SEQUENCE MovieSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE Movie
 (
     MovieID CHAR(6) PRIMARY KEY DEFAULT ('Mov' + RIGHT('000' + CAST(NEXT VALUE FOR MovieSequence AS VARCHAR(3)), 3)),
     MovieName NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(500) NOT NULL,
     Genre NVARCHAR(100) NOT NULL,
     Director NVARCHAR(50) NOT NULL,
     Duration INT NOT NULL,
     ReleasedDate SMALLDATETIME NOT NULL,
     Language NVARCHAR(20) NOT NULL,
     Country NVARCHAR(20) NOT NULL,
-    Trailer NVARCHAR(200) NOT NULL,
     StartDate SMALLDATETIME NOT NULL,
     Status NVARCHAR(50) NOT NULL
         CONSTRAINT CK_Status CHECK (Status IN ('Released', 'Unreleased')),
     ImportPrice MONEY NOT NULL,
-    ImageSource NVARCHAR(100) NOT NULL
+    ImageSource NVARCHAR(100) NOT NULL,
+	Trailer NVARCHAR(200) NOT NULL,
+	Description NVARCHAR(500) NOT NULL
 );
 go
 
-go
 CREATE SEQUENCE ProductSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE Product
 (
     ProductID CHAR(6) PRIMARY KEY DEFAULT ('Pro' + RIGHT('000' + CAST(NEXT VALUE FOR ProductSequence AS VARCHAR(3)), 3)),
@@ -125,29 +114,25 @@ CREATE TABLE Product
     PurchasePrice MONEY NOT NULL,
     ImageSource NVARCHAR(100) NOT NULL,
     ProductType CHAR(6) NOT NULL
-			CONSTRAINT CK_ProductType CHECK (ProductType in ('Drink', 'Food'))
-		
+			CONSTRAINT CK_ProductType CHECK (ProductType in ('Drink', 'Food'))	
 );
 go
--- Giá bán sẽ được tự động set cao hơn giá nhập 20%
+-- Giá bán sẽ được tự động set cao hơn giá nhập 100%
 
-go
 CREATE SEQUENCE RoomSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE Room
 (
     RoomID CHAR(6) PRIMARY KEY DEFAULT ('Room' + RIGHT('00' + CAST(NEXT VALUE FOR RoomSequence AS VARCHAR(2)), 2)),
-    RoomName NVARCHAR(50) NOT NULL,
+    RoomName NVARCHAR(50) NOT NULL UNIQUE,
     NumberOfSeats INT NOT NULL
 );
 go
 
 --chỉ có 7 phòng 
-go
 INSERT INTO Room(RoomName, NumberOfSeats)
 VALUES
 ('Room 1',192),
@@ -159,13 +144,11 @@ VALUES
 ('Room 7',192);
 go
 
-go
 CREATE SEQUENCE SeatTypeSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE SeatType
 (
     SeatTypeID CHAR(6) PRIMARY KEY DEFAULT ('Type' + RIGHT('00' + CAST(NEXT VALUE FOR SeatTypeSequence AS VARCHAR(2)), 2)),
@@ -174,7 +157,6 @@ CREATE TABLE SeatType
 );
 go
 
-go
 INSERT INTO SeatType(SeatTypeName, DescriptionSeat)
 VALUES
 	('Standard Seat', 'Comfortable seating with ample armrest space.'),
@@ -182,13 +164,11 @@ VALUES
 	('Sweetbox Seat', 'Comfortable seating with ample armrest space. Private space for couples or friends.');
 go
 
-go
 CREATE SEQUENCE SeatSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE Seat (
     SeatID CHAR(6) PRIMARY KEY DEFAULT ('Se' + RIGHT('0000' + CAST(NEXT VALUE FOR SeatSequence AS VARCHAR(4)), 4)),
     SeatLocation NVARCHAR(5),
@@ -200,7 +180,6 @@ CREATE TABLE Seat (
 go
 
 -- Phần hỗ trợ add ghế
-go
 CREATE PROCEDURE sp_generate_seat_for_firstName (@firstName CHAR(1), @RoomID CHAR(6))
 AS
 BEGIN
@@ -227,7 +206,6 @@ BEGIN
 END
 GO
 
-go
 CREATE PROCEDURE sp_generate_seat_for_room (@RoomID CHAR(6))
 AS
 BEGIN
@@ -246,7 +224,6 @@ BEGIN
 END
 go
 
-go
 EXECUTE sp_generate_seat_for_room 'Room01';
 EXECUTE sp_generate_seat_for_room 'Room02';
 EXECUTE sp_generate_seat_for_room 'Room03';
@@ -256,74 +233,66 @@ EXECUTE sp_generate_seat_for_room 'Room06';
 EXECUTE sp_generate_seat_for_room 'Room07';
 go
 
-go
 CREATE SEQUENCE MovieScheduleSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE MovieSchedule
 (
-    ScheduleID CHAR(6) PRIMARY KEY DEFAULT ('Sch' + RIGHT('000' + CAST(NEXT VALUE FOR MovieScheduleSequence AS VARCHAR(3)), 3)),
-    ScreeningTime SMALLDATETIME NOT NULL, --bao gồm ngày chiếu, giờ chiếu 
-    EndTime SMALLDATETIME, --tự động tính từ giờ chiếu và lenght của movie khi add 1 suất chiếu
-    MovieID CHAR(6) NOT NULL, --chỉ lấy movie đang phát hành, movie đổi trạng thái thì bỏ ở bảng MovieSchedule
+    ScheduleID CHAR(8) PRIMARY KEY DEFAULT ('Sch' + RIGHT('00000' + CAST(NEXT VALUE FOR MovieScheduleSequence AS VARCHAR(5)), 5)),
+    ScreeningTime SMALLDATETIME NOT NULL,
+    EndTime SMALLDATETIME,
+	PricePerSeat MONEY NOT NULL,
+    MovieID CHAR(6) NOT NULL,
     RoomID CHAR(6) NOT NULL,
     CONSTRAINT FK_RoomID_MovieSchedule FOREIGN KEY (RoomID) REFERENCES Room(RoomID),
     CONSTRAINT FK_MovieID_MovieSchedule FOREIGN KEY (MovieID) REFERENCES Movie(MovieID)
 );
 go
 
-go
-CREATE SEQUENCE TicketSequence
+CREATE SEQUENCE MovieScheduleSeatSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
-CREATE TABLE Ticket
+CREATE TABLE MovieScheduleSeat
 (
-    TicketID CHAR(6) PRIMARY KEY DEFAULT ('Tic' + RIGHT('000' + CAST(NEXT VALUE FOR TicketSequence AS VARCHAR(3)), 3)),
-    TicketPrice MONEY NOT NULL,
     Sold BIT NOT NULL,
     SeatID CHAR(6) NOT NULL,
-    ScheduleID CHAR(6) NOT NULL,
-    CONSTRAINT FK_SeatID_Ticket FOREIGN KEY (SeatID) REFERENCES Seat(SeatID),
-    CONSTRAINT FK_ScheduleID_Ticket FOREIGN KEY (ScheduleID) REFERENCES MovieSchedule(ScheduleID)
+    ScheduleID CHAR(8) NOT NULL,
+	CONSTRAINT PK_MovieScheduleSeat PRIMARY KEY (SeatID, ScheduleID),
+    CONSTRAINT FK_SeatID_MovieScheduleSeat FOREIGN KEY (SeatID) REFERENCES Seat(SeatID),
+    CONSTRAINT FK_ScheduleID_MovieScheduleSeat FOREIGN KEY (ScheduleID) REFERENCES MovieSchedule(ScheduleID)
 );
 go
 
-go
 CREATE SEQUENCE OrderSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE [Order]
 (
-    OrderID CHAR(6) PRIMARY KEY DEFAULT ('Ord' + RIGHT('000' + CAST(NEXT VALUE FOR OrderSequence AS VARCHAR(3)), 3)),
+    OrderID CHAR(7) PRIMARY KEY DEFAULT ('Ord' + RIGHT('0000' + CAST(NEXT VALUE FOR OrderSequence AS VARCHAR(4)), 4)),
     OrderDate SMALLDATETIME NOT NULL,
-    QuantityTicket INT NOT NULL,
+    QuantitySeat INT NOT NULL,
     Note NVARCHAR(300),
-    Total MONEY NOT NULL,
-    CustomerID CHAR(6),
+    Total MONEY,
+    CustomerID CHAR(7),
     EmployeeID CHAR(6),
-    ScheduleID CHAR(6),
+    ScheduleID CHAR(8),
     CONSTRAINT FK_CustomerID_Order FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
     CONSTRAINT FK_EmployeeID_Order FOREIGN KEY (EmployeeID) REFERENCES Employee(EmployeeID),
     CONSTRAINT FK_ScheduleID_Order FOREIGN KEY (ScheduleID) REFERENCES MovieSchedule(ScheduleID)
 );
 go
 
-go
 CREATE TABLE OrderDetail
 (
     Quantity INT NOT NULL,
-    UnitPrice MONEY NOT NULL,
-    Total AS (Quantity * UnitPrice),
-    OrderID CHAR(6) NOT NULL,
+    LineTotal MONEY,
+    OrderID CHAR(7) NOT NULL,
     ProductID CHAR(6) NOT NULL,
 	PRIMARY KEY (OrderID, ProductID),
     CONSTRAINT FK_OrderID_OrderDetail FOREIGN KEY (OrderID) REFERENCES [Order](OrderID),
@@ -332,13 +301,11 @@ CREATE TABLE OrderDetail
 go
 
 --Order nhập 1 phim
-go
 CREATE SEQUENCE OrderAddMovieSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE OrderAddMovie
 (
     AddMovieID CHAR(6) PRIMARY KEY DEFAULT ('AMo' + RIGHT('000' + CAST(NEXT VALUE FOR OrderAddMovieSequence AS VARCHAR(3)), 3)),
@@ -350,13 +317,11 @@ CREATE TABLE OrderAddMovie
 go
 
 --Order nhập 1 product
-go
 CREATE SEQUENCE OrderAddProductSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE OrderAddProduct
 (
     AddProductID CHAR(6) PRIMARY KEY DEFAULT ('APr' + RIGHT('000' + CAST(NEXT VALUE FOR OrderAddProductSequence AS VARCHAR(3)), 3)),
@@ -370,13 +335,11 @@ CREATE TABLE OrderAddProduct
 go
 
 --Order nhập thêm số lượng product
-go
 CREATE SEQUENCE OrderImportProductSequence
     START WITH 1
     INCREMENT BY 1;
 go
 
-go
 CREATE TABLE OrderImportProduct
 (
     ImportProductID CHAR(6) PRIMARY KEY DEFAULT ('IPr' + RIGHT('000' + CAST(NEXT VALUE FOR OrderImportProductSequence AS VARCHAR(3)), 3)),
@@ -390,8 +353,7 @@ CREATE TABLE OrderImportProduct
 go
 
 -- Trigger khi xóa 1 Employee
-go
-CREATE TRIGGER TriggerDeleteEmployee
+CREATE OR ALTER TRIGGER TriggerDeleteEmployee
 ON Employee
 INSTEAD OF DELETE
 AS
@@ -414,13 +376,12 @@ END
 go
 
 --Trigger xóa 1 Customer
-go
-CREATE TRIGGER TriggerDeleteCustomer
+CREATE OR ALTER TRIGGER TriggerDeleteCustomer
 ON Customer
 INSTEAD OF DELETE
 AS
 BEGIN
-    DECLARE @CustomerID CHAR(6)
+    DECLARE @CustomerID CHAR(7)
 
     SELECT @CustomerID = CustomerID
     FROM deleted
@@ -435,8 +396,7 @@ END
 go
 
 --Trigger xóa 1 Movie
-go
-CREATE TRIGGER TriggerDeleteMovie
+CREATE OR ALTER TRIGGER TriggerDeleteMovie
 ON Movie
 INSTEAD OF DELETE
 AS
@@ -458,28 +418,23 @@ BEGIN
 END
 go
 
--- Trigger tự set giá sau mỗi lần update, insert: giá bán = giá nhập + giá nhập * 20% = 120% * giá nhập
-go
-CREATE TRIGGER TriggerSetPriceProduct
+CREATE OR ALTER TRIGGER TriggerSetPriceProduct
 ON Product
-AFTER INSERT
+AFTER INSERT, UPDATE
 AS
 BEGIN
-    DECLARE @ProductID CHAR(6)
-    DECLARE @PurchasePrice MONEY
-
-    SELECT @ProductID = ProductID, @PurchasePrice = PurchasePrice
-    FROM inserted
-
-    UPDATE Product
-    SET Price = @PurchasePrice * 1.2
-    WHERE ProductID = @ProductID
+    IF (UPDATE(PurchasePrice))
+    BEGIN
+        UPDATE p
+        SET Price = i.PurchasePrice * 2
+        FROM Product p
+        INNER JOIN inserted i ON p.ProductID = i.ProductID
+    END
 END
 go
 
--- Trigger tự động add Order add Product
-go
-CREATE TRIGGER TriggerAutoAddOrderAddProduct
+-- Trigger tự động add OrderAddProduct
+CREATE OR ALTER TRIGGER TriggerAutoAddOrderAddProduct
 ON Product
 AFTER INSERT
 AS
@@ -499,9 +454,8 @@ BEGIN
 END
 go
 
--- Trigger tự add Order import product
-go
-CREATE TRIGGER TriggerAutoAddOrderImportProduct
+-- Trigger tự add OrderImportProduct
+CREATE OR ALTER TRIGGER TriggerAutoAddOrderImportProduct
 ON Product
 AFTER UPDATE
 AS
@@ -528,10 +482,9 @@ END
 go
 
 -- Trigger xóa 1 Product
-go
-CREATE TRIGGER TriggerDeleteProduct
+CREATE OR ALTER TRIGGER TriggerDeleteProduct
 ON Product
-AFTER DELETE
+INSTEAD OF DELETE
 AS
 BEGIN
     DECLARE @ProductID CHAR(6)
@@ -556,20 +509,19 @@ BEGIN
 END
 go
 
--- Trigger khi insert 1 MovieSchedule thì tạo dữ liệu cho bảng Ticket
-go
-CREATE TRIGGER TriggerCreateTicketByMovieScheduleInsert
+-- Trigger khi insert 1 MovieSchedule thì tạo dữ liệu cho bảng MovieScheduleSeat
+CREATE OR ALTER TRIGGER TriggerCreateMovieScheduleSeatByMovieScheduleInsert
 ON MovieSchedule
 AFTER INSERT
 AS
 BEGIN
-    DECLARE @ScheduleID CHAR(6)
+    DECLARE @ScheduleID CHAR(8)
     DECLARE @RoomID CHAR(6)
 
     SELECT @ScheduleID = ScheduleID, @RoomID = RoomID
     FROM inserted
 
-    INSERT INTO Ticket (SeatID, ScheduleID, Sold)
+    INSERT INTO MovieScheduleSeat (SeatID, ScheduleID, Sold)
     SELECT SeatID, @ScheduleID, 0
     FROM Seat
     WHERE RoomID = @RoomID
@@ -577,18 +529,17 @@ END
 go
 
 -- Trigger xóa 1 MovieSchedule
-go
-CREATE TRIGGER TriggerDeleteMovieSchedule
+CREATE OR ALTER TRIGGER TriggerDeleteMovieSchedule
 ON MovieSchedule
 INSTEAD OF DELETE
 AS
 BEGIN
-    DECLARE @ScheduleID CHAR(6)
+    DECLARE @ScheduleID CHAR(8)
 
     SELECT @ScheduleID = ScheduleID
     FROM deleted
 
-    DELETE FROM Ticket
+    DELETE FROM MovieScheduleSeat
     WHERE ScheduleID = @ScheduleID
 
     UPDATE [Order]
@@ -600,9 +551,8 @@ BEGIN
 END
 go
 
--- Trigger cập nhật OrderAddMovie khi chỉnh sửa Movie
-go
-CREATE TRIGGER TriggerUpdateOrderAddMovieUpdate
+-- Trigger cập nhật OrderAddMovie
+CREATE OR ALTER TRIGGER TriggerUpdateOrderAddMovieUpdate
 ON Movie
 AFTER UPDATE
 AS
@@ -619,18 +569,24 @@ BEGIN
 END
 go
 
--- Create a function to retrieve login permissions
-CREATE FUNCTION Emp_Acc(@username VARCHAR(40))
-RETURNS TABLE
+-- -- Trigger thêm OrderAddMovie
+CREATE OR ALTER TRIGGER TriggerAddOrderAddMovie
+ON Movie
+AFTER INSERT
 AS
-RETURN
-SELECT Role
-FROM Employee e JOIN Account a 
-ON e.EmployeeID = a.EmployeeID
-WHERE a.Username = @username;
-go
+BEGIN
+	DECLARE @MovieID CHAR(6)
+    DECLARE @ImportPrice MONEY
 
-CREATE FUNCTION getEmployeeByAccount(@user VARCHAR(40))
+    SELECT @MovieID = MovieID, @ImportPrice = ImportPrice
+    FROM inserted
+
+    INSERT INTO OrderAddMovie (AddMovieDate, Total, MovieID)
+    VALUES (GETDATE(), @ImportPrice, @MovieID)
+END
+GO
+
+CREATE OR ALTER FUNCTION getEmployeeByAccount(@user VARCHAR(40))
 RETURNS TABLE
 AS
 RETURN
@@ -640,27 +596,288 @@ ON e.EmployeeID = a.EmployeeID
 WHERE a.Username = @user;
 go
 
+CREATE OR ALTER FUNCTION fn_CustomerSpendingStats (@Year INT, @Month INT = NULL)
+RETURNS @StatsTable TABLE (
+    CustomerID CHAR(7),
+    CustomerName NVARCHAR(50),
+    PhoneNumber VARCHAR(10),
+    TotalSpending MONEY
+)
+AS
+BEGIN
+    INSERT INTO @StatsTable
+    SELECT o.CustomerID, c.FullName, c.PhoneNumber, SUM(o.Total) AS TotalSpending
+    FROM [Order] o
+    JOIN Customer c ON o.CustomerID = c.CustomerID
+    WHERE YEAR(o.OrderDate) = @Year
+        AND (@Month IS NULL OR MONTH(o.OrderDate) = @Month)
+    GROUP BY o.CustomerID, c.FullName, c.PhoneNumber
+    RETURN;
+END;
+go
 
--- Thêm dữ liệu cho Movie
-INSERT INTO Movie (MovieName, Description, Genre, Director, Duration, ReleasedDate, Language, Country, Trailer, StartDate, Status, ImportPrice, ImageSource)
-VALUES
-('The Shawshank Redemption', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', 'https://www.youtube.com/watch?v=6hB3S9bIaco', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg'),
-('The Godfather', 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.', 'Crime', 'Francis Ford Coppola', 175, '1972-03-24', 'English', 'USA', 'https://www.youtube.com/watch?v=5DO-nDW43Ik', '1972-03-24', 'Released', 12.99, 'images/the_godfather.jpg'),
-('The Dark Knight', 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.', 'Action', 'Christopher Nolan', 152, '2008-07-18', 'English', 'USA', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', '2008-07-18', 'Released', 14.99, 'images/the_dark_knight.jpg'),
-('Pulp Fiction', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', '1994-10-14', 'Released', 11.99, 'images/pulp_fiction.jpg'),
-('Schindler''s List', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.', 'Biography', 'Steven Spielberg', 195, '1994-02-04', 'English', 'USA', 'https://www.youtube.com/watch?v=gG22XNhtnoY', '1994-02-04', 'Released', 13.99, 'images/schindlers_list.jpg'),
-('The Lord of the Rings: The Return of the King', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.', 'Adventure', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', '2003-12-17', 'Released', 16.99, 'images/lotr_return_of_the_king.jpg'),
-('Fight Club', 'An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.', 'Drama', 'David Fincher', 139, '1999-10-15', 'English', 'USA', 'https://www.youtube.com/watch?v=SUXWAEX2jlg', '1999-10-15', 'Released', 10.49, 'images/fight_club.jpg'),
-('Forrest Gump', 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.', 'Drama', 'Robert Zemeckis', 142, '1994-07-06', 'English', 'USA', 'https://www.youtube.com/watch?v=uPIEn0M8su0', '1994-07-06', 'Released', 9.99, 'images/forrest_gump.jpg'),
-('Inception', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.', 'Action', 'Christopher Nolan', 148, '2010-07-16', 'English', 'USA', 'https://www.youtube.com/watch?v=YoHD9XEInc0', '2010-07-16', 'Released', 15.49, 'images/inception.jpg'),
-('The Matrix', 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.', 'Action', 'Lana Wachowski, Lilly Wachowski', 136, '1999-03-31', 'English', 'USA', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', '1999-03-31', 'Released', 11.99, 'images/the_matrix.jpg');
+
+CREATE OR ALTER TRIGGER CalculateEndTime
+ON MovieSchedule
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    DECLARE @ScheduleID CHAR(8);
+    DECLARE @MovieDuration INT;
+    DECLARE @ScreeningTime SMALLDATETIME;
+    DECLARE @EndTime SMALLDATETIME;
+
+    SELECT @ScheduleID = ScheduleID, @MovieDuration = m.Duration, @ScreeningTime = i.ScreeningTime
+    FROM inserted i INNER JOIN Movie m 
+	ON i.MovieID = m.MovieID;
+
+    SET @EndTime = DATEADD(MINUTE, @MovieDuration, @ScreeningTime);
+    UPDATE MovieSchedule
+    SET EndTime = @EndTime
+    WHERE ScheduleID = @ScheduleID;
+END;
+go
+
+CREATE OR ALTER TRIGGER CheckRoomAvailability
+ON MovieSchedule
+INSTEAD OF INSERT
+AS
+BEGIN
+    DECLARE @NewScreeningTime SMALLDATETIME;
+    DECLARE @NewEndTime SMALLDATETIME;
+    DECLARE @RoomID CHAR(6);
+
+    SELECT @NewScreeningTime = DATEADD(MINUTE, -30, i.ScreeningTime),
+           @NewEndTime = DATEADD(MINUTE, m.Duration + 30, i.ScreeningTime),
+           @RoomID = i.RoomID
+    FROM inserted i INNER JOIN Movie m 
+	ON i.MovieID = m.MovieID;
+
+    IF EXISTS (
+      SELECT 1
+        FROM MovieSchedule ms
+        WHERE ms.RoomID = @RoomID
+        AND ((ms.EndTime > @NewScreeningTime AND ms.EndTime < @NewEndTime) OR (ms.ScreeningTime > @NewScreeningTime AND ms.ScreeningTime < @NewEndTime))
+    )
+    BEGIN
+        RAISERROR('Room is not available!!! {CREATE BY THANHSIX108}', 16, 1);
+        ROLLBACK TRANSACTION;
+    END;
+    ELSE
+    BEGIN
+        INSERT INTO MovieSchedule (ScreeningTime, MovieID, RoomID, PricePerSeat)
+        SELECT ScreeningTime, MovieID, RoomID, PricePerSeat
+        FROM inserted;
+    END;
+END;
+go
+
+CREATE OR ALTER PROCEDURE UpdateProductQuantityByID
+    @ProductID CHAR(6),
+    @Quantity INT
+AS
+BEGIN
+    DECLARE @UpdatedQuantity INT;
+
+    SELECT @UpdatedQuantity = Quantity
+    FROM Product
+    WHERE ProductID = @ProductID;
+
+    SET @UpdatedQuantity = @UpdatedQuantity + @Quantity;
+
+    UPDATE Product
+    SET Quantity = @UpdatedQuantity
+    WHERE ProductID = @ProductID;
+END;
+go
+
+CREATE OR ALTER PROCEDURE AddNewProduct
+    @ProductName NVARCHAR(100),
+    @Quantity INT,
+    @PurchasePrice MONEY,
+    @ImageSource NVARCHAR(100),
+    @ProductType CHAR(6),
+    @ProductID CHAR(6) OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @InsertedProductID CHAR(6);
+
+    INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+    VALUES (@ProductName, @Quantity, @PurchasePrice, @ImageSource, @ProductType);
+
+    SET @InsertedProductID = (SELECT TOP 1 ProductID FROM Product WHERE @@ROWCOUNT > 0 ORDER BY ProductID DESC);
+
+    SET @ProductID = @InsertedProductID;
+END;
+go
+
+CREATE OR ALTER FUNCTION fn_ProductSalesByYearMonth (@Year INT, @Month INT = NULL)
+RETURNS @ProductSales TABLE (
+    ProductName NVARCHAR(MAX),
+    TotalQuantity INT,
+    TotalPrice MONEY)
+AS
+BEGIN
+    INSERT INTO @ProductSales
+    SELECT p.ProductName, 
+           SUM(od.Quantity) AS TotalQuantity,
+           SUM(od.Quantity) * p.Price AS TotalPrice
+    FROM [dbo].[OrderDetail] od 
+    JOIN [dbo].[Product] p ON od.ProductID = p.ProductID
+    JOIN [dbo].[Order] o ON o.OrderID = od.OrderID
+    WHERE YEAR(o.OrderDate) = @Year
+      AND (@Month IS NULL OR MONTH(o.OrderDate) = @Month)
+    GROUP BY p.ProductName, p.Price;
+    
+    RETURN;
+END;
+go
+
+CREATE OR ALTER FUNCTION fn_MovieSalesByYearMonth (@Year INT, @Month INT = NULL
+)
+RETURNS @MovieSales TABLE (
+    MovieID CHAR(6),
+    MovieName NVARCHAR(100),
+    ViewTotal INT,
+    Total MONEY)
+AS
+BEGIN
+    INSERT INTO @MovieSales
+    SELECT
+        m.MovieID,
+        m.MovieName,
+        SUM(o.QuantitySeat) AS ViewTotal,
+        SUM(o.QuantitySeat * ms.PricePerSeat) AS Total
+    FROM
+        [dbo].[Order] o
+    JOIN
+        [dbo].[MovieSchedule] ms ON o.ScheduleID = ms.ScheduleID
+    JOIN
+        [dbo].[Movie] m ON ms.MovieID = m.MovieID
+    WHERE
+        YEAR(o.OrderDate) = @Year
+        AND (@Month IS NULL OR MONTH(o.OrderDate) = @Month)
+    GROUP BY
+        m.MovieID,
+        m.MovieName
+    ORDER BY
+        m.MovieID;
+    
+    RETURN;
+END;
+go
+
+CREATE OR ALTER TRIGGER CalculateLineTotal
+ON OrderDetail
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT * FROM inserted)
+    BEGIN
+        UPDATE od
+        SET LineTotal = p.Price * i.Quantity
+        FROM OrderDetail od
+        INNER JOIN inserted i ON od.OrderID = i.OrderID AND od.ProductID = i.ProductID
+        INNER JOIN Product p ON i.ProductID = p.ProductID;
+    END
+END;
+go
+
+CREATE OR ALTER FUNCTION fn_CalculateTotalRevenueByMonthYear (@year INT, @month INT)
+RETURNS MONEY
+AS
+BEGIN
+    DECLARE @totalAddProduct MONEY;
+    DECLARE @totalImportProduct MONEY;
+    DECLARE @totalAddMovie MONEY;
+    DECLARE @totalDoanhThu MONEY;
+
+    SELECT @totalAddProduct = SUM(Total)
+    FROM OrderAddProduct
+	WHERE YEAR(AddProductDate) = @year
+		AND (@month IS NULL OR MONTH(AddProductDate) = @month);
+
+    SELECT @totalImportProduct = SUM(Total)
+    FROM OrderImportProduct
+	WHERE YEAR(ImportProductDate) = @year
+		AND (@month IS NULL OR MONTH(ImportProductDate) = @month);
+
+    SELECT @totalAddMovie = SUM(Total)
+    FROM [dbo].[OrderAddMovie]
+	WHERE YEAR(AddMovieDate) = @year
+		AND (@month IS NULL OR MONTH(AddMovieDate) = @month);
+
+    SET @totalDoanhThu = ISNULL(@totalAddProduct, 0) + ISNULL(@totalImportProduct, 0) + ISNULL(@totalAddMovie, 0);
+
+    RETURN @totalDoanhThu;
+END;
+go
+
+CREATE OR ALTER FUNCTION fn_CountCustomersPerHour (@Year INT, @Month INT, @Day INT)
+RETURNS @HourlyCounts TABLE (Hour INT, NumberOfCustomers INT)
+AS
+BEGIN
+    WITH Hours AS (SELECT 0 AS Hour UNION ALL SELECT Hour + 1 FROM Hours WHERE Hour < 23)
+    INSERT INTO @HourlyCounts
+    SELECT h.Hour, COUNT(o.CustomerID) AS NumberOfCustomers 
+	FROM Hours h  LEFT JOIN [Order] o 
+	ON DATEPART(hour, o.OrderDate) = h.Hour 
+	AND YEAR(o.OrderDate) = @Year AND MONTH(o.OrderDate) = @Month AND DAY(o.OrderDate) = @Day
+    GROUP BY h.Hour
+    ORDER BY h.Hour;
+
+    RETURN;
+END;
+go
+
+CREATE OR ALTER TRIGGER CaculateOrderTotal
+ON [Order]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE o
+    SET o.Total = ISNULL(o.QuantitySeat, 0) * ISNULL(ms.PricePerSeat, 0)
+    FROM [Order] o
+    INNER JOIN inserted i ON o.OrderID = i.OrderID
+    LEFT JOIN MovieSchedule ms ON o.ScheduleID = ms.ScheduleID;
+END;
+go
+
+CREATE OR ALTER TRIGGER CalculateOrderTotalFromOrderDetail
+ON OrderDetail
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @OrderIDs TABLE (OrderID CHAR(7));
+    INSERT INTO @OrderIDs (OrderID)
+    SELECT DISTINCT OrderID FROM inserted;
+
+    UPDATE o
+    SET o.Total = ISNULL(od.TotalPrice, 0) + ISNULL(o.Total, 0)
+    FROM [Order] o
+    LEFT JOIN (
+        SELECT OrderID, SUM(LineTotal) AS TotalPrice
+        FROM OrderDetail
+        WHERE OrderID IN (SELECT OrderID FROM @OrderIDs) -- Chỉ tính tổng cho các Order liên quan
+        GROUP BY OrderID
+    ) od ON o.OrderID = od.OrderID
+    WHERE o.OrderID IN (SELECT OrderID FROM @OrderIDs);
+END;
 go
 
 -- Thêm dữ liệu cho bảng Employee
 INSERT INTO Employee (FullName, Gender, DateOfBirth, Email, PhoneNumber, Role, StartingDate, Salary, ImageSource)
 VALUES
 ('admin', 1, '2004-08-10', 'lathanhsi100804@gmail.com', '0398999999', 'Manager', GETDATE(), 0, 'images/profile.png'),
-('Thanh Sĩ', 1, '2004-08-10', 'lathanhsi100804@gmail.com', '0398888888', 'Employee', GETDATE(), 0, 'images/thanhsi108.png'),
+(N'Thanh Sĩ', 1, '2004-08-10', 'lathanhsi100804@gmail.com', '0398888888', 'Employee', GETDATE(), 0, 'images/thanhsi108.png'),
 ('Tai Lionel', 1, '2003-10-27', 'tailionel@example.com', '1234567899', 'Employee', GETDATE(), 0, NULL),
 ('Alice Smith', 0, '1995-05-15', 'alicesmith@example.com', '9876543210', 'Employee', '2024-04-30', 1800, NULL),
 ('Bob Johnson', 1, '1988-11-20', 'bjohnson@example.com', '1357924680', 'Employee', '2024-04-30', 2200, NULL),
@@ -671,6 +888,7 @@ VALUES
 ('Sarah Anderson', 0, '1994-08-10', 'sanderson@example.com', '0123456788', 'Employee', '2024-04-30', 1900, NULL);
 go
 
+-- Thêm dữ liệu cho bảng Account
 INSERT INTO Account (Username, Password, EmployeeID)
 VALUES 
 ('admin', '$2a$10$TBId43wSoxr9Itgr.g8R0u2XZbuY7o98yBBCO6LqgqTSHj/HWYiqG', 'Emp001'), 
@@ -679,31 +897,338 @@ VALUES
 go
 
 -- Thêm dữ liệu cho bảng Customer
-INSERT INTO Customer (FullName, Gender, DateOfBirth, PhoneNumber, Email, RegDate)
+INSERT INTO Customer (FullName, PhoneNumber, Email, RegDate)
 VALUES
-('Emma Johnson', 'Female', '1993-01-15', '1234567890', 'emma@example.com', '2024-04-30'),
-('William Smith', 'Male', '1988-05-20', '9876543212', 'william@example.com', '2024-04-30'),
-('Olivia Brown', 'Female', '1990-11-10', '1357924681', 'olivia@example.com', '2024-04-30'),
-('James Wilson', 'Male', '1985-09-05', '2468013578', 'james@example.com', '2024-04-30'),
-('Sophia Taylor', 'Female', '1995-04-30', '0123456787', 'sophia@example.com', '2024-04-30'),
-('Alexander Martinez', 'Male', '1989-12-25', '9870123455', 'alexander@example.com', '2024-04-30'),
-('Ava Anderson', 'Female', '1992-07-10', '9876543213', 'ava@example.com', '2024-04-30'),
-('Michael Thomas', 'Male', '1996-03-15', '1234567898', 'michael@example.com', '2024-04-30'),
-('Isabella Garcia', 'Female', '1987-06-20', '2468013570', 'isabella@example.com', '2024-04-30'),
-('Ethan Rodriguez', 'Male', '1994-08-10', '0123456786', 'ethan@example.com', '2024-04-30');
+('Emma Johnson',  '1234567890', 'emma@example.com', '2024-04-30'),
+('William Smith', '9876543212', 'william@example.com', '2024-04-30'),
+('Olivia Brown', '1357924681', 'olivia@example.com', '2024-04-30'),
+('James Wilson',  '2468013578', 'james@example.com', '2024-04-30'),
+('Sophia Taylor',  '0123456787', 'sophia@example.com', '2024-04-30'),
+('Alexander Martinez', '9870123455', 'alexander@example.com', '2024-04-30'),
+('Ava Anderson',  '9876543213', 'ava@example.com', '2024-04-30'),
+('Michael Thomas',  '1234567898', 'michael@example.com', '2024-04-30'),
+('Isabella Garcia', '2468013570', 'isabella@example.com', '2024-04-30'),
+('Ethan Rodriguez', '2468013571', 'ethan@example.com', '2024-04-30');
 go
 
-INSERT INTO Product (ProductName, Price, Quantity, PurchasePrice, ImageSource, ProductType)
-VALUES
-('Popcorn', 5.99, 100, 3.50, 'images/sample.png', 'Food'),
-('Large Popcorn', 7.99, 70, 4.50, 'images/sample.png', 'Food'),
-('Medium Popcorn', 6.99, 80, 4.00, 'images/sample.png', 'Food');
+-- Thêm dữ liệu cho bảng Movie
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Shawshank Redemption', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg', 'https://www.youtube.com/watch?v=6hB3S9bIaco', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Godfather', 'Crime', 'Francis Ford Coppola', 175, '1972-03-24', 'English', 'USA', '1972-03-24', 'Unreleased', 12.99, 'images/the_godfather.jpg', 'https://www.youtube.com/watch?v=5DO-nDW43Ik', 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Dark Knight', 'Action', 'Christopher Nolan', 152, '2008-07-18', 'English', 'USA', '2008-07-18', 'Released', 14.99, 'images/the_dark_knight.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Pulp Fiction', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', '1994-10-14', 'Unreleased', 11.99, 'images/pulp_fiction.jpg', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Schindler''s List', 'Biography', 'Steven Spielberg', 195, '1994-02-04', 'English', 'USA', '1994-02-04', 'Released', 13.99, 'images/schindlers_list.jpg', 'https://www.youtube.com/watch?v=gG22XNhtnoY', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Return of the King', 'Adventure', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', '2003-12-17', 'Released', 16.99, 'images/lotr_return_of_the_king.jpg', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Fight Club', 'Drama', 'David Fincher', 139, '1999-10-15', 'English', 'USA', '1999-10-15', 'Unreleased', 10.49, 'images/fight_club.jpg', 'https://www.youtube.com/watch?v=SUXWAEX2jlg', 'An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Forrest Gump', 'Drama', 'Robert Zemeckis', 142, '1994-07-06', 'English', 'USA', '1994-07-06', 'Released', 9.99, 'images/forrest_gump.jpg', 'https://www.youtube.com/watch?v=uPIEn0M8su0', 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Inception', 'Action', 'Christopher Nolan', 148, '2010-07-16', 'English', 'USA', '2010-07-16', 'Unreleased', 15.49, 'images/inception.jpg', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Matrix', 'Action', 'Lana Wachowski, Lilly Wachowski', 136, '1999-03-31', 'English', 'USA', '1999-03-31', 'Released', 11.99, 'images/the_matrix.jpg', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Green Mile', 'Drama', 'Frank Darabont', 189, '1999-12-10', 'English', 'USA', '1999-12-10', 'Released', 12.49, 'images/the_green_mile.jpg', 'https://www.youtube.com/watch?v=Ki4haFrqSrw', 'The lives of guards on Death Row are affected by one of their charges: a black man accused of child murder and rape, yet who has a mysterious gift.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Departed', 'Crime', 'Martin Scorsese', 151, '2006-10-06', 'English', 'USA', '2006-10-06', 'Unreleased', 13.99, 'images/the_departed.jpg', 'https://www.youtube.com/watch?v=auYbpnEwBBg', 'An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Goodfellas', 'Biography', 'Martin Scorsese', 146, '1990-09-19', 'English', 'USA', '1990-09-19', 'Released', 11.49, 'images/goodfellas.jpg', 'https://www.youtube.com/watch?v=qo5jJpHtI1Y', 'The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito in the Italian-American crime syndicate.');
+
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Silence of the Lambs', 'Crime', 'Jonathan Demme', 118, '1991-02-14', 'English', 'USA', '1991-02-14', 'Unreleased', 14.99, 'images/the_silence_of_the_lambs.jpg', 'https://www.youtube.com/watch?v=ZWCAf-xLV2c', 'A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer, a madman who skins his victims.');
 go
 
-INSERT INTO Product (ProductName, Price, Quantity, PurchasePrice, ImageSource, ProductType)
-VALUES
-('Pepsi', 3.49, 150, 1.99, 'images/sample.png', 'Drink'),
-('Coca-Cola', 3.49, 150, 1.99, 'images/sample.png', 'Drink'),
-('Mineral Water', 2.99, 200, 1.50, 'images/sample.png', 'Drink'),
-('7 Up', 3.49, 150, 1.99, 'images/sample.png', 'Drink');
+-- movieschedule
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-03 20:00:00', 'Mov001', 'Room01', 14.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-03 00:00:00', 'Mov002', 'Room02', 19.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-03 00:00:00', 'Mov003', 'Room03', 24.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-03 00:00:00', 'Mov004', 'Room04', 29.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-03 00:00:00', 'Mov005', 'Room05', 34.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-03 00:00:00', 'Mov006', 'Room06', 39.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-03 00:00:00', 'Mov007', 'Room07', 44.9);
 go
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-04 12:00:00', 'Mov008', 'Room01', 49.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-04 12:00:00', 'Mov009', 'Room02', 44.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-04 12:00:00', 'Mov010', 'Room03', 39.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-04 12:00:00', 'Mov011', 'Room04', 34.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-04 12:00:00', 'Mov012', 'Room05', 29.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-04 12:00:00', 'Mov013', 'Room06', 24.9);
+
+insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
+values 
+('2024-05-04 12:00:00', 'Mov014', 'Room07', 19.9);
+go
+
+-- Thêm dữ liệu cho bảng Product
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Popcorn', 100, 3.50, 'images/popcorn.jpg', 'Food');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Large Popcorn', 90, 4.50, 'images/popcorn.jpg', 'Food');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Medium Popcorn', 80, 4.00, 'images/popcorn.jpg', 'Food');
+go
+
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Pepsi', 110, 1.99, 'images/pepsi.jpg', 'Drink');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Coca-Cola', 120, 1.99, 'images/cocacola.png', 'Drink');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Mineral Water', 130, 1.50, 'images/mineral-water.png', 'Drink');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('7 Up', 140, 1.99, 'images/7up.jpg', 'Drink');
+go
+
+EXECUTE UpdateProductQuantityByID 'Pro001', 80;
+EXECUTE UpdateProductQuantityByID 'Pro003', 70;
+EXECUTE UpdateProductQuantityByID 'Pro004', 60;
+EXECUTE UpdateProductQuantityByID 'Pro007', 50;
+EXECUTE UpdateProductQuantityByID 'Pro001', 40;
+go
+
+-- Order
+-- Customer 1:
+INSERT INTO [Order] (OrderDate, QuantitySeat, Note, CustomerID, EmployeeID, ScheduleID)
+VALUES
+('2024-05-03 18:45:00', 2, N'Extra butter on popcorn', 'Cus0001', 'Emp004', 'Sch00008'),
+('2024-03-21 14:20:00', 1, N'No notes', 'Cus0001', 'Emp001', 'Sch00010'),
+('2023-09-17 09:40:00', 2, N'Celebrating birthday!', 'Cus0001', 'Emp005', 'Sch00006');
+
+-- Customer 2:
+INSERT INTO [Order] (OrderDate, QuantitySeat, Note, CustomerID, EmployeeID, ScheduleID)
+VALUES
+('2024-05-01 10:30:00', 4, N'Extra butter on popcorn', 'Cus0002', 'Emp008', 'Sch00006'),
+('2024-04-07 17:50:00', 1, N'Need wheelchair access', 'Cus0002', 'Emp005', 'Sch00002'),
+('2023-08-22 21:10:00', 2, N'No notes', 'Cus0002', 'Emp003', 'Sch00004');
+
+-- Customer 3:
+INSERT INTO [Order] (OrderDate, QuantitySeat, Note, CustomerID, EmployeeID, ScheduleID)
+VALUES
+('2024-04-02 20:10:00', 3, N'No notes', 'Cus0003', 'Emp003', 'Sch00004'),
+('2024-02-20 08:35:00', 5, N'No notes', 'Cus0003', 'Emp009', 'Sch00002'),
+('2023-10-14 20:55:00', 2, N'No notes', 'Cus0003', 'Emp001', 'Sch00006');
+
+-- Customer 4:
+INSERT INTO [Order] (OrderDate, QuantitySeat, Note, CustomerID, EmployeeID, ScheduleID)
+VALUES
+('2024-04-12 22:05:00', 2, N'Celebrating birthday!', 'Cus0004', 'Emp006', 'Sch00010'),
+('2024-01-28 18:15:00', 2, N'No notes', 'Cus0004', 'Emp008', 'Sch00004'),
+('2023-11-14 16:40:00', 2, N'No notes', 'Cus0004', 'Emp004', 'Sch00002');
+
+-- OrderDetail
+ -- Order 1
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(3, 'Ord0001', 'Pro002');
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(2, 'Ord0001', 'Pro004');
+
+-- Order 2
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(2, 'Ord0002', 'Pro002');
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(5, 'Ord0002', 'Pro004');
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(3, 'Ord0002', 'Pro001'); 
+
+-- Order 3
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(4, 'Ord0003', 'Pro001'); 
+
+-- Order 4
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(1, 'Ord0004', 'Pro007'); 
+
+-- Order 5
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(4, 'Ord0005', 'Pro002'); 
+INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+VALUES
+(6, 'Ord0005', 'Pro005');
+go
+
+/*
+*******-------- Customer ------*******
+DECLARE @i INT = 1;
+WHILE @i <= 6999
+BEGIN
+    DECLARE @PhoneNumber NVARCHAR(20);
+    DECLARE @Email NVARCHAR(100);
+    DECLARE @FullName NVARCHAR(100);
+    SET @PhoneNumber = CONCAT('555', RIGHT('0000000000' + CAST(ABS(CHECKSUM(NEWID())) % 1000000000 AS NVARCHAR(10)), 7));
+    IF NOT EXISTS (SELECT 1 FROM Customer WHERE PhoneNumber = @PhoneNumber)
+    BEGIN
+        SET @Email = CONCAT(LEFT(@PhoneNumber, LEN(@PhoneNumber) - 4), '@example.com');
+        SET @FullName = CONCAT('Customer ', @i);
+        INSERT INTO Customer (FullName, PhoneNumber, Email, RegDate)
+        VALUES
+        (@FullName, @PhoneNumber, @Email, GETDATE());
+        SET @i = @i + 1;
+    END;
+END;
+go
+*/
+
+/*
+*******-------- Order ------*******
+DECLARE @i INT = 1;
+WHILE @i <= 8999
+BEGIN
+	DECLARE @RandomCustomerID CHAR(7);
+	DECLARE @RandomEmployeeID CHAR(6);
+	DECLARE @RandomScheduleID CHAR(8);
+	DECLARE @RandomQuantitySeat INT;
+	DECLARE @RandomOrderDate DATETIME;
+	SET @RandomOrderDate = DATEADD(DAY, -ROUND(RAND() * 365, 0), GETDATE());
+	DECLARE @RandomHour INT = ROUND(RAND() * 23, 0);
+	DECLARE @RandomMinute INT = ROUND(RAND() * 59, 0);
+	DECLARE @RandomSecond INT = ROUND(RAND() * 59, 0);
+	SET @RandomOrderDate = DATEADD(HOUR, @RandomHour, @RandomOrderDate);
+	SET @RandomOrderDate = DATEADD(MINUTE, @RandomMinute, @RandomOrderDate);
+	SET @RandomOrderDate = DATEADD(SECOND, @RandomSecond, @RandomOrderDate);
+	SELECT TOP 1 @RandomCustomerID = CustomerID
+    FROM Customer
+    ORDER BY NEWID();
+    SELECT TOP 1 @RandomEmployeeID = EmployeeID
+    FROM Employee
+    ORDER BY NEWID();
+    SELECT TOP 1 @RandomScheduleID = ScheduleID
+    FROM MovieSchedule
+    ORDER BY NEWID();
+    SET @RandomQuantitySeat = 1 + FLOOR(RAND() * 5);
+    INSERT INTO [Order] (OrderDate, QuantitySeat, Note, CustomerID, EmployeeID, ScheduleID)
+    VALUES (@RandomOrderDate, @RandomQuantitySeat, 'No Note', @RandomCustomerID, @RandomEmployeeID, @RandomScheduleID);
+    SET @i = @i + 1;
+END;
+*/
+
+--*************************---------------------- There ----------------------*************************
+/*
+*******--------OrderDetail-------********
+DECLARE @i INT = 1;
+WHILE @i <= 24999
+BEGIN
+    DECLARE @Quantity INT = ABS(CHECKSUM(NEWID())) % 10 + 1;
+    DECLARE @RandomProductID CHAR(6);
+    SELECT TOP 1 @RandomProductID = ProductID
+    FROM Product
+    ORDER BY NEWID();
+	DECLARE @RandomOrderID CHAR(7);
+    SELECT TOP 1 @RandomOrderID = OrderID
+    FROM [Order]
+    ORDER BY NEWID();
+    IF NOT EXISTS (SELECT 1 FROM OrderDetail WHERE OrderID = @RandomOrderID AND ProductID = @RandomProductID)
+    BEGIN
+        INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
+        VALUES (@Quantity, @RandomOrderID, @RandomProductID);
+    END;
+    SET @i = @i + 1;
+END;
+*/
+
+--*******-------- MovieSchedule ------*******
+/*
+DECLARE @i INT = 1;
+WHILE @i <= 8000
+BEGIN
+    DECLARE @RandomScreeningTime DATETIME;
+    SET @RandomScreeningTime = DATEADD(DAY, -ROUND(RAND() * 365, 0), GETDATE());
+    DECLARE @RandomHour INT = ROUND(RAND() * 23, 0);
+    DECLARE @RandomMinute INT = ROUND(RAND() * 59, 0);
+    DECLARE @RandomSecond INT = ROUND(RAND() * 59, 0);
+    SET @RandomScreeningTime = DATEADD(HOUR, @RandomHour, @RandomScreeningTime);
+    SET @RandomScreeningTime = DATEADD(MINUTE, @RandomMinute, @RandomScreeningTime);
+    SET @RandomScreeningTime = DATEADD(SECOND, @RandomSecond, @RandomScreeningTime);
+    DECLARE @RandomMovieID CHAR(6);
+    SELECT TOP 1 @RandomMovieID = MovieID FROM Movie ORDER BY NEWID();
+    DECLARE @RandomRoomID CHAR(6);
+    SELECT TOP 1 @RandomRoomID = RoomID FROM Room ORDER BY NEWID();
+    DECLARE @MovieDuration INT;
+    SELECT @MovieDuration = Duration FROM Movie WHERE MovieID = @RandomMovieID;
+    DECLARE @NewScreeningTime SMALLDATETIME = DATEADD(MINUTE, -30, @RandomScreeningTime);
+    DECLARE @NewEndTime SMALLDATETIME = DATEADD(MINUTE, @MovieDuration + 30, @RandomScreeningTime);
+    IF NOT EXISTS (
+        SELECT 1
+        FROM MovieSchedule ms
+        WHERE ms.RoomID = @RandomRoomID
+        AND ((ms.EndTime > @NewScreeningTime AND ms.EndTime < @NewEndTime)
+             OR (ms.ScreeningTime > @NewScreeningTime AND ms.ScreeningTime < @NewEndTime))
+    )
+    BEGIN
+		DECLARE @PricePerSeat MONEY;
+        SET @PricePerSeat = 10.00 + RAND() * 50.00;
+        INSERT INTO MovieSchedule (ScreeningTime, MovieID, RoomID, PricePerSeat)
+        VALUES (@RandomScreeningTime, @RandomMovieID, @RandomRoomID, @PricePerSeat);
+    END;
+    SET @i = @i + 1;
+END;
+*/
