@@ -834,7 +834,7 @@ BEGIN
 END;
 go
 
-CREATE OR ALTER TRIGGER CaculateOrderTotal
+CREATE OR ALTER TRIGGER CalculateOrderTotal
 ON [Order]
 AFTER INSERT, UPDATE
 AS
@@ -842,12 +842,13 @@ BEGIN
     SET NOCOUNT ON;
 
     UPDATE o
-    SET o.Total = ISNULL(o.QuantitySeat, 0) * ISNULL(ms.PricePerSeat, 0)
+    SET o.Total = ISNULL(o.QuantitySeat, 0) * ISNULL(ms.PricePerSeat, 0) + ISNULL((SELECT SUM(od.LineTotal) FROM OrderDetail od WHERE od.OrderID = o.OrderID), 0)
     FROM [Order] o
     INNER JOIN inserted i ON o.OrderID = i.OrderID
     LEFT JOIN MovieSchedule ms ON o.ScheduleID = ms.ScheduleID;
 END;
 go
+
 
 CREATE OR ALTER TRIGGER CalculateOrderTotalFromOrderDetail
 ON OrderDetail
@@ -856,22 +857,10 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    DECLARE @OrderIDs TABLE (OrderID CHAR(7));
-    INSERT INTO @OrderIDs (OrderID)
-    SELECT DISTINCT OrderID FROM inserted;
-
-    UPDATE o
-    SET o.Total = ISNULL(od.TotalPrice, 0) + ISNULL(o.Total, 0)
-    FROM [Order] o
-    LEFT JOIN (
-        SELECT OrderID, SUM(LineTotal) AS TotalPrice
-        FROM OrderDetail
-        WHERE OrderID IN (SELECT OrderID FROM @OrderIDs) -- Chỉ tính tổng cho các Order liên quan
-        GROUP BY OrderID
-    ) od ON o.OrderID = od.OrderID
-    WHERE o.OrderID IN (SELECT OrderID FROM @OrderIDs);
+    UPDATE [Order]
+    SET Total = 0
+    FROM [dbo].[Order]
 END;
-go
 
 -- Thêm dữ liệu cho bảng Employee
 INSERT INTO Employee (FullName, Gender, DateOfBirth, Email, PhoneNumber, Role, StartingDate, Salary, ImageSource)
@@ -914,49 +903,140 @@ go
 -- Thêm dữ liệu cho bảng Movie
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Shawshank Redemption', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg', 'https://www.youtube.com/watch?v=6hB3S9bIaco', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Godfather', 'Crime', 'Francis Ford Coppola', 175, '1972-03-24', 'English', 'USA', '1972-03-24', 'Unreleased', 12.99, 'images/the_godfather.jpg', 'https://www.youtube.com/watch?v=5DO-nDW43Ik', 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Dark Knight', 'Action', 'Christopher Nolan', 152, '2008-07-18', 'English', 'USA', '2008-07-18', 'Released', 14.99, 'images/the_dark_knight.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Pulp Fiction', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', '1994-10-14', 'Unreleased', 11.99, 'images/pulp_fiction.jpg', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Schindler''s List', 'Biography', 'Steven Spielberg', 195, '1994-02-04', 'English', 'USA', '1994-02-04', 'Released', 13.99, 'images/schindlers_list.jpg', 'https://www.youtube.com/watch?v=gG22XNhtnoY', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Lord of the Rings: The Return of the King', 'Adventure', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', '2003-12-17', 'Released', 16.99, 'images/lotr_return_of_the_king.jpg', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Fight Club', 'Drama', 'David Fincher', 139, '1999-10-15', 'English', 'USA', '1999-10-15', 'Unreleased', 10.49, 'images/fight_club.jpg', 'https://www.youtube.com/watch?v=SUXWAEX2jlg', 'An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Forrest Gump', 'Drama', 'Robert Zemeckis', 142, '1994-07-06', 'English', 'USA', '1994-07-06', 'Released', 9.99, 'images/forrest_gump.jpg', 'https://www.youtube.com/watch?v=uPIEn0M8su0', 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold from the perspective of an Alabama man with an IQ of 75, whose only desire is to be reunited with his childhood sweetheart.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Inception', 'Action', 'Christopher Nolan', 148, '2010-07-16', 'English', 'USA', '2010-07-16', 'Unreleased', 15.49, 'images/inception.jpg', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Matrix', 'Action', 'Lana Wachowski, Lilly Wachowski', 136, '1999-03-31', 'English', 'USA', '1999-03-31', 'Released', 11.99, 'images/the_matrix.jpg', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Green Mile', 'Drama', 'Frank Darabont', 189, '1999-12-10', 'English', 'USA', '1999-12-10', 'Released', 12.49, 'images/the_green_mile.jpg', 'https://www.youtube.com/watch?v=Ki4haFrqSrw', 'The lives of guards on Death Row are affected by one of their charges: a black man accused of child murder and rape, yet who has a mysterious gift.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Departed', 'Crime', 'Martin Scorsese', 151, '2006-10-06', 'English', 'USA', '2006-10-06', 'Unreleased', 13.99, 'images/the_departed.jpg', 'https://www.youtube.com/watch?v=auYbpnEwBBg', 'An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Goodfellas', 'Biography', 'Martin Scorsese', 146, '1990-09-19', 'English', 'USA', '1990-09-19', 'Released', 11.49, 'images/goodfellas.jpg', 'https://www.youtube.com/watch?v=qo5jJpHtI1Y', 'The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito in the Italian-American crime syndicate.');
-
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Silence of the Lambs', 'Crime', 'Jonathan Demme', 118, '1991-02-14', 'English', 'USA', '1991-02-14', 'Unreleased', 14.99, 'images/the_silence_of_the_lambs.jpg', 'https://www.youtube.com/watch?v=ZWCAf-xLV2c', 'A young F.B.I. cadet must receive the help of an incarcerated and manipulative cannibal killer to help catch another serial killer, a madman who skins his victims.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Spirited Away', 'Animation, Adventure, Family', 'Hayao Miyazaki', 125, '2001-07-20', 'Japanese', 'Japan', '2001-07-20', 'Released', 14.99, 'images/spirited_away.jpg', 'https://www.youtube.com/watch?v=D_SLY-IuDlI', 'A young girl wanders into a world of spirits and demons after her parents are turned into pigs by a witch.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Big Lebowski', 'Comedy, Crime', 'Joel Coen', 117, '1998-03-06', 'English', 'USA', '1998-03-06', 'Released', 9.99, 'images/the_big_lebowski.jpg', 'https://www.youtube.com/watch?v=wJrQSUe5ccc', 'A mistaken identity throws a carefree bowler into the path of a bunch of angry thugs who believe he stole a rug from a millionaire.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Princess Bride', 'Adventure, Comedy, Family', 'Rob Reiner', 98, '1987-09-25', 'English', 'USA', '1987-09-25', 'Released', 8.99, 'images/the_princess_bride.jpg', 'https://www.youtube.com/watch?v=JFrKyGFNM2Y', 'Westley must rescue his princess bride from the evil Prince Humperdinck in this comedic fantasy.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Amélie', 'Comedy, Romance', 'Jean-Pierre Jeunet', 113, '2001-04-25', 'French', 'France', '2001-04-25', 'Released', 10.99, 'images/amelie.jpg', 'https://www.youtube.com/watch?v=hNK_iqFDuws', 'A shy waitress in Montmartre decides to anonymously improve the lives of those around her.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Your Name', 'Animation, Drama, Fantasy', 'Makoto Shinkai', 102, '2016-08-26', 'Japanese', 'Japan', '2016-08-26', 'Released', 12.99, 'images/your_name.jpg', 'https://www.youtube.com/watch?v=xTJzS7_JqSQ', 'Two teenagers discover they are linked in a strange dream-sharing phenomenon and set out to meet in the waking world.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Grand Budapest Hotel', 'Comedy, Crime', 'Wes Anderson', 100, '2014-02-21', 'English', 'USA', '2014-02-21', 'Released', 14.99, 'images/the_grand_budapest_hotel.jpg', 'https://www.youtube.com/watch?v=1y_0KkvRsXk', 'The concierge of a famous European hotel during the interwar period takes a young employee under his wing.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Blade Runner', 'Sci-Fi, Neo-Noir', 'Ridley Scott', 117, '1982-06-25', 'English', 'USA', '1982-06-25', 'Released', 13.99, 'images/blade_runner.jpg', 'https://www.youtube.com/watch?v=KP9kbYphvxo', 'A blade runner, a retired police officer who hunts rogue replicants (artificial humans), is tasked with retiring a group of recently arrived replicants.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Seven Samurai', 'Drama', 'Akira Kurosawa', 203, '1954-04-26', 'Japanese', 'Japan', '1954-04-26', 'Released', 14.49, 'images/seven_samurai.jpg', 'https://www.youtube.com/watch?v=ByfZ63y-VkQ', 'A poor village under constant bandit attacks hires seven unemployed samurai to protect them for the upcoming harvest.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Shining', 'Horror', 'Stanley Kubrick', 146, '1980-05-23', 'English', 'USA', '1980-05-23', 'Released', 11.99, 'images/the_shining.jpg', 'https://www.youtube.com/watch?v=NZleC1Y3HdM', 'A family heads to an isolated hotel for the winter where a sinister presence influences the father into violence, while his psychic son sees horrific forebodings from both past and future.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Rear Window', 'Mystery, Thriller', 'Alfred Hitchcock', 112, '1954-08-01', 'English', 'USA', '1954-08-01', 'Released', 12.49, 'images/rear_window.jpg', 'https://www.youtube.com/watch?v=cXcY9zvYOO0', 'A wheelchair-bound photographer spies on his neighbors from his apartment window and becomes convinced one of them has committed murder.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Raiders of the Lost Ark', 'Action, Adventure', 'Steven Spielberg', 115, '1981-06-12', 'English', 'USA', '1981-06-12', 'Released', 15.99, 'images/raiders_of_the_lost_ark.jpg', 'https://www.youtube.com/watch?v=XSL3YwGNKUw', 'Indiana Jones is hired by the U.S. government to find the Ark of the Covenant before Nazis can obtain its powers.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Breakfast Club', 'Comedy, Drama', 'John Hughes', 97, '1985-02-22', 'English', 'USA', '1985-02-22', 'Released', 9.99, 'images/the_breakfast_club.jpg', 'https://www.youtube.com/watch?v=TJW41_t-5mc', 'Five high school students from different social groups are forced to spend a Saturday in detention together, where they bond over their shared experiences and discover that they have more in common than they thought.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Back to the Future', 'Adventure, Comedy, Sci-Fi', 'Robert Zemeckis', 116, '1985-07-26', 'English', 'USA', '1985-07-26', 'Released', 10.99, 'images/back_to_the_future.jpg', 'https://www.youtube.com/watch?v=hO4tjXzBlCQ', 'Marty McFly, a teenager who travels back in time to 1955 in a time machine built by his friend Doc Brown, must ensure his parents meet and fall in love in order to save his own existence.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Terminator', 'Action, Sci-Fi', 'James Cameron', 108, '1984-10-26', 'English', 'USA', '1984-10-26', 'Released', 12.99, 'images/the_terminator.jpg', 'https://www.youtube.com/watch?v=d0_qZ2Zx7ZM', 'A cyborg assassin is sent back in time to kill Sarah Connor, a young woman whose unborn son is destined to save humanity from a future dominated by machines.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Goonies', 'Adventure, Comedy', 'Richard Donner', 114, '1985-06-07', 'English', 'USA', '1985-06-07', 'Released', 8.99, 'images/the_goonies.jpg', 'https://www.youtube.com/watch?v=7A_g4R11y3Q', 'A group of misfit kids embark on an adventure to find a hidden pirate treasure.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Princess Bride', 'Adventure, Comedy, Fantasy', 'Rob Reiner', 98, '1987-09-25', 'English', 'USA', '1987-09-25', 'Released', 8.99, 'images/the_princess_bride.jpg', 'https://www.youtube.com/watch?v=JFrKyGFNM2Y', 'Westley must rescue his princess bride from the evil Prince Humperdinck in this comedic fantasy.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Pulp Fiction', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', '1994-10-14', 'Released', 11.99, 'images/pulp_fiction.jpg', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Godfather: Part II', 'Crime, Drama', 'Francis Ford Coppola', 202, '1974-12-18', 'English', 'USA', '1974-12-18', 'Released', 14.99, 'images/the_godfather_part_ii.jpg', 'https://www.youtube.com/watch?v=9VpU_T155J4', 'The story of the young Vito Corleone in 1900s New York is told in parallel to the story of his son Michael as he expands and protects the family business in the postwar years.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Dark Knight Rises', 'Action, Crime, Drama', 'Christopher Nolan', 165, '2012-07-20', 'English', 'USA', '2012-07-20', 'Released', 16.99, 'images/the_dark_knight_rises.jpg', 'https://www.youtube.com/watch?v=gUEU1Fg_7lI', 'Eight years after the events of The Dark Knight, Batman is forced out of hiding and back into the streets to confront a ruthless terrorist named Bane.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('12 Angry Men', 'Crime, Drama', 'Sidney Lumet', 89, '1957-07-15', 'English', 'USA', '1957-07-15', 'Released', 9.99, 'images/12_angry_men.jpg', 'https://www.youtube.com/watch?v=V7Dt-y4oWxA', 'A jury in New York City is tasked with deciding the fate of a young man accused of murder. As the jurors deliberate, their personal biases and prejudices emerge, leading to a tense and dramatic confrontation.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Schindler''s List', 'Biography, Drama, History', 'Steven Spielberg', 195, '1993-12-15', 'English', 'USA', '1993-12-15', 'Released', 13.99, 'images/schindlers_list.jpg', 'https://www.youtube.com/watch?v=gG22XNhtnoY', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Fellowship of the Ring', 'Adventure, Drama, Fantasy', 'Peter Jackson', 178, '2001-12-19', 'English', 'New Zealand', '2001-12-19', 'Released', 16.99, 'images/lotr_fellowship_of_the_ring.jpg', 'https://www.youtube.com/watch?v=h0E2v5z_ZSs', 'A hobbit named Frodo inherits the One Ring from his uncle Bilbo, and with the help of a fellowship embarks on a quest to destroy it in the fires of Mount Doom.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Casablanca', 'Drama, Romance, War', 'Michael Curtiz', 102, '1942-11-25', 'English', 'USA', '1942-11-25', 'Released', 10.99, 'images/casablanca.jpg', 'https://www.youtube.com/watch?v=0618_pHRL4c', 'Rick Blaine, an American expatriate who runs a nightclub in Casablanca during World War II, must choose between his love for a woman and helping her husband, a Czech resistance leader, escape from the Nazis.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Shawshank Redemption', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg', 'https://www.youtube.com/watch?v=6hB3S9bIaco', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Big Lebowski', 'Comedy, Crime', 'Joel Coen', 117, '1998-03-06', 'English', 'USA', '1998-03-06', 'Released', 9.99, 'images/the_big_lebowski.jpg', 'https://www.youtube.com/watch?v=wJrQSUe5ccc', 'A mistaken identity throws a carefree bowler into the path of a bunch of angry thugs who believe he stole a rug from a millionaire.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Matrix', 'Action, Sci-Fi', 'Lana Wachowski, Lilly Wachowski', 136, '1999-03-31', 'English', 'USA', '1999-03-31', 'Released', 11.99, 'images/the_matrix.jpg', 'https://www.youtube.com/watch?v=vKQi3bBA1y8', 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Memento', 'Crime, Mystery, Thriller', 'Christopher Nolan', 113, '2000-09-05', 'English', 'USA', '2000-09-05', 'Released', 12.99, 'images/memento.jpg', 'https://www.youtube.com/watch?v=8_rT1T3z1sQ', 'A man with short-term memory loss tries to find his wife''s killer, but the fragments of memory he can recall are not as reliable as he thinks.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Departed', 'Crime, Drama, Thriller', 'Martin Scorsese', 151, '2006-10-06', 'English', 'USA', '2006-10-06', 'Released', 13.99, 'images/the_departed.jpg', 'https://www.youtube.com/watch?v=auYbpnEwBBg', 'An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Apocalypse Now', 'Drama, War', 'Francis Ford Coppola', 153, '1979-08-03', 'English', 'USA', '1979-08-03', 'Released', 14.99, 'images/apocalypse_now.jpg', 'https://www.youtube.com/watch?v=14z_230z19g', 'An American captain during the Vietnam War is sent on a dangerous mission to assassinate the renegade Colonel Kurtz, who has gone AWOL and is waging his own war in Cambodia.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Good, the Bad and the Ugly', 'Western', 'Sergio Leone', 178, '1966-12-30', 'Italian', 'Italy', '1966-12-30', 'Released', 13.99, 'images/the_good_the_bad_and_the_ugly.jpg', 'https://www.youtube.com/watch?v=3_6z-AOz1UA', 'During the Civil War, three gunslingers compete to find a hidden cache of Confederate gold.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Princess Bride', 'Adventure, Comedy, Fantasy', 'Rob Reiner', 98, '1987-09-25', 'English', 'USA', '1987-09-25', 'Released', 8.99, 'images/the_princess_bride.jpg', 'https://www.youtube.com/watch?v=JFrKyGFNM2Y', 'Westley must rescue his princess bride from the evil Prince Humperdinck in this comedic fantasy.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Return of the King', 'Adventure, Drama, Fantasy', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', '2003-12-17', 'Released', 16.99, 'images/lotr_return_of_the_king.jpg', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Departed', 'Crime, Drama, Thriller', 'Martin Scorsese', 151, '2006-10-06', 'English', 'USA', '2006-10-06', 'Released', 13.99, 'images/the_departed.jpg', 'https://www.youtube.com/watch?v=auYbpnEwBBg', 'An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Goodfellas', 'Biography, Crime, Drama', 'Martin Scorsese', 146, '1990-09-19', 'English', 'USA', '1990-09-19', 'Released', 11.49, 'images/goodfellas.jpg', 'https://www.youtube.com/watch?v=qo5jJpHtI1Y', 'The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Forrest Gump (1994)', 'Comedy, Drama, Romance', 'Robert Zemeckis', 142, '1994-07-06', 'English', 'USA', '1994-07-06', 'Released', 12.99, 'images/forrest_gump.jpg', 'https://www.youtube.com/watch?v=y4B2N452uE0', 'The story of Forrest Gump, a man with an IQ of 75, whose innocent life is accidentally intertwined with some of the most significant events of the 20th century.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Silence of the Lambs (1991)', 'Crime, Drama, Thriller', 'Jonathan Demme', 118, '1991-02-14', 'English', 'USA', '1991-02-14', 'Released', 13.99, 'images/the_silence_of_the_lambs.jpg', 'https://www.youtube.com/watch?v=Rd15_dF-7bw', 'A young FBI trainee is sent to interview an imprisoned cannibal and former psychiatrist for help catching an active serial killer.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Pulp Fiction (1994)', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', '1994-10-14', 'Released', 11.99, 'images/pulp_fiction.jpg', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Shawshank Redemption (1994)', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg', 'https://www.youtube.com/watch?v=6hB3S9bIaco', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Fellowship of the Ring (2001)', 'Adventure, Drama, Fantasy', 'Peter Jackson', 178, '2001-12-19', 'English', 'New Zealand', '2001-12-19', 'Released', 16.99, 'images/lotr_fellowship_of_the_ring.jpg', 'https://www.youtube.com/watch?v=h0E2v5z_ZSs', 'A hobbit named Frodo inherits the One Ring from his uncle Bilbo, and with the help of a fellowship embarks on a quest to destroy it in the fires of Mount Doom.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Two Towers', 'Adventure, Drama, Fantasy', 'Peter Jackson', 179, '2002-12-18', 'English', 'New Zealand', '2002-12-18', 'Released', 16.99, 'images/lotr_the_two_towers.jpg', 'https://www.youtube.com/watch?v=L9sfz2_5N9s', 'Frodo and Sam continue their journey to Mordor to destroy the One Ring, while Aragorn, Legolas, and Gimli track Merry and Pippin who have been captured by Orcs.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Godfather (1972)', 'Crime, Drama', 'Francis Ford Coppola', 175, '1972-03-24', 'English', 'USA', '1972-03-24', 'Released', 14.99, 'images/the_godfather.jpg', 'https://www.youtube.com/watch?v=9Wm41V1SE7E', 'The story of the Corleone family under the patriarch Vito Corleone, focusing on the transformation of his youngest son, Michael, from reluctant family outsider to ruthless mafia boss.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Dark Knight (2008)', 'Action, Crime, Drama', 'Christopher Nolan', 152, '2008-07-18', 'English', 'USA', '2008-07-18', 'Released', 16.99, 'images/the_dark_knight.jpg', 'https://www.youtube.com/watch?v=J-7z1z9O7sM', 'With the help of Lieutenant Jim Gordon and Batman, Gotham City tries to confront the Joker, a psychopathic criminal who plans to bring chaos upon the city.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Pulp Fiction (1994)', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', '1994-10-14', 'Released', 11.99, 'images/pulp_fiction.jpg', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Return of the King (2003)', 'Adventure, Drama, Fantasy', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', '2003-12-17', 'Released', 16.99, 'images/lotr_return_of_the_king.jpg', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Shawshank Redemption (1994)', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg', 'https://www.youtube.com/watch?v=6hB3S9bIaco', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Fellowship of the Ring (2001)', 'Adventure, Drama, Fantasy', 'Peter Jackson', 178, '2001-12-19', 'English', 'New Zealand', '2001-12-19', 'Released', 16.99, 'images/lotr_fellowship_of_the_ring.jpg', 'https://www.youtube.com/watch?v=h0E2v5z_ZSs', 'The story of the young Vito Corleone in 1900s New York is told in parallel to the story of his son Michael as he expands and protects the family business in the postwar years.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Princess Bride (1987)', 'Adventure, Comedy, Fantasy', 'Rob Reiner', 98, '1987-09-25', 'English', 'USA', '1987-09-25', 'Released', 8.99, 'images/the_princess_bride.jpg', 'https://www.youtube.com/watch?v=JFrKyGFNM2Y', 'Westley must rescue his princess bride from the evil Prince Humperdinck in this comedic fantasy.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Departed (2006)', 'Crime, Drama, Thriller', 'Martin Scorsese', 151, '2006-10-06', 'English', 'USA', '2006-10-06', 'Released', 13.99, 'images/the_departed.jpg', 'https://www.youtube.com/watch?v=auYbpnEwBBg', 'An undercover cop and a mole in the police attempt to identify each other while infiltrating an Irish gang in South Boston.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('Goodfellas (1990)', 'Biography, Crime, Drama', 'Martin Scorsese', 146, '1990-09-19', 'English', 'USA', '1990-09-19', 'Released', 11.49, 'images/goodfellas.jpg', 'https://www.youtube.com/watch?v=qo5jJpHtI1Y', 'The story of Henry Hill and his life in the mob, covering his relationship with his wife Karen Hill and his mob partners Jimmy Conway and Tommy DeVito.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Big Lebowski (1998)', 'Comedy, Crime', 'Joel Coen', 117, '1998-03-06', 'English', 'USA', '1998-03-06', 'Released', 9.99, 'images/the_big_lebowski.jpg', 'https://www.youtube.com/watch?v=wJrQSUe5ccc', 'A mistaken identity throws a carefree bowler into the path of a bunch of angry thugs who believe he stole a rug from a millionaire.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Shawshank Redemption (1994)', 'Drama', 'Frank Darabont', 142, '1994-09-23', 'English', 'USA', '1994-09-23', 'Released', 10.99, 'images/shawshank_redemption.jpg', 'https://www.youtube.com/watch?v=6hB3S9bIaco', 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
+VALUES ('The Lord of the Rings: The Return of the King (2003)', 'Adventure, Drama, Fantasy', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', '2003-12-17', 'Released', 16.99, 'images/lotr_return_of_the_king.jpg', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.');
 go
 
--- movieschedule
 
+-- movieschedule
 insert into movieschedule (screeningTime, movieid, roomid, PricePerSeat) 
 values 
 ('2024-05-03 20:00:00', 'Mov001', 'Room01', 14.9);
@@ -1021,12 +1101,10 @@ VALUES
 ('Popcorn', 100, 3.50, 'images/popcorn.jpg', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Large Popcorn', 90, 4.50, 'images/popcorn.jpg', 'Food');
+('Large Popcorn', 190, 4.50, 'images/popcorn.jpg', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Medium Popcorn', 80, 4.00, 'images/popcorn.jpg', 'Food');
-go
-
+('Medium Popcorn', 180, 4.00, 'images/popcorn.jpg', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
 ('Pepsi', 110, 1.99, 'images/pepsi.jpg', 'Drink');
@@ -1039,6 +1117,28 @@ VALUES
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
 ('7 Up', 140, 1.99, 'images/7up.jpg', 'Drink');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Combo x2 Popcorn', 100, 5.50, 'images/popcorn.jpg', 'Food');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Combo x2 Large Popcorn', 195, 7.50, 'images/popcorn.jpg', 'Food');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Combo x2 Medium Popcorn', 120, 7.00, 'images/popcorn.jpg', 'Food');
+go
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Combo x2 Pepsi', 135, 2.99, 'images/pepsi.jpg', 'Drink');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Combo x2 Coca-Cola', 140, 2.99, 'images/cocacola.png', 'Drink');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Combo x2 Mineral Water', 165, 2.50, 'images/mineral-water.png', 'Drink');
+INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
+VALUES
+('Combo x2 7 Up', 185, 2.99, 'images/7up.jpg', 'Drink');
 go
 
 EXECUTE UpdateProductQuantityByID 'Pro001', 80;
@@ -1117,7 +1217,7 @@ VALUES
 go
 
 /*
-*******-------- Customer ------*******
+------------*** Customer ***
 DECLARE @i INT = 1;
 WHILE @i <= 6999
 BEGIN
@@ -1136,10 +1236,8 @@ BEGIN
     END;
 END;
 go
-*/
 
-/*
-*******-------- Order ------*******
+-------------*** Order *** 
 DECLARE @i INT = 1;
 WHILE @i <= 8999
 BEGIN
@@ -1169,11 +1267,9 @@ BEGIN
     VALUES (@RandomOrderDate, @RandomQuantitySeat, 'No Note', @RandomCustomerID, @RandomEmployeeID, @RandomScheduleID);
     SET @i = @i + 1;
 END;
-*/
+go
 
---*************************---------------------- There ----------------------*************************
-/*
-*******--------OrderDetail-------********
+-------------------*** OrderDetail ***
 DECLARE @i INT = 1;
 WHILE @i <= 24999
 BEGIN
@@ -1193,10 +1289,9 @@ BEGIN
     END;
     SET @i = @i + 1;
 END;
-*/
+go
 
---*******-------- MovieSchedule ------*******
-/*
+----------------*** MovieSchedule ***
 DECLARE @i INT = 1;
 WHILE @i <= 8000
 BEGIN
@@ -1231,4 +1326,21 @@ BEGIN
     END;
     SET @i = @i + 1;
 END;
+go
+
+-------------------*** Importproduct ***
+DECLARE @i INT = 1;
+WHILE @i <= 899
+BEGIN
+    DECLARE @RandomProductID CHAR(6);
+    SELECT TOP 1 @RandomProductID = ProductID FROM Product ORDER BY NEWID();
+
+    DECLARE @RandomQuantityImport INT;
+    SET @RandomQuantityImport = CAST((RAND() * (150 - 100 + 1) + 100) AS INT);
+
+    EXECUTE UpdateProductQuantityByID @RandomProductID, @RandomQuantityImport;
+
+    SET @i = @i + 1;
+END;
+GO
 */
