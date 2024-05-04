@@ -30,6 +30,8 @@ import gui.application.form.other.FormMovieManagement;
 import gui.application.form.other.FormProfileInfo;
 import gui.application.form.other.FormScreeningManagement;
 import gui.application.form.other.FormStaffManagement;
+import gui.application.form.other.FormStatisticsCustomer;
+import gui.application.form.other.FormStatisticsGeneral;
 import gui.menu.Menu;
 import gui.menu.MenuAction;
 
@@ -108,10 +110,10 @@ public class MainForm extends JLayeredPane {
 				case 5:
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new FormDashboard());
+						Application.showMainForm(new FormStatisticsGeneral());
 						break;
 					case 2:
-						Application.showMainForm(new DefaultForm("Statistics - customer"));
+						Application.showMainForm(new FormStatisticsCustomer());
 						break;
 					case 3:
 						Application.showMainForm(new DefaultForm("Statistics - movie"));
@@ -171,10 +173,10 @@ public class MainForm extends JLayeredPane {
 				case 5:
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new FormDashboard());
+						Application.showMainForm(new FormStatisticsGeneral());
 						break;
 					case 2:
-						Application.showMainForm(new DefaultForm("Statistics - customer"));
+						Application.showMainForm(new FormStatisticsCustomer());
 						break;
 					case 3:
 						Application.showMainForm(new DefaultForm("Statistics - movie"));

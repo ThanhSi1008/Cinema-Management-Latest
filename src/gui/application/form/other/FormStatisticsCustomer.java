@@ -1,5 +1,6 @@
 package gui.application.form.other;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
@@ -26,7 +28,7 @@ import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import net.miginfocom.swing.MigLayout;
 
-public class FormStatisticsCustomer extends JFrame {
+public class FormStatisticsCustomer extends JPanel {
 
 	private JPanel container;
 	private JPanel topContainer;
@@ -43,6 +45,8 @@ public class FormStatisticsCustomer extends JFrame {
 	private CustomerRankingDAO customerRankingDAO;
 
 	public FormStatisticsCustomer() {
+		
+		setLayout(new BorderLayout());
 
 		customerRankingDAO = new CustomerRankingDAO();
 
@@ -120,10 +124,7 @@ public class FormStatisticsCustomer extends JFrame {
 		rankTitleLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h3.font");
 		
 		// frame
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		add(container);
-		pack();
-		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
 	
 	private TableCellRenderer getAlignmentCellRender(TableCellRenderer oldRender, boolean header) {
@@ -153,14 +154,14 @@ public class FormStatisticsCustomer extends JFrame {
 		};
 	};
 
-	public static void main(String args[]) {
-		FlatRobotoFont.install();
-		FlatLaf.registerCustomDefaultsSource("gui.theme");
-		UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 16));
-		FlatMacLightLaf.setup();
-		SwingUtilities.invokeLater(() -> {
-			new FormStatisticsCustomer().setVisible(true);
-		});
-	}
+//	public static void main(String args[]) {
+//		FlatRobotoFont.install();
+//		FlatLaf.registerCustomDefaultsSource("gui.theme");
+//		UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 16));
+//		FlatMacLightLaf.setup();
+//		SwingUtilities.invokeLater(() -> {
+//			new FormStatisticsCustomer().setVisible(true);
+//		});
+//	}
 
 }
