@@ -110,7 +110,6 @@ public class MovieDAO {
 				String status = resultSet.getString("Status");
 				double importPrice = resultSet.getDouble("ImportPrice");
 				String imageSource = resultSet.getString("ImageSource");
-				System.out.println(releasedDate);
 				return new Movie(movieID, movieName, description, genre, director, duration, releasedDate.toLocalDate(),
 						language, country, trailer, startDate.toLocalDate(), status, importPrice, imageSource);
 			}

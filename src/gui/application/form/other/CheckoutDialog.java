@@ -2,6 +2,9 @@ package gui.application.form.other;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.FlatLaf;
 
 import dao.CustomerDAO;
 import dao.MovieScheduleSeatDAO;
@@ -34,6 +38,7 @@ import entity.MovieScheduleSeat;
 import entity.Order;
 import entity.OrderDetail;
 import net.miginfocom.swing.MigLayout;
+import raven.crazypanel.FlatLafStyleComponent;
 
 public class CheckoutDialog extends JDialog {
 
@@ -74,7 +79,7 @@ public class CheckoutDialog extends JDialog {
 	private JLabel room;
 	private JLabel seatLabel;
 	private JLabel totalTicketPriceLabel;
-	private JLabel totalTickerPrice;
+	private JLabel totalTicketPrice;
 	private JLabel movieTotalLabel;
 	private JLabel movieTotal;
 	private JLabel seats;
@@ -209,7 +214,14 @@ public class CheckoutDialog extends JDialog {
 		seatLabel = new JLabel("Seat(s):");
 		seats = new JLabel();
 		totalTicketPriceLabel = new JLabel("Total ticket price:");
-		totalTickerPrice = new JLabel();
+		totalTicketPrice = new JLabel();
+		
+		movie.putClientProperty(FlatClientProperties.STYLE, "font:$p.font");
+		date.putClientProperty(FlatClientProperties.STYLE, "font:$p.font");
+		screeningTime.putClientProperty(FlatClientProperties.STYLE, "font:$p.font");
+		room.putClientProperty(FlatClientProperties.STYLE, "font:$p.font");
+		seats.putClientProperty(FlatClientProperties.STYLE, "font:$p.font");
+		totalTicketPrice.putClientProperty(FlatClientProperties.STYLE, "font:$p.font");
 
 		movieDetailContainer.add(movieLabel);
 		movieDetailContainer.add(movie, "gapleft push");
@@ -222,7 +234,7 @@ public class CheckoutDialog extends JDialog {
 		movieDetailContainer.add(seatLabel);
 		movieDetailContainer.add(seats, "gapleft push");
 		movieDetailContainer.add(totalTicketPriceLabel);
-		movieDetailContainer.add(totalTickerPrice, "gapleft push");
+		movieDetailContainer.add(totalTicketPrice, "gapleft push");
 
 		movieTotalContainer = new JPanel(new MigLayout("fill", "[left][right]", "[fill]"));
 		movieTotalContainer.setBorder(commonBorder);
@@ -252,7 +264,7 @@ public class CheckoutDialog extends JDialog {
 			System.out.println(s);
 		}
 		DecimalFormat df = new DecimalFormat("#0.00");
-		totalTickerPrice.setText("$" + movieSchedule.getPerSeatPrice() + " x " + seatChosenList.size());
+		totalTicketPrice.setText("$" + movieSchedule.getPerSeatPrice() + " x " + seatChosenList.size());
 		movieTotal.setText("$" + df.format(movieTotalDouble) + "");
 
 		movieContainer.add(movieTitleContainer);
@@ -281,6 +293,7 @@ public class CheckoutDialog extends JDialog {
 			productOrderDetailCard.add(multiplyLabel);
 			productOrderDetailCard.add(productLineTotalLabel);
 			productOrderDetailContainer.add(productOrderDetailCard);
+			productLineTotalLabel.putClientProperty(FlatClientProperties.STYLE, "" + "font:$p.bold;");
 		}
 
 		productTotalContainer = new JPanel(new MigLayout("wrap, fillx", "[left][right]", "[fill]"));
@@ -325,6 +338,11 @@ public class CheckoutDialog extends JDialog {
 		productTitleLabel.setFont(commonFont);
 		noteLabel.setFont(commonFont);
 		orderTitleLabel.setFont(commonFont);
+		movieTotal.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$primary;");
+		productTotal.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$primary;");
+		subtotal.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$primary;");
+		total.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$danger;");
+		checkoutButton.putClientProperty(FlatClientProperties.STYLE, "arc:5;hoverBackground:$primary;hoverForeground:$white");
 
 		// handle event listener
 		checkoutButton.addActionListener(e -> {
@@ -413,6 +431,19 @@ public class CheckoutDialog extends JDialog {
 
 		add(container);
 
+		this.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int option = JOptionPane.showConfirmDialog(CheckoutDialog.this, "Are you sure you want to discard all the changes", "Warning", JOptionPane.YES_NO_OPTION);
+				if (option == JOptionPane.YES_OPTION) {
+					setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				} else {
+					setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+				}
+			}
+			
+		});
 		this.setSize(1300, 800);
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);

@@ -198,6 +198,7 @@ public class SeatingOptionDialog extends JDialog {
 		total.setFont(bold);
 
 		continueButton = new JButton("Continue");
+		continueButton.putClientProperty(FlatClientProperties.STYLE, "arc:5;hoverBackground:$primary;hoverForeground:$white");
 
 		card.add(movieNameLabel);
 		card.add(movieName, "gapleft push");

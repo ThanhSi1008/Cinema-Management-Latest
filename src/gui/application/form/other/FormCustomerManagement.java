@@ -51,6 +51,7 @@ public class FormCustomerManagement extends JPanel implements ActionListener {
 		container0 = new JPanel();
 		container1 = new JPanel();
 		searchTextField = new JTextField();
+		searchTextField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,  "Search");
 		updateButton = new JButton("Update");
 		deleteButton = new JButton("Delete");
 		filterComboBox = new JComboBox<String>();

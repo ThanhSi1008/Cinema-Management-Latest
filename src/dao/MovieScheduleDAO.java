@@ -28,20 +28,64 @@ public class MovieScheduleDAO {
 		connectDB.connect();
 	}
 
+//	public List<MovieSchedule> getAllMovieSchedule() {
+//		Connection connection = connectDB.getConnection();
+//		List<MovieSchedule> movieScheduleList = new ArrayList<MovieSchedule>();
+//		try {
+//			PreparedStatement s = connection.prepareStatement(
+//					"SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PerSeatPrice from MovieSchedule");
+//			ResultSet rs = s.executeQuery();
+//			while (rs.next()) {
+//				String movieScheduleID = rs.getString(1);
+//				LocalDateTime screeningTime = rs.getTimestamp(2).toLocalDateTime();
+//				LocalDateTime endTime = rs.getTimestamp(3).toLocalDateTime();
+//				Movie movie = movieDAO.getMovieByID(rs.getString(4));
+//				Room room = roomDAO.getRoomByID(rs.getString(5));
+//				Double perSeatPrice = rs.getDouble(6);
+//				movieScheduleList
+//						.add(new MovieSchedule(movieScheduleID, screeningTime, endTime, movie, room, perSeatPrice));
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return movieScheduleList;
+//	}
+	
 	public List<MovieSchedule> getAllMovieSchedule() {
 		Connection connection = connectDB.getConnection();
 		List<MovieSchedule> movieScheduleList = new ArrayList<MovieSchedule>();
 		try {
 			PreparedStatement s = connection.prepareStatement(
-					"SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PerSeatPrice from MovieSchedule");
+					"select * from movieschedule ms join movie m on ms.movieid = m.movieid join room r on ms.roomid = r.roomid");
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				String movieScheduleID = rs.getString(1);
 				LocalDateTime screeningTime = rs.getTimestamp(2).toLocalDateTime();
 				LocalDateTime endTime = rs.getTimestamp(3).toLocalDateTime();
-				Movie movie = movieDAO.getMovieByID(rs.getString(4));
-				Room room = roomDAO.getRoomByID(rs.getString(5));
-				Double perSeatPrice = rs.getDouble(6);
+				Double perSeatPrice = rs.getDouble(4);
+				
+				String movieID = rs.getString(7);
+				String movieName = rs.getString(8);
+				String genre = rs.getString(9);
+				String director = rs.getString(10);
+				int duration = rs.getInt(11);
+				LocalDate releasedDate = rs.getDate(12).toLocalDate();
+				String language = rs.getString(13);
+				String country = rs.getString(14);
+				LocalDate startDate = rs.getDate(15).toLocalDate();
+				String status = rs.getString(16);
+				double importPrice = rs.getDouble(17);
+				String imageSource = rs.getString(18);
+				String trailer = rs.getString(19);
+				String description = rs.getString(20);
+				Movie movie = new Movie(movieID, movieName, description, genre, director, duration, releasedDate, language, country, trailer, startDate, status, importPrice, imageSource);
+				
+				String roomID = rs.getString(21);
+				String roomName = rs.getString(22);
+				int numberOfSeats = rs.getInt(23);
+				
+				Room room = new Room(roomID, roomName, numberOfSeats);		
+				
 				movieScheduleList
 						.add(new MovieSchedule(movieScheduleID, screeningTime, endTime, movie, room, perSeatPrice));
 			}

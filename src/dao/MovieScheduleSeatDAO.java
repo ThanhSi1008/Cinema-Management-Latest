@@ -67,6 +67,7 @@ public class MovieScheduleSeatDAO {
 					.prepareStatement("update moviescheduleseat set sold = 1 where seatID = ? and scheduleid = ?");
 			s.setString(1, seatID);
 			s.setString(2, scheduleID);
+			s.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

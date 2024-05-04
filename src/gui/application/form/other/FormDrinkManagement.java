@@ -60,9 +60,9 @@ public class FormDrinkManagement extends JPanel {
 
 		setLayout(new MigLayout("fill, wrap 2"));
 
-		JPanel topPanel = new JPanel(new MigLayout("fill, wrap 2"));
+		JPanel topPanel = new JPanel(new MigLayout("fill, wrap 2", "[left]push[right]", "[]"));
 
-		add(topPanel, "span 2, al trail");
+		add(topPanel, "span 2, al trail, dock north");
 
 		// Search text field
 		searchTextField = new JTextField(50);

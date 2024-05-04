@@ -1,10 +1,14 @@
 package gui.application.form.other;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
@@ -118,7 +123,7 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 		rightContainer.setLayout(new MigLayout("wrap, fill, insets 15", "[fill]", "[grow 0][fill][grow 0][grow 0]"));
 		checkoutContainer.setLayout(new MigLayout("wrap, fill", "[][]", "[]"));
 		checkOutText = new JLabel("Check out");
-		removeAllButton = new JButton("Remove");
+		removeAllButton = new JButton("Remove all");
 		removeAllButton .setIcon(new FlatSVGIcon("gui/icon/svg/delete.svg", 0.35f));
 		checkoutContainer.add(checkOutText);
 		checkoutContainer.add(removeAllButton, "gapleft push");
@@ -134,6 +139,7 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 
 		continueContainer.setLayout(new MigLayout("wrap, fill", "[center]", ""));
 		continueButton = new JButton("Continue");
+		continueButton.putClientProperty(FlatClientProperties.STYLE, "arc:5;hoverBackground:$primary;hoverForeground:$white");
 		continueContainer.add(continueButton);
 
 		rightContainer.add(checkoutContainer);
@@ -146,6 +152,8 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 		chosenScroll.setBorder(BorderFactory.createEmptyBorder());
 		chosenScroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
+		
+		total.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h3.font;" + "foreground:$danger;");
 
 		// event handlers
 		allButton.addActionListener(this);
@@ -164,6 +172,20 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 				checkoutDialog.setVisible(true);
 			});
 			thread.start();
+		});
+		
+		this.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				int option = JOptionPane.showConfirmDialog(ProductOptionDialog.this, "Are you sure you want to discard all the changes", "Warning", JOptionPane.YES_NO_OPTION);
+				if (option == JOptionPane.YES_OPTION) {
+					setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+				} else {
+					setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+				}
+			}
+			
 		});
 
 		add(container);
@@ -186,6 +208,8 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			ImageIcon resizedIcon = new ImageIcon(resizedImg);
 			JLabel image = new JLabel(resizedIcon);
 			JLabel productName = new JLabel(product.getProductName());
+			productName.putClientProperty(FlatClientProperties.STYLE,
+					"" + "font:$h4.font;");			
 			JPanel quantityContainer = new JPanel(new MigLayout("", "[][]", ""));
 			quantityContainer.setBackground(Color.white);
 			JLabel quantityText = new JLabel("Qty:");
@@ -194,6 +218,7 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			quantityContainer.add(quantity);
 			quantity.setText(product.getQuantity() + "");
 			JLabel price = new JLabel("$" + product.getPrice() + "");
+			price.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$primary;");
 			productCard.add(image, "span 2, al center");
 			productCard.add(productName, "span 2, al center");
 			productCard.add(quantityContainer);
@@ -224,6 +249,15 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 
 	public void showChosenProductOrderDetail() {
 		productChosenContainer.removeAll();
+		if (chosenProductOrderDetailList.size() == 0) {
+			double totalDouble = 0;
+			for (OrderDetail od : chosenProductOrderDetailList) {
+				od.setTotal();
+				totalDouble += od.getProduct().getPrice() * od.getQuantity();
+			}
+			DecimalFormat df = new DecimalFormat("#0.00");
+			total.setText("$" + df.format(totalDouble) + "");
+		}
 		chosenProductOrderDetailList.forEach(chosenProductOrderDeatail -> {
 			JPanel productChosenCard = new JPanel();
 			productChosenCard.setLayout(new MigLayout("wrap, fill", "[grow0][grow 0][fill]", "[][]"));
@@ -253,7 +287,8 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 				od.setTotal();
 				totalDouble += od.getProduct().getPrice() * od.getQuantity();
 			}
-			total.setText("$" + totalDouble + "");
+			DecimalFormat df = new DecimalFormat("#0.00");
+			total.setText("$" + df.format(totalDouble) + "");
 			productChosenQuantitySpinner.addChangeListener(e -> {
 				int newQty = (int) productChosenQuantitySpinner.getValue();
 				chosenProductOrderDeatail.setQuantity(newQty);
