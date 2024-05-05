@@ -22,15 +22,14 @@ public class OrderDAO {
 		Connection connection = connectDB.getConnection();
 		try {
 			PreparedStatement s = connection.prepareStatement(
-					"insert into [order] (orderdate, quantityseat, note, total, customerid, employeeid, scheduleid) output inserted.orderid values (?, ?, ?, ?, ?, ?, ?)");
+					"insert into [order] (orderdate, quantityseat, note, customerid, employeeid, scheduleid) output inserted.orderid values (?, ?, ?, ?, ?, ?)");
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:00");
 			s.setString(1, newOrder.getOrderDate().format(formatter));
 			s.setInt(2, newOrder.getQuantityTicket());
 			s.setString(3, newOrder.getNote());
-			s.setDouble(4, newOrder.getTotal());
-			s.setString(5, newOrder.getCustomer().getCustomerID());
-			s.setString(6, newOrder.getEmployee().getEmployeeID());
-			s.setString(7, newOrder.getSchedule().getScheduleID());
+			s.setString(4, newOrder.getCustomer().getCustomerID());
+			s.setString(5, newOrder.getEmployee().getEmployeeID());
+			s.setString(6, newOrder.getSchedule().getScheduleID());
 			ResultSet rs = s.executeQuery();
 			if (rs.next()) {
 				return rs.getString(1);
