@@ -138,7 +138,7 @@ public class FormStatisticsGeneral extends JPanel {
 		
 		bottomLeftMainContainer.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
 		bottomRightMainContainer.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-
+		
 		// frame
 		add(container);
 	}

@@ -26,31 +26,29 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
-import dao.CustomerRankingDAO;
+import dao.MovieRankingDAO;
 import entity.CustomerRanking;
+import entity.MovieRanking;
 import net.miginfocom.swing.MigLayout;
 
-public class FormStatisticsCustomer extends JPanel implements ActionListener {
+public class FormStatisticsMovie extends JPanel implements ActionListener {
 
 	private JPanel container;
 	private JPanel topContainer;
-	private JPanel bottomContainer;
 	private JPanel topTitleContainer;
 	private JPanel topMainContainer;
-	private JPanel bottomMainContainer;
-	private JPanel bottomTitleContainer;
 	private JLabel rankTitleLabel;
 	private JComboBox<String> filterByCombobox;
 	private JComboBox<String> filterCombobox;
-	private RankCustomerTableModel rankCustomerTableModel;
-	private JTable rankCustomerTable;
-	private CustomerRankingDAO customerRankingDAO;
+	private RankMovieTableModel rankMovieTableModel;
+	private MovieRankingDAO movieRankingDAO;
+	private JTable rankMovieTable;
 
-	public FormStatisticsCustomer() {
-		
+	public FormStatisticsMovie() {
+
 		setLayout(new BorderLayout());
 
-		customerRankingDAO = new CustomerRankingDAO();
+		movieRankingDAO = new MovieRankingDAO();
 
 		container = new JPanel(new MigLayout("wrap, fill", "[fill]", "[fill][grow 0]"));
 
@@ -58,63 +56,56 @@ public class FormStatisticsCustomer extends JPanel implements ActionListener {
 		topTitleContainer = new JPanel(new MigLayout("wrap, fill", "[]push[][]", "[center]"));
 		topMainContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[align top]"));
 
-		bottomContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill]"));
-		bottomTitleContainer = new JPanel(new MigLayout("wrap, fill", "[left]", "[]"));
-		bottomMainContainer = new JPanel(new MigLayout("wrap, fill"));
-
-		rankTitleLabel = new JLabel("Customer's Spending Ranking");
+		rankTitleLabel = new JLabel("Movie Revenue Ranking");
 		filterByCombobox = new JComboBox<String>();
 		filterByCombobox.addItem("By month");
 		filterByCombobox.addItem("By year");
 		filterCombobox = new JComboBox<String>();
-		rankCustomerTableModel = new RankCustomerTableModel();
-		List<CustomerRanking> customerRankingList = customerRankingDAO
-				.getCustomerRankingByMonthAndYear(LocalDate.now().getMonthValue(), LocalDate.now().getYear());
-		rankCustomerTableModel.setCustomerRankingList(customerRankingList);
-		rankCustomerTable = new JTable(rankCustomerTableModel);
+		rankMovieTableModel = new RankMovieTableModel();
+		List<MovieRanking> movieRankingList = movieRankingDAO
+				.getMovieRankingByMonthAndYear(LocalDate.now().getMonthValue(), LocalDate.now().getYear());
+		rankMovieTableModel.setMovieRankingList(movieRankingList);
+		rankMovieTable = new JTable(rankMovieTableModel);
 
-		container.add(topContainer);
-		container.add(bottomContainer);
+		container.add(topContainer, "dock center");
 		topContainer.add(topTitleContainer);
 		topContainer.add(topMainContainer);
-		bottomContainer.add(bottomTitleContainer);
-		bottomContainer.add(bottomMainContainer);
 
 		topTitleContainer.add(rankTitleLabel);
 		topTitleContainer.add(filterByCombobox);
 		topTitleContainer.add(filterCombobox);
 
-		topMainContainer.add(new JScrollPane(rankCustomerTable));
-		
+		topMainContainer.add(new JScrollPane(rankMovieTable));
+
 		// styles
-		JScrollPane scroll = (JScrollPane) rankCustomerTable.getParent().getParent();
+		JScrollPane scroll = (JScrollPane) rankMovieTable.getParent().getParent();
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
-		rankCustomerTable.getTableHeader().putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");
-		rankCustomerTable.putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");
+		rankMovieTable.getTableHeader().putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");
+		rankMovieTable.putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");
 
-		rankCustomerTable.getTableHeader()
-				.setDefaultRenderer(getAlignmentCellRender(rankCustomerTable.getTableHeader().getDefaultRenderer(), true));
-		rankCustomerTable.setDefaultRenderer(Object.class,
-				getAlignmentCellRender(rankCustomerTable.getDefaultRenderer(Object.class), false));
-		
-		if (rankCustomerTable.getColumnModel().getColumnCount() > 0) {
-			rankCustomerTable.getColumnModel().getColumn(1).setPreferredWidth(300);
+		rankMovieTable.getTableHeader()
+				.setDefaultRenderer(getAlignmentCellRender(rankMovieTable.getTableHeader().getDefaultRenderer(), true));
+		rankMovieTable.setDefaultRenderer(Object.class,
+				getAlignmentCellRender(rankMovieTable.getDefaultRenderer(Object.class), false));
+
+		if (rankMovieTable.getColumnModel().getColumnCount() > 0) {
+			rankMovieTable.getColumnModel().getColumn(1).setPreferredWidth(300);
 		}
 		rankTitleLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h3.font");
-		
+
 		// action listeners
 		filterByCombobox.addActionListener(this);
-		filterByCombobox.setSelectedItem("By month");		
+		filterByCombobox.setSelectedItem("By month");
+
 		// frame
 		add(container);
-		// delete me
 //		pack();
 //		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 //		setExtendedState(JFrame.MAXIMIZED_BOTH);
 	}
-	
+
 	private TableCellRenderer getAlignmentCellRender(TableCellRenderer oldRender, boolean header) {
 		return new DefaultTableCellRenderer() {
 			@Override
@@ -124,7 +115,7 @@ public class FormStatisticsCustomer extends JPanel implements ActionListener {
 						column);
 				if (com instanceof JLabel) {
 					JLabel label = (JLabel) com;
-					if (column == 3) {
+					if (column == 2 || column == 3) {
 						label.setHorizontalAlignment(SwingConstants.CENTER);
 					} else {
 						label.setHorizontalAlignment(SwingConstants.LEADING);
@@ -140,8 +131,8 @@ public class FormStatisticsCustomer extends JPanel implements ActionListener {
 				return com;
 			}
 		};
-	}
-
+	};
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(filterByCombobox)) {
@@ -169,9 +160,9 @@ public class FormStatisticsCustomer extends JPanel implements ActionListener {
 				    filterCombobox.removeActionListener(al);
 				}
 				filterCombobox.addActionListener(e1 -> {
-					List<CustomerRanking> customerRankingList = customerRankingDAO.getCustomerRankingByMonthAndYear(filterCombobox.getSelectedIndex()+1, LocalDate.now().getYear());
-					rankCustomerTableModel.setCustomerRankingList(customerRankingList);
-					rankCustomerTableModel.fireTableDataChanged();
+					List<MovieRanking> movieRankingList = movieRankingDAO.getMovieRankingByMonthAndYear(filterCombobox.getSelectedIndex()+1, LocalDate.now().getYear());
+					rankMovieTableModel.setMovieRankingList(movieRankingList);
+					rankMovieTableModel.fireTableDataChanged();
 				});
 				filterCombobox.setSelectedIndex(LocalDate.now().getMonthValue()-1);
 			} else {
@@ -183,9 +174,9 @@ public class FormStatisticsCustomer extends JPanel implements ActionListener {
 				filterCombobox.addActionListener(e2 -> {
 					String selectedYearString = (String) filterCombobox.getSelectedItem();
 					if (selectedYearString != null) {
-						List<CustomerRanking> customerRankingList = customerRankingDAO.getCustomerRankingByMonthAndYear(0, Integer.parseInt((String) selectedYearString));
-						rankCustomerTableModel.setCustomerRankingList(customerRankingList);
-						rankCustomerTableModel.fireTableDataChanged();
+						List<MovieRanking> movieRankingList = movieRankingDAO.getMovieRankingByMonthAndYear(0, Integer.parseInt((String) selectedYearString));
+						rankMovieTableModel.setMovieRankingList(movieRankingList);
+						rankMovieTableModel.fireTableDataChanged();
 					}
 				});
 				filterCombobox.setSelectedIndex(1);
@@ -199,7 +190,7 @@ public class FormStatisticsCustomer extends JPanel implements ActionListener {
 //		UIManager.put("defaultFont", new Font(FlatRobotoFont.FAMILY, Font.PLAIN, 16));
 //		FlatMacLightLaf.setup();
 //		SwingUtilities.invokeLater(() -> {
-//			new FormStatisticsCustomer().setVisible(true);
+//			new FormStatisticsMovie().setVisible(true);
 //		});
 //	}
 
