@@ -87,20 +87,20 @@ public class SeatingOptionDialog extends JDialog {
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
 
 		// get all the buttons and show them onto the page
-		seatsContainer.setLayout(new MigLayout("fillx, wrap, insets 0", "[][][][][][][][][][][][][][][][]", ""));
+		seatsContainer.setLayout(new MigLayout("fill, wrap, insets 0", "[][][][][][][][][][][][][][][][]", "[align top]"));
 		List<MovieScheduleSeat> movieScheduleSeatList = movieScheduleSeatDAO
 				.getAllMovieScheduleSeatByMovieScheduleID(movieSchedule.getScheduleID());
 		seatChosenList = new ArrayList<>();
 		movieScheduleSeatList.forEach(movieScheduleSeat -> {
 			JButton button = new JButton(movieScheduleSeat.getSeat().getSeatLocation());
 			if (movieScheduleSeat.isSold()) {
-				button.setBackground(new Color(240, 0, 0));
-				button.setForeground(new Color(255, 255, 255));
-				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 12));
-				seatsContainer.add(button, "width 35!, height 35!"); // Adjust the width and height as needed
+				button.setOpaque(true);
+				button.putClientProperty(FlatClientProperties.STYLE, "background:$App.accent.red;foreground:$App.accent.white");
+				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 9));
+				seatsContainer.add(button, "width 30!, height 30!, grow"); // Adjust the width and height as needed
 			} else {
-				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 12));
-				seatsContainer.add(button, "width 35!, height 35!"); // Adjust the width and height as needed
+				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 9));
+				seatsContainer.add(button, "width 30!, height 30!, grow"); // Adjust the width and height as needed
 				// button.putClientProperty("forMovieScheduleSeat", movieScheduleSeat);
 				// action listener
 				button.addActionListener(e -> {
@@ -124,8 +124,8 @@ public class SeatingOptionDialog extends JDialog {
 						total.setText("$" + df.format(totalDouble) + "");
 					} else {
 						seatChosenList.add(movieScheduleSeat);
-						button.setBackground(new Color(240, 0, 0));
-						button.setForeground(new Color(255, 255, 255));
+						button.setOpaque(true);
+						button.putClientProperty(FlatClientProperties.STYLE, "background:$App.accent.red;foreground:$App.accent.white");
 						seats = "";
 						seatChosenList.forEach(seatChosen -> {
 							seats += seatChosen + ",";
@@ -156,7 +156,7 @@ public class SeatingOptionDialog extends JDialog {
 		JPanel takenPanel = new JPanel(new MigLayout("align center, gap 10, insets 0 10 0 10", "[center]", ""));
 		JLabel takenLabel = new JLabel("Taken");
 		JButton redButton = new JButton();
-		redButton.setBackground(new Color(240, 0, 0));
+		redButton.putClientProperty(FlatClientProperties.STYLE, "background:$App.accent.red");
 		takenPanel.add(takenLabel);
 		takenPanel.add(redButton, "width 35!, height 35!");
 		noteContainer.add(availablePanel);
@@ -241,6 +241,12 @@ public class SeatingOptionDialog extends JDialog {
 			}
 
 		});
+		
+		// style
+		card.setOpaque(true);
+		card.putClientProperty(FlatClientProperties.STYLE, "background:$white;foreground:$black;border:20,10,20,10");
+		perSeatPrice.putClientProperty(FlatClientProperties.STYLE, "foreground:$primary;font:$h5.font");
+		total.putClientProperty(FlatClientProperties.STYLE, "foreground:$danger;font:$h3.font");
 
 		add(container);
 		this.setSize(1300, 800);

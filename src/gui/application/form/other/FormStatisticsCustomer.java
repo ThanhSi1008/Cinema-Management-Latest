@@ -61,7 +61,7 @@ public class FormStatisticsCustomer extends JPanel implements ActionListener {
 		bottomContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill]"));
 		bottomTitleContainer = new JPanel(new MigLayout("wrap, fill", "[left]", "[]"));
 		bottomMainContainer = new JPanel(new MigLayout("wrap, fill"));
-
+		
 		rankTitleLabel = new JLabel("Customer's Spending Ranking");
 		filterByCombobox = new JComboBox<String>();
 		filterByCombobox.addItem("By month");

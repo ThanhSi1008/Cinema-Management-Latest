@@ -430,6 +430,9 @@ public class CheckoutDialog extends JDialog {
 		});
 
 		add(container);
+		customerInfoContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
+		checkoutContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
+		movieTitleContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
 
 		this.addWindowListener(new WindowAdapter() {
 

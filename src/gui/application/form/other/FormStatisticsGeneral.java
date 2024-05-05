@@ -2,6 +2,10 @@ package gui.application.form.other;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -12,9 +16,10 @@ import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
+import entity.CustomerRanking;
 import net.miginfocom.swing.MigLayout;
 
-public class FormStatisticsGeneral extends JPanel {
+public class FormStatisticsGeneral extends JPanel implements ActionListener {
 
 	private JPanel container;
 	private JPanel topContainer;
@@ -48,6 +53,8 @@ public class FormStatisticsGeneral extends JPanel {
 		comboboxContainer = new JPanel(new MigLayout("wrap", "[fill][fill]", "[fill]"));
 		dataContainer = new JPanel(new MigLayout("wrap", "[fill][fill]", "[][fill]"));
 		bottomLeftContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill]"));
+		bottomRightContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill]"));
+		
 		bottomRightContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill]"));
 		
 		incomeTitleContainer = new JPanel(new MigLayout("wrap, fill", "[center]", "[]"));
@@ -142,6 +149,57 @@ public class FormStatisticsGeneral extends JPanel {
 		// frame
 		add(container);
 	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource().equals(filterByCombobox)) {
+			// if "by month" is selected, change the items of filter to january to december
+			// if "by year" is selected, change the items of filter to 2023 and 2024
+			for (ActionListener al : filterCombobox.getActionListeners()) {
+			    filterCombobox.removeActionListener(al);
+			}
+			String selectedItem = (String) filterByCombobox.getSelectedItem();
+			filterCombobox.removeAllItems();
+			if (selectedItem.equals("By month")) {
+				filterCombobox.addItem("January");
+				filterCombobox.addItem("Feburary");
+				filterCombobox.addItem("March");
+				filterCombobox.addItem("April");
+				filterCombobox.addItem("May");
+				filterCombobox.addItem("June");
+				filterCombobox.addItem("July");
+				filterCombobox.addItem("August");
+				filterCombobox.addItem("September");
+				filterCombobox.addItem("October");
+				filterCombobox.addItem("November");
+				filterCombobox.addItem("December");
+				for (ActionListener al : filterCombobox.getActionListeners()) {
+				    filterCombobox.removeActionListener(al);
+				}
+				filterCombobox.addActionListener(e1 -> {
+					List<CustomerRanking> customerRankingList = customerRankingDAO.getCustomerRankingByMonthAndYear(filterCombobox.getSelectedIndex()+1, LocalDate.now().getYear());
+					rankCustomerTableModel.setCustomerRankingList(customerRankingList);
+					rankCustomerTableModel.fireTableDataChanged();
+				});
+				filterCombobox.setSelectedIndex(LocalDate.now().getMonthValue()-1);
+			} else {
+				filterCombobox.addItem(LocalDate.now().getYear()-1 + "");
+				filterCombobox.addItem(LocalDate.now().getYear() + "");
+				for (ActionListener al : filterCombobox.getActionListeners()) {
+				    filterCombobox.removeActionListener(al);
+				}
+				filterCombobox.addActionListener(e2 -> {
+					String selectedYearString = (String) filterCombobox.getSelectedItem();
+					if (selectedYearString != null) {
+						List<CustomerRanking> customerRankingList = customerRankingDAO.getCustomerRankingByMonthAndYear(0, Integer.parseInt((String) selectedYearString));
+						rankCustomerTableModel.setCustomerRankingList(customerRankingList);
+						rankCustomerTableModel.fireTableDataChanged();
+					}
+				});
+				filterCombobox.setSelectedIndex(1);
+			}
+		}
+	};
 
 //	public static void main(String args[]) {
 //		FlatRobotoFont.install();

@@ -2,12 +2,14 @@ package gui.application.form.other;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -16,6 +18,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -23,13 +26,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
+import com.formdev.flatlaf.fonts.roboto.FlatRobotoFont;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
 import com.raven.datechooser.DateChooser;
 import com.raven.datechooser.EventDateChooser;
 import com.raven.datechooser.SelectedAction;
@@ -41,6 +50,7 @@ import dao.RoomDAO;
 import entity.Employee;
 import entity.MovieSchedule;
 import entity.Room;
+import gui.application.Application;
 import net.miginfocom.swing.MigLayout;
 
 public class FormScreeningManagement extends JPanel implements ActionListener {
@@ -296,4 +306,5 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 		screeningTableModel.setMovieScheduleList(movieScheduleList);
 		screeningTableModel.fireTableDataChanged();
 	}
+	
 }
