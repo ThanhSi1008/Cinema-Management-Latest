@@ -20,9 +20,10 @@ public class CustomerRankingDAO {
 	}
 
 	public List<CustomerRanking> getCustomerRankingByMonthAndYear(int month, int year) {
-		Connection connection = connectDB.getConnection();
+		Connection connection = null;
 		List<CustomerRanking> customerRankingList = null;
 		try {
+			connection = connectDB.getConnection();
 			PreparedStatement s = connection
 					.prepareStatement("SELECT * FROM fn_CustomerSpendingStats(?, ?) order by totalspending desc");
 			s.setInt(1, year);

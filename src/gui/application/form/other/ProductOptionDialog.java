@@ -211,11 +211,11 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			productName.putClientProperty(FlatClientProperties.STYLE,
 					"" + "font:$h4.font;");			
 			JPanel quantityContainer = new JPanel(new MigLayout("", "[][]", ""));
+			quantityContainer.setBackground(Color.white);
 			JLabel quantityText = new JLabel("Qty:");
 			JLabel quantity = new JLabel();
 			quantityContainer.add(quantityText);
 			quantityContainer.add(quantity);
-			quantityContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
 			quantity.setText(product.getQuantity() + "");
 			JLabel price = new JLabel("$" + product.getPrice() + "");
 			price.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$primary;");
@@ -223,7 +223,9 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			productCard.add(productName, "span 2, al center");
 			productCard.add(quantityContainer);
 			productCard.add(price, "gapleft push");
-			productCard.putClientProperty(FlatClientProperties.STYLE, "default.background:$white;default.background:$black");
+			productCard.setBackground(new Color(255, 255, 255));
+			productCard.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
+
 			productCard.addActionListener(e -> {
 				exist = false;
 				chosenProductOrderDetailList.forEach(chosenProductOrderDeatail -> {

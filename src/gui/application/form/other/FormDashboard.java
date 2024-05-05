@@ -14,6 +14,10 @@ import javax.swing.JPanel;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
+import dao.TotalIncomeDAO;
+import dao.TotalSpendingDAO;
+import entity.TotalIncome;
+import entity.TotalSpending;
 import gui.other.DateCalculator;
 import net.miginfocom.swing.MigLayout;
 import raven.chart.ChartLegendRenderer;
@@ -31,20 +35,25 @@ public class FormDashboard extends SimpleForm {
 	private PieChart pieChart1;
 	private PieChart pieChart2;
 	private PieChart pieChart3;
+	private TotalSpendingDAO totalSpendingDAO;
+	private TotalIncomeDAO totalIncomeDAO;
 
 	public FormDashboard() {
+		totalSpendingDAO = new TotalSpendingDAO();
+		totalIncomeDAO = new TotalIncomeDAO();
+		System.out.println(totalIncomeDAO.getTotalIncome(2024, 5));
 		init();
 		formRefresh();
 	}
 
 	@Override
 	public void formRefresh() {
-		lineChart.startAnimation();
-		pieChart1.startAnimation();
-		pieChart2.startAnimation();
-		pieChart3.startAnimation();
-		barChart1.startAnimation();
-		barChart2.startAnimation();
+//		lineChart.startAnimation();
+//		pieChart1.startAnimation();
+//		pieChart2.startAnimation();
+//		pieChart3.startAnimation();
+//		barChart1.startAnimation();
+//		barChart2.startAnimation();
 	}
 
 	@Override
@@ -59,45 +68,45 @@ public class FormDashboard extends SimpleForm {
 
 	private void init() {
 		setLayout(new MigLayout("wrap,fill,gap 10", "fill"));
-		createPieChart();
+//		createPieChart();
 		createLineChart();
-		createBarChart();
+//		createBarChart(); 
 	}
 
 	private void createPieChart() {
 		pieChart1 = new PieChart();
-		JLabel header1 = new JLabel("Product Income");
+		JLabel header1 = new JLabel("Total Spending");
 		header1.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1");
 		pieChart1.setHeader(header1);
-		pieChart1.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"),
-				Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"),
-				Color.decode("#c084fc"));
+		pieChart1.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#22d3ee"), Color.decode("#c084fc"),
+				Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#818cf8"), Color.decode("#34d399"),
+				Color.decode("#a3e635"));
 		pieChart1.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
-		pieChart1.setDataset(createPieData());
+		pieChart1.setDataset(createPieDataForTotalSpending());
 		add(pieChart1, "split 3,height 290");
 
 		pieChart2 = new PieChart();
-		JLabel header2 = new JLabel("Product Cost");
+		JLabel header2 = new JLabel("Total Income");
 		header2.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1");
 		pieChart2.setHeader(header2);
 		pieChart2.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"),
 				Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"),
 				Color.decode("#c084fc"));
 		pieChart2.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
-		pieChart2.setDataset(createPieData());
+		pieChart2.setDataset(createPieDataForTotalIncome());
 		add(pieChart2, "height 290");
-
-		pieChart3 = new PieChart();
-		JLabel header3 = new JLabel("Product Profit");
-		header3.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1");
-		pieChart3.setHeader(header3);
-		pieChart3.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"),
-				Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"),
-				Color.decode("#c084fc"));
-		pieChart3.setChartType(PieChart.ChartType.DONUT_CHART);
-		pieChart3.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
-		pieChart3.setDataset(createPieData());
-		add(pieChart3, "height 290");
+//
+//		pieChart3 = new PieChart();
+//		JLabel header3 = new JLabel("Product Profit");
+//		header3.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1");
+//		pieChart3.setHeader(header3);
+//		pieChart3.getChartColor().addColor(Color.decode("#f87171"), Color.decode("#fb923c"), Color.decode("#fbbf24"),
+//				Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"),
+//				Color.decode("#c084fc"));
+//		pieChart3.setChartType(PieChart.ChartType.DONUT_CHART);
+//		pieChart3.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
+//		pieChart3.setDataset(createPieData());
+//		add(pieChart3, "height 290");
 	}
 
 	private void createLineChart() {
@@ -136,6 +145,7 @@ public class FormDashboard extends SimpleForm {
 
 	private DefaultPieDataset<String> createData() {
 		DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+
 		Random random = new Random();
 		dataset.addValue("July (ongoing)", random.nextInt(100));
 		dataset.addValue("June", random.nextInt(100));
@@ -146,14 +156,20 @@ public class FormDashboard extends SimpleForm {
 		return dataset;
 	}
 
-	private DefaultPieDataset<String> createPieData() {
+	private DefaultPieDataset<String> createPieDataForTotalSpending() {
 		DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-		Random random = new Random();
-		dataset.addValue("Bags", random.nextInt(100) + 50);
-		dataset.addValue("Hats", random.nextInt(100) + 50);
-		dataset.addValue("Glasses", random.nextInt(100) + 50);
-		dataset.addValue("Watches", random.nextInt(100) + 50);
-		dataset.addValue("Jewelry", random.nextInt(100) + 50);
+		TotalSpending totalSpending = totalSpendingDAO.getTotalIncome(2024, 5);
+		dataset.addValue("Total Add Product", totalSpending.getTotalAddProdcut());
+		dataset.addValue("Total Import Product", totalSpending.getTotalImportProduct());
+		dataset.addValue("Total Add Movie", totalSpending.getTotalAddMovie());
+		return dataset;
+	}
+
+	private DefaultPieDataset<String> createPieDataForTotalIncome() {
+		DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+		TotalIncome totalIncome = totalIncomeDAO.getTotalIncome(2024, 5);
+		dataset.addValue("Total Product", totalIncome.getTotalProduct());
+		dataset.addValue("Total Seat", totalIncome.getTotalSeat());
 		return dataset;
 	}
 

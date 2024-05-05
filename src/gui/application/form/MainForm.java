@@ -112,7 +112,8 @@ public class MainForm extends JLayeredPane {
 				case 5:
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new FormStatisticsGeneral());
+						Application.showMainForm(new FormDashboard());
+//						Application.showMainForm(new FormStatisticsGeneral());
 						break;
 					case 2:
 						Application.showMainForm(new FormStatisticsCustomer());
