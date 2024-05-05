@@ -54,20 +54,17 @@ public class FormFoodManagement extends JPanel {
 
 	private void init() {
 
-		foodList.forEach(food -> {
-			System.out.println(food);
-		});
+		setLayout(new MigLayout("fill, wrap", "[fill]", "[grow 0][fill]"));
 
-		setLayout(new MigLayout("fill, wrap 2"));
+		JPanel topPanel = new JPanel(new MigLayout("fill, wrap", "[]push[]", "[]"));
 
-		JPanel topPanel = new JPanel(new MigLayout("fill, wrap 2"));
-
-		add(topPanel, "span 2, al trail");
+		add(topPanel);
 
 		// Search text field
-		searchTextField = new JTextField(50);
+		searchTextField = new JTextField(15);
 		searchTextField.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
 				new FlatSVGIcon("gui/icon/svg/search.svg", 0.35f));
+		searchTextField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,  "Search");
 		topPanel.add(searchTextField);
 
 		// Add button
@@ -82,6 +79,10 @@ public class FormFoodManagement extends JPanel {
 
 		container = initPanel(foodList);
 		scroll = new JScrollPane(container);
+		JScrollPane scroll = (JScrollPane) container.getParent().getParent();
+		scroll.setBorder(BorderFactory.createEmptyBorder());
+		scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
+				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
 		add(scroll, "span 2, grow, al left");
 
 		searchTextField.getDocument().addDocumentListener(new DocumentListener() {
@@ -171,7 +172,8 @@ public class FormFoodManagement extends JPanel {
 			addQuantityButton[index].setIcon(new FlatSVGIcon("gui/icon/svg/add.svg", 0.35f));
 			productPanelList[index] = new JPanel(new MigLayout("wrap 6, fill"));
 			productPanelList[index].setPreferredSize(new Dimension(250, 500));
-			productPanelList[index].setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			productPanelList[index].putClientProperty(FlatClientProperties.STYLE, "background:$white");
+			// productPanelList[index].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
 			JLabel productPosterLabel = new JLabel("", SwingConstants.CENTER);
 			JLabel productNameLabel = new JLabel();
@@ -194,7 +196,8 @@ public class FormFoodManagement extends JPanel {
 			productQuantityLabel.setHorizontalAlignment(SwingConstants.LEFT);
 			productPriceLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 			productNameLabel.setText(product.getProductName());
-			productNameLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			productNameLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h3.font; border:0,0,16,0");
+			// productNameLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 			productNameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 			productPosterLabel.setPreferredSize(new Dimension(250, 350));
 			productPanelList[index].add(productPosterLabel, "grow, span 6");
