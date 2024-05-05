@@ -51,7 +51,7 @@ public class ProductDAO {
 		}
 		return productList;
 	}
-	
+
 	public List<Product> getAllProduct() {
 		Connection connection = connectDB.getConnection();
 		List<Product> productList = null;
@@ -67,12 +67,13 @@ public class ProductDAO {
 				double purchasePrice = rs.getDouble(5);
 				String imageSource = rs.getString(6);
 				String productType = rs.getString(7);
-				productList.add(new Product(productID, productName, price, quantity, purchasePrice, imageSource, productType));		
+				productList.add(
+						new Product(productID, productName, price, quantity, purchasePrice, imageSource, productType));
 			}
 			return productList;
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}	
+		}
 		return productList;
 	}
 
