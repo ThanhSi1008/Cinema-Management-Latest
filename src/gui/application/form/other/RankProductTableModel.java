@@ -5,15 +5,15 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import entity.CustomerRanking;
+import entity.ProductRanking;
 
-public class RankCustomerTableModel extends AbstractTableModel {
+public class RankProductTableModel extends AbstractTableModel {
 	
 	private static final long serialVersionUID = 1L;
-	private List<CustomerRanking> customerRankingList;
-	private String[] columnNames = { "Index", "Customer Name", "Phone Number", "Total Spending"};
+	private List<ProductRanking> productRankingList;
+	private String[] columnNames = { "Index", "Product Name", "Sales quantity", "Revenue" };
 
-	public RankCustomerTableModel() {
+	public RankProductTableModel() {
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class RankCustomerTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return customerRankingList.size();
+		return productRankingList.size();
 	}
 
 	@Override
@@ -54,23 +54,23 @@ public class RankCustomerTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		CustomerRanking customerRanking = customerRankingList.get(rowIndex);
+		ProductRanking productRanking = productRankingList.get(rowIndex);
 		switch (columnIndex) {
 			case 0:
 				return rowIndex + 1;
 			case 1:
-				return customerRanking.getCustomerName();
+				return productRanking.getProductName();
 			case 2:
-				return customerRanking.getPhoneNumber();
+				return productRanking.getSalesQty();
 			case 3:
 				DecimalFormat df = new DecimalFormat("#0.00");
-				return "$" + df.format(customerRanking.getTotal());
+				return "$" + df.format(productRanking.getTotalRevenue());
 		}
 		return null;
 	}
 	
-	public void setCustomerRankingList(List<CustomerRanking> customerRankingList) {
-		this.customerRankingList = customerRankingList;
+	public void setProductRankingList(List<ProductRanking> productRankingList) {
+		this.productRankingList = productRankingList;
 	}
 
 }

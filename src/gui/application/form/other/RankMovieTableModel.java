@@ -5,15 +5,15 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
-import entity.CustomerRanking;
+import entity.MovieRanking;
 
-public class RankCustomerTableModel extends AbstractTableModel {
+public class RankMovieTableModel extends AbstractTableModel {
 	
 	private static final long serialVersionUID = 1L;
-	private List<CustomerRanking> customerRankingList;
-	private String[] columnNames = { "Index", "Customer Name", "Phone Number", "Total Spending"};
+	private List<MovieRanking> movieRankingList;
+	private String[] columnNames = { "Index", "Movie Name", "Views", "Revenue" };
 
-	public RankCustomerTableModel() {
+	public RankMovieTableModel() {
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class RankCustomerTableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return customerRankingList.size();
+		return movieRankingList.size();
 	}
 
 	@Override
@@ -54,23 +54,23 @@ public class RankCustomerTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		CustomerRanking customerRanking = customerRankingList.get(rowIndex);
+		MovieRanking movieRanking = movieRankingList.get(rowIndex);
 		switch (columnIndex) {
 			case 0:
 				return rowIndex + 1;
 			case 1:
-				return customerRanking.getCustomerName();
+				return movieRanking.getMovieName();
 			case 2:
-				return customerRanking.getPhoneNumber();
+				return movieRanking.getViews();
 			case 3:
 				DecimalFormat df = new DecimalFormat("#0.00");
-				return "$" + df.format(customerRanking.getTotal());
+				return "$" + df.format(movieRanking.getRevenue());
 		}
 		return null;
 	}
 	
-	public void setCustomerRankingList(List<CustomerRanking> customerRankingList) {
-		this.customerRankingList = customerRankingList;
+	public void setMovieRankingList(List<MovieRanking> movieRankingList) {
+		this.movieRankingList = movieRankingList;
 	}
 
 }

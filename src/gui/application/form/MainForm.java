@@ -32,6 +32,8 @@ import gui.application.form.other.FormScreeningManagement;
 import gui.application.form.other.FormStaffManagement;
 import gui.application.form.other.FormStatisticsCustomer;
 import gui.application.form.other.FormStatisticsGeneral;
+import gui.application.form.other.FormStatisticsMovie;
+import gui.application.form.other.FormStatisticsProduct;
 import gui.menu.Menu;
 import gui.menu.MenuAction;
 
@@ -116,10 +118,10 @@ public class MainForm extends JLayeredPane {
 						Application.showMainForm(new FormStatisticsCustomer());
 						break;
 					case 3:
-						Application.showMainForm(new DefaultForm("Statistics - movie"));
+						Application.showMainForm(new FormStatisticsMovie());
 						break;
 					case 4:
-						Application.showMainForm(new DefaultForm("Statistics - product"));
+						Application.showMainForm(new FormStatisticsProduct());
 						break;
 					default:
 						action.cancel();
@@ -179,10 +181,10 @@ public class MainForm extends JLayeredPane {
 						Application.showMainForm(new FormStatisticsCustomer());
 						break;
 					case 3:
-						Application.showMainForm(new DefaultForm("Statistics - movie"));
+						Application.showMainForm(new FormStatisticsMovie());
 						break;
 					case 4:
-						Application.showMainForm(new DefaultForm("Statistics - product"));
+						Application.showMainForm(new FormStatisticsProduct());
 						break;
 					default:
 						action.cancel();

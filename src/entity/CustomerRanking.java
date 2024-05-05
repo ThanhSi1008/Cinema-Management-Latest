@@ -1,4 +1,4 @@
-package gui.application.form.other;
+package entity;
 
 public class CustomerRanking {
 

@@ -1,13 +1,15 @@
-package gui.application.form.other;
+package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 import connectDB.ConnectDB;
+import entity.CustomerRanking;
 
 public class CustomerRankingDAO {
 	private ConnectDB connectDB;
@@ -21,9 +23,14 @@ public class CustomerRankingDAO {
 		Connection connection = connectDB.getConnection();
 		List<CustomerRanking> customerRankingList = null;
 		try {
-			PreparedStatement s = connection.prepareStatement("SELECT * FROM fn_CustomerSpendingStats(?, ?)");
+			PreparedStatement s = connection
+					.prepareStatement("SELECT * FROM fn_CustomerSpendingStats(?, ?) order by totalspending desc");
 			s.setInt(1, year);
-			s.setInt(2, month);
+			if (month == 0) {
+				s.setNull(2, Types.INTEGER);
+			} else {
+				s.setInt(2, month);
+			}
 			customerRankingList = new ArrayList<CustomerRanking>();
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -31,7 +38,7 @@ public class CustomerRankingDAO {
 				String customerName = rs.getString(2);
 				String phoneNumber = rs.getString(3);
 				double totalSpending = rs.getDouble(4);
-				customerRankingList.add(new CustomerRanking(customerID, customerName, phoneNumber, totalSpending)); 
+				customerRankingList.add(new CustomerRanking(customerID, customerName, phoneNumber, totalSpending));
 			}
 			return customerRankingList;
 		} catch (SQLException e) {
@@ -39,6 +46,5 @@ public class CustomerRankingDAO {
 		}
 		return customerRankingList;
 	}
-	
-	
+
 }
