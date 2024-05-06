@@ -141,7 +141,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 	private void createBarChart(JPanel l) {
 		// BarChart 1
 		barChart = new HorizontalBarChart();
-		JLabel header1 = new JLabel("Monthly Income");
+		JLabel header1 = new JLabel("Compare Total Income and Total Spending");
 		header1.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1;" + "border:0,0,5,0");
 		barChart.setHeader(header1);
 		barChart.setBarColor(Color.decode("#f97316"));

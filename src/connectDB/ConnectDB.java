@@ -10,6 +10,11 @@ public class ConnectDB {
 	private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=CinemaManagement;encrypt=false;";
 	private static final String USER = "sa";
 	private static final String PASSWORD = "22639301";
+	
+//	private static final String URL = "jdbc:sqlserver://cinema-management.database.windows.net;databaseName=CinemaManagement;";
+//	private static final String USER = "group15";
+//	private static final String PASSWORD = "12345678@Aa";
+
 
 	private static ConnectDB instance;
 	private Connection connection;
