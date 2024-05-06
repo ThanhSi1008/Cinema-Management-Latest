@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Random;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -15,11 +13,8 @@ import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
-import dao.IncomeDAO;
 import dao.TotalIncomeDAO;
 import dao.TotalSpendingDAO;
-import entity.CustomerRanking;
-import entity.Income;
 import entity.TotalIncome;
 import entity.TotalSpending;
 import net.miginfocom.swing.MigLayout;
@@ -49,13 +44,12 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 	private JLabel spendingTitleLabel;
 	private PieChart pieChart1;
 	private PieChart pieChart2;
-	private HorizontalBarChart barChart1;
-	private HorizontalBarChart barChart2;
 	private TotalSpendingDAO totalSpendingDAO;
 	private TotalIncomeDAO totalIncomeDAO;
 	private JPanel southContainer;
 	private JPanel southLeftContainer;
 	private JPanel southRightContainer;
+	private HorizontalBarChart barChart;
 
 	public FormStatisticsGeneral() {
 		totalSpendingDAO = new TotalSpendingDAO();
@@ -65,7 +59,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 		container = new JPanel(new MigLayout("wrap, fill", "[fill]", "[min!][fill][fill]"));
 		topContainer = new JPanel(new MigLayout("wrap, fill", "[fill][right]", "[fill]"));
 		bottomContainer = new JPanel(new MigLayout("wrap, fill", "[fill][fill]", "[fill]"));
-		southContainer = new JPanel(new MigLayout("wrap, fill", "[center][center]", "[fill]"));
+		southContainer = new JPanel(new MigLayout("wrap, fill", "[fill][fill]", "[fill]"));
 		southLeftContainer = new JPanel(new MigLayout("wrap, fill"));
 		southRightContainer = new JPanel(new MigLayout("wrap, fill"));
 
@@ -133,7 +127,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 
 		createPieChart(bottomLeftMainContainer, bottomRightMainContainer);
 		createBarChart(southLeftContainer, southRightContainer);
-		
+
 		// action listener
 		// action listeners
 		filterByCombobox.addActionListener(this);
@@ -146,28 +140,15 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 
 	private void createBarChart(JPanel l, JPanel r) {
 		// BarChart 1
-		barChart1 = new HorizontalBarChart();
+		barChart = new HorizontalBarChart();
 		JLabel header1 = new JLabel("Monthly Income");
 		header1.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1;" + "border:0,0,5,0");
-		barChart1.setHeader(header1);
-		barChart1.setBarColor(Color.decode("#f97316"));
-		barChart1.setDataset(createData());
+		barChart.setHeader(header1);
+		barChart.setBarColor(Color.decode("#f97316"));
 		JPanel panel1 = new JPanel(new BorderLayout());
 		panel1.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
-		panel1.add(barChart1);
+		panel1.add(barChart);
 		l.add(panel1, "split 2,gap 0 20");
-
-		// BarChart 2
-		barChart2 = new HorizontalBarChart();
-		JLabel header2 = new JLabel("Monthly Expense");
-		header2.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1;" + "border:0,0,5,0");
-		barChart2.setHeader(header2);
-		barChart2.setBarColor(Color.decode("#10b981"));
-		barChart2.setDataset(createData());
-		JPanel panel2 = new JPanel(new BorderLayout());
-		panel2.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
-		panel2.add(barChart2);
-		r.add(panel2);
 	}
 
 	private void createPieChart(JPanel l, JPanel r) {
@@ -192,16 +173,12 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 		r.add(pieChart2, "height 290");
 	}
 
-	private DefaultPieDataset<String> createData() {
+	private DefaultPieDataset<String> createData(TotalIncome income, TotalSpending spending) {
 		DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
 
-		Random random = new Random();
-		dataset.addValue("July (ongoing)", random.nextInt(100));
-		dataset.addValue("June", random.nextInt(100));
-		dataset.addValue("May", random.nextInt(100));
-		dataset.addValue("April", random.nextInt(100));
-		dataset.addValue("March", random.nextInt(100));
-		// dataset.addValue("February", random.nextInt(100));
+		dataset.addValue("TotalIcome", income.getTotalProduct().add(income.getTotalSeat()));
+		dataset.addValue("TotalSpending",
+				spending.getTotalAddMovie().add(spending.getTotalAddProdcut()).add(spending.getTotalImportProduct()));
 		return dataset;
 	}
 
@@ -222,17 +199,16 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 
 	@Override
 	public void formRefresh() {
-		// lineChart.startAnimation();
 		pieChart1.startAnimation();
 		pieChart2.startAnimation();
-		// pieChart3.startAnimation();
-		barChart1.startAnimation();
-		barChart2.startAnimation();
+//		barChart1.startAnimation();
+//		barChart2.startAnimation();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(filterByCombobox)) {
+			formRefresh();
 			// if "by month" is selected, change the items of filter to january to december
 			// if "by year" is selected, change the items of filter to 2023 and 2024
 			for (ActionListener al : filterCombobox.getActionListeners()) {
@@ -241,6 +217,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 			String selectedItem = (String) filterByCombobox.getSelectedItem();
 			filterCombobox.removeAllItems();
 			if (selectedItem.equals("By month")) {
+				formRefresh();
 				filterCombobox.addItem("January");
 				filterCombobox.addItem("Feburary");
 				filterCombobox.addItem("March");
@@ -257,19 +234,29 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 					filterCombobox.removeActionListener(al);
 				}
 				filterCombobox.addActionListener(e1 -> {
-					TotalIncome returnedTotalIncome = totalIncomeDAO.getTotalIncome(LocalDate.now().getYear(), filterCombobox.getSelectedIndex() + 1);
-					TotalSpending returnedTotalSpending = totalSpendingDAO.getTotalSpending(LocalDate.now().getYear(), filterCombobox.getSelectedIndex() + 1);
-					
-					totalIncome.setText("$" + returnedTotalIncome.getTotalProduct().add(returnedTotalIncome.getTotalSeat()) +  "");
-					totalSpending.setText("$" + returnedTotalSpending.getTotalAddMovie().add(returnedTotalSpending.getTotalAddProdcut().add(returnedTotalSpending.getTotalImportProduct())) + "");
-					
+					TotalIncome returnedTotalIncome = totalIncomeDAO.getTotalIncome(LocalDate.now().getYear(),
+							filterCombobox.getSelectedIndex() + 1);
+					TotalSpending returnedTotalSpending = totalSpendingDAO.getTotalSpending(LocalDate.now().getYear(),
+							filterCombobox.getSelectedIndex() + 1);
+
+					totalIncome.setText(
+							"$" + returnedTotalIncome.getTotalProduct().add(returnedTotalIncome.getTotalSeat()) + "");
+					totalSpending
+							.setText("$"
+									+ returnedTotalSpending.getTotalAddMovie().add(returnedTotalSpending
+											.getTotalAddProdcut().add(returnedTotalSpending.getTotalImportProduct()))
+									+ "");
+
 					pieChart1.setDataset(createPieDataForTotalSpending(returnedTotalSpending));
 					pieChart2.setDataset(createPieDataForTotalIncome(returnedTotalIncome));
+					barChart.setDataset(createData(returnedTotalIncome, returnedTotalSpending));
 					repaint();
 					revalidate();
+					formRefresh();
 				});
 				filterCombobox.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
 			} else {
+				formRefresh();
 				filterCombobox.addItem(LocalDate.now().getYear() - 1 + "");
 				filterCombobox.addItem(LocalDate.now().getYear() + "");
 				for (ActionListener al : filterCombobox.getActionListeners()) {
@@ -278,14 +265,21 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 				filterCombobox.addActionListener(e2 -> {
 					String selectedYearString = (String) filterCombobox.getSelectedItem();
 					if (selectedYearString != null) {
-						TotalIncome returnedTotalIncome = totalIncomeDAO.getTotalIncome(Integer.parseInt((String) selectedYearString), 0);
-						TotalSpending returnedTotalSpending = totalSpendingDAO.getTotalSpending(Integer.parseInt((String) selectedYearString), 0);
-						totalIncome.setText("$" + returnedTotalIncome.getTotalProduct().add(returnedTotalIncome.getTotalSeat()) +  "");
-						totalSpending.setText("$" + returnedTotalSpending.getTotalAddMovie().add(returnedTotalSpending.getTotalAddProdcut()).add(returnedTotalSpending.getTotalImportProduct()) + "");
+						TotalIncome returnedTotalIncome = totalIncomeDAO
+								.getTotalIncome(Integer.parseInt((String) selectedYearString), 0);
+						TotalSpending returnedTotalSpending = totalSpendingDAO
+								.getTotalSpending(Integer.parseInt((String) selectedYearString), 0);
+						totalIncome.setText("$"
+								+ returnedTotalIncome.getTotalProduct().add(returnedTotalIncome.getTotalSeat()) + "");
+						totalSpending.setText("$" + returnedTotalSpending.getTotalAddMovie()
+								.add(returnedTotalSpending.getTotalAddProdcut())
+								.add(returnedTotalSpending.getTotalImportProduct()) + "");
 						pieChart1.setDataset(createPieDataForTotalSpending(returnedTotalSpending));
 						pieChart2.setDataset(createPieDataForTotalIncome(returnedTotalIncome));
+						barChart.setDataset(createData(returnedTotalIncome, returnedTotalSpending));
 						repaint();
 						revalidate();
+						formRefresh();
 					}
 				});
 				filterCombobox.setSelectedIndex(1);
