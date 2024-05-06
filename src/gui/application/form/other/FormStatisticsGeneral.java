@@ -59,12 +59,12 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 		container = new JPanel(new MigLayout("wrap, fill", "[fill]", "[min!][fill][fill]"));
 		topContainer = new JPanel(new MigLayout("wrap, fill", "[fill][right]", "[fill]"));
 		bottomContainer = new JPanel(new MigLayout("wrap, fill", "[fill][fill]", "[fill]"));
-		southContainer = new JPanel(new MigLayout("wrap, fill", "[fill][fill]", "[fill]"));
+		southContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[fill]"));
 		southLeftContainer = new JPanel(new MigLayout("wrap, fill"));
 		southRightContainer = new JPanel(new MigLayout("wrap, fill"));
 
-		southContainer.add(southLeftContainer);
-		southContainer.add(southRightContainer);
+//		southContainer.add(southLeftContainer);
+//		southContainer.add(southRightContainer);
 
 		topLeftContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill]"));
 		comboboxContainer = new JPanel(new MigLayout("wrap", "[fill][fill]", "[fill]"));
@@ -126,7 +126,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 		spendingTitleLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h3.font;");
 
 		createPieChart(bottomLeftMainContainer, bottomRightMainContainer);
-		createBarChart(southLeftContainer, southRightContainer);
+		createBarChart(southContainer);
 
 		// action listener
 		// action listeners
@@ -138,7 +138,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 		formRefresh();
 	}
 
-	private void createBarChart(JPanel l, JPanel r) {
+	private void createBarChart(JPanel l) {
 		// BarChart 1
 		barChart = new HorizontalBarChart();
 		JLabel header1 = new JLabel("Monthly Income");
