@@ -4,11 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -18,6 +20,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
@@ -26,7 +29,10 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import dao.MovieDAO;
 import entity.Movie;
+import gui.other.MovieCSVReader;
 import net.miginfocom.swing.MigLayout;
+import raven.toast.Notifications;
+import raven.toast.Notifications.Type;
 
 public class FormMovieManagement extends JPanel implements ActionListener {
 
@@ -45,6 +51,7 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 
 	private MovieDAO movieDAO;
 	private MovieUpdateDialog movieUpdateDialog;
+	private JButton importMovieByCSV;
 
 	public FormMovieManagement() {
 
@@ -54,20 +61,22 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		container0 = new JPanel();
 		container1 = new JPanel();
 		searchTextField = new JTextField();
-		searchTextField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,  "Search");
+		searchTextField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search");
 		addNewButton = new JButton("Add New");
 		updateButton = new JButton("Update");
 		deleteButton = new JButton("Delete");
+		importMovieByCSV = new JButton("Import Movie");
 		filterComboBox = new JComboBox<String>();
 		filterComboBox.addItem("All");
 		filterComboBox.addItem("Released");
 		filterComboBox.addItem("Unreleased");
-		container1.setLayout(new MigLayout("", "[]push[][][][]", ""));
+		container1.setLayout(new MigLayout("", "[]push[][][][][]", ""));
 		container1.add(searchTextField, "w 200!");
 		container1.add(filterComboBox);
 		container1.add(addNewButton);
 		container1.add(updateButton);
 		container1.add(deleteButton);
+		container1.add(importMovieByCSV);
 
 		addNewButton.setIcon(new FlatSVGIcon("gui/icon/svg/add.svg", 0.35f));
 		updateButton.setIcon(new FlatSVGIcon("gui/icon/svg/edit.svg", 0.35f));
@@ -104,6 +113,7 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		updateButton.addActionListener(this);
 		deleteButton.addActionListener(this);
 		filterComboBox.addActionListener(this);
+		importMovieByCSV.addActionListener(this);
 
 		// when user type something in the search text field, take out the value that
 		// users type in
@@ -206,6 +216,35 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		}
 		if (e.getSource().equals(filterComboBox)) {
 			searchAndFilter();
+		}
+		if (e.getSource().equals(importMovieByCSV)) {
+
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle("Import Movie File");
+			fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fileChooser.setAcceptAllFileFilterUsed(false);
+
+			FileNameExtensionFilter filter = new FileNameExtensionFilter("CSV files", "csv");
+			fileChooser.addChoosableFileFilter(filter);
+
+			int returnValue = fileChooser.showOpenDialog(null);
+			if (returnValue == JFileChooser.APPROVE_OPTION) {
+				File selectedFile = fileChooser.getSelectedFile();
+				System.out.println(selectedFile.getPath());
+				String csvFile = selectedFile.getPath();
+				List<Movie> movies = MovieCSVReader.readMoviesFromCSV(csvFile);
+				if (movies != null) {
+					for (Movie movie : movies) {
+						if (!movieDAO.addNewMovie(movie)) {
+							return;
+						}
+					}
+				}
+				Notifications.getInstance().show(Type.INFO, Notifications.Location.BOTTOM_LEFT,
+						(movies.size() + " movie(s) imported successfully!"));
+				searchAndFilter();
+			}
+
 		}
 	}
 

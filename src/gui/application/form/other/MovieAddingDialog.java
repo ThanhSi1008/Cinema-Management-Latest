@@ -43,7 +43,6 @@ import raven.toast.Notifications.Location;
 public class MovieAddingDialog extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	final JFileChooser fc = new JFileChooser();
 	private CrazyPanel container;
 	private JLabel movieNameLabel;
 	private JTextField movieNameTextField;

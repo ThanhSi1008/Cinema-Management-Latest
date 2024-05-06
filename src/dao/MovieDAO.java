@@ -47,7 +47,7 @@ public class MovieDAO {
 		return movieList;
 	}
 
-	public void addNewMovie(Movie newMovie) {
+	public boolean addNewMovie(Movie newMovie) {
 		Connection connection = connectDB.getConnection();
 		String insertSQL = "INSERT INTO Movie (MovieName, Description, Genre, Director, Duration, ReleasedDate, Language, Country, Trailer, StartDate, Status, ImportPrice, ImageSource)"
 				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -69,9 +69,11 @@ public class MovieDAO {
 			preparedStatement.setString(13, newMovie.getImageSource());
 			int rowsAffected = preparedStatement.executeUpdate();
 			System.out.println(rowsAffected + " row(s) inserted successfully.");
+			return rowsAffected > 0;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 	public int deleteMovieByID(String movieID) {

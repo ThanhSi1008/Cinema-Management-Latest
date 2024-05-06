@@ -57,7 +57,7 @@ public class FormStatisticsCustomer extends SimpleForm implements ActionListener
 		customerRankingDAO = new CustomerRankingDAO();
 		customersByHourDAO = new CustomersByHourDAO();
 
-		container = new JPanel(new MigLayout("wrap, fill, debug", "[fill]", "[fill][grow 0]"));
+		container = new JPanel(new MigLayout("wrap, fill", "[fill]", "[fill][grow 0]"));
 
 		topContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill]"));
 		topTitleContainer = new JPanel(new MigLayout("wrap, fill", "[]push[][]", "[center]"));
