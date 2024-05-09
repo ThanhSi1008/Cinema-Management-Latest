@@ -1,12 +1,12 @@
 
-USE Master
-go
+--USE Master
+--go
 
-CREATE DATABASE CinemaManagement
-go
+--CREATE DATABASE CinemaManagement
+--go
 
-USE CinemaManagement
-go
+--USE CinemaManagement
+--go
 
 
 /*

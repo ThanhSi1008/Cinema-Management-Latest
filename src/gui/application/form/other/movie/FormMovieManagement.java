@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.List;
 
@@ -29,6 +31,9 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import dao.MovieDAO;
 import entity.Movie;
+import entity.MovieSchedule;
+import gui.application.Application;
+import gui.application.form.other.screening.SeatingOptionDialog;
 import gui.other.MovieCSVReader;
 import net.miginfocom.swing.MigLayout;
 import raven.toast.Notifications;
@@ -137,6 +142,23 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 			}
 		});
 		// select all the movie with that has that text in it and show it into the table
+		
+		movieTable.addMouseListener(new MouseAdapter() {
+			private MovieDetailDialog movieDetailDialog;
+
+			public void mousePressed(MouseEvent mouseEvent) {
+				JTable table = (JTable) mouseEvent.getSource();
+				// int row = table.rowAtPoint(point);
+				if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
+					int selectedRow = table.getSelectedRow();
+					String movieID = (String) movieTableModel.getValueAt(selectedRow, 0);
+					Movie movie = movieDAO.getMovieByID(movieID);
+					movieDetailDialog = new MovieDetailDialog(movie);
+					movieDetailDialog.setModal(true);
+					movieDetailDialog.setVisible(true);
+				}
+			}
+		});
 
 		add(container0);
 
