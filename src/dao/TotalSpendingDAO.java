@@ -183,7 +183,7 @@ public class TotalSpendingDAO {
 		ResultSet resultSet = null;
 		PreparedStatement statement = null;
 		boolean success = false;
-		String querySQL = "SELECT Time, TotalOrder, TotalSeat, TotalSeatValue, TotalProduct, TotalProductValue, TotalOrderValue FROM OrderSummaryView ORDER BY Time";
+		String querySQL = "select * from OrderSummaryView order by date";
 		try {
 			connection = connectDB.getConnection();
 			statement = connection.prepareStatement(querySQL);
@@ -193,15 +193,14 @@ public class TotalSpendingDAO {
 			FileWriter fileWriter = new FileWriter(filePath);
 			CSVWriter csvWriter = new CSVWriter(fileWriter);
 
-			String[] columnHeaders = { "Time", "TotalOrder", "TotalSeat", "TotalSeatValue", "TotalProduct",
-					"TotalProductValue", "TotalOrderValue" };
+			String[] columnHeaders = { "Date", "Quantity Seat", "Total Seat", "Quantity Product", "Total Product",
+					"Revenue For The Day" };
 			csvWriter.writeNext(columnHeaders);
 
 			while (resultSet.next()) {
-				String[] rowData = { resultSet.getString("Time"), resultSet.getString("TotalOrder"),
-						resultSet.getString("TotalSeat"), resultSet.getString("TotalSeatValue"),
-						resultSet.getString("TotalProduct"), resultSet.getString("TotalProductValue"),
-						resultSet.getString("TotalOrderValue") };
+				String[] rowData = { resultSet.getString("Date"), resultSet.getString("QuantitySeat"),
+						resultSet.getString("TotalSeat"), resultSet.getString("QuantityProduct"),
+						resultSet.getString("TotalProduct"), resultSet.getString("TotalAllBill") };
 				csvWriter.writeNext(rowData);
 			}
 

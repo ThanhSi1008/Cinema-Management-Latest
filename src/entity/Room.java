@@ -1,5 +1,7 @@
 package entity;
 
+import java.util.Objects;
+
 public class Room {
 	private String roomID;
 	private String roomName;
@@ -30,6 +32,23 @@ public class Room {
 
 	public void setNumberOfSeats(int numberOfSeats) {
 		this.numberOfSeats = numberOfSeats;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(roomID);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Room other = (Room) obj;
+		return Objects.equals(roomID, other.roomID);
 	}
 
 	@Override

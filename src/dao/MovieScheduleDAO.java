@@ -28,19 +28,18 @@ public class MovieScheduleDAO {
 		connectDB.connect();
 	}
 
-	public List<MovieSchedule> getAllMovieSchedule() {
+	public List<MovieSchedule> getAllAvailableMovieSchedule() {
 		Connection connection = connectDB.getConnection();
 		List<MovieSchedule> movieScheduleList = new ArrayList<MovieSchedule>();
+		String query = "select * from movieschedule ms join movie m on ms.movieid = m.movieid join room r on ms.roomid = r.roomid where Status = 'Released' and EndTime > getdate() order by ScreeningTime";
 		try {
-			PreparedStatement s = connection.prepareStatement(
-					"select * from movieschedule ms join movie m on ms.movieid = m.movieid join room r on ms.roomid = r.roomid");
+			PreparedStatement s = connection.prepareStatement(query);
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
 				String movieScheduleID = rs.getString(1);
 				LocalDateTime screeningTime = rs.getTimestamp(2).toLocalDateTime();
 				LocalDateTime endTime = rs.getTimestamp(3).toLocalDateTime();
 				Double perSeatPrice = rs.getDouble(4);
-
 				String movieID = rs.getString(7);
 				String movieName = rs.getString(8);
 				String genre = rs.getString(9);
@@ -55,17 +54,17 @@ public class MovieScheduleDAO {
 				String imageSource = rs.getString(18);
 				String trailer = rs.getString(19);
 				String description = rs.getString(20);
-				Movie movie = new Movie(movieID, movieName, description, genre, director, duration, releasedDate,
-						language, country, trailer, startDate, status, importPrice, imageSource);
-
 				String roomID = rs.getString(21);
 				String roomName = rs.getString(22);
 				int numberOfSeats = rs.getInt(23);
 
+				Movie movie = new Movie(movieID, movieName, description, genre, director, duration, releasedDate,
+						language, country, trailer, startDate, status, importPrice, imageSource);
 				Room room = new Room(roomID, roomName, numberOfSeats);
 
 				movieScheduleList
 						.add(new MovieSchedule(movieScheduleID, screeningTime, endTime, movie, room, perSeatPrice));
+
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -79,7 +78,7 @@ public class MovieScheduleDAO {
 		try {
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			PreparedStatement s = connection.prepareStatement(
-					"SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PricePerSeat from MovieSchedule WHERE CAST(ScreeningTime AS DATE) = ?");
+					"SELECT ScheduleID, ScreeningTime, EndTime, ms.MovieID, RoomID, PricePerSeat from MovieSchedule ms join Movie m on m.MovieID = ms.MovieID WHERE CAST(ScreeningTime AS DATE) = ? and Status = 'Released' and EndTime > getdate() order by ScreeningTime");
 			s.setString(1, searchedDateLocalDate.format(formatter));
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -133,7 +132,7 @@ public class MovieScheduleDAO {
 
 		try {
 			PreparedStatement s = connection.prepareStatement(
-					"SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PricePerSeat FROM MovieSchedule WHERE RoomID = (SELECT RoomID FROM Room WHERE RoomName = ?) AND CAST(ScreeningTime AS DATE) = ?");
+					"SELECT ScheduleID, ScreeningTime, EndTime, ms.MovieID, RoomID, PricePerSeat FROM MovieSchedule ms join Movie m on m.MovieID = ms.MovieID WHERE RoomID = (SELECT RoomID FROM Room WHERE RoomName = ?) AND CAST(ScreeningTime AS DATE) = ? and Status = 'Released' and EndTime > getdate() order by ScreeningTime");
 			s.setString(1, roomNameToFind);
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 			s.setString(2, searchedDateLocalDate.format(formatter));

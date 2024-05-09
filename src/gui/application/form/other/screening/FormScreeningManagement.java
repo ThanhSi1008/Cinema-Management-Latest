@@ -109,7 +109,7 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 				// int row = table.rowAtPoint(point);
 				if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
 					int selectedRow = table.getSelectedRow();
-					String movieScheduleID = (String) screeningTable.getValueAt(selectedRow, 0);
+					String movieScheduleID = (String) screeningTableModel.getValueAt(selectedRow, 0);
 					MovieSchedule movieSchedule = movieScheduleDAO.getMovieScheduleByID(movieScheduleID);
 					seatingOptioneDialog = new SeatingOptionDialog(movieSchedule);
 					seatingOptioneDialog.setCurrentEmployee(currentEmployee);
