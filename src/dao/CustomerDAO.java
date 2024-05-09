@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +65,7 @@ public class CustomerDAO {
 		return customerID;
 	}
 
-	public String getCustomerByPhoneNumber(String phoneNumber) {
+	public String getCustomerIdByPhoneNumber(String phoneNumber) {
 		Connection connection = connectDB.getConnection();
 		String customerID = "";
 		try {
@@ -193,6 +194,27 @@ public class CustomerDAO {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	public Customer getCustomerByPhoneNumber(String phoneNumberToFind) {
+		Connection connection = connectDB.getConnection();
+		Customer customer = null;
+		try {
+			PreparedStatement s = connection.prepareStatement("select customerid, fullname, phonenumber, email, regdate from customer where phonenumber = ?");
+			s.setString(1, phoneNumberToFind);
+			ResultSet rs = s.executeQuery();
+			if (rs.next()) {
+				String customerID = rs.getString(1);
+				String fullName = rs.getString(2);
+				String phoneNumber = rs.getString(3);
+				String email = rs.getString(4);
+				LocalDate regdate = rs.getDate(5).toLocalDate();
+				return new Customer(customerID, fullName, phoneNumber, email, regdate);				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return customer;
 	}
 
 }

@@ -2,6 +2,8 @@ package gui.application.form.other.screening;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
@@ -20,6 +22,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import com.formdev.flatlaf.FlatClientProperties;
 
@@ -93,7 +97,6 @@ public class CheckoutDialog extends JDialog {
 	private JPanel movieTitleContainer;
 	private JPanel customerInforForm;
 	private JPanel customerTitleContainer;
-	private JLabel errorMessageLabel;
 	private double totalDouble;
 	private CustomerDAO customerDAO;
 	private ProductDAO productDAO;
@@ -102,6 +105,10 @@ public class CheckoutDialog extends JDialog {
 	private OrderDAO orderDAO;
 	private OrderDetailDAO orderDetailDAO;
 	private ProductOptionDialog productOptionDialog;
+	private JPanel customerInforFormContainer;
+	private JLabel phoneNumberErrorMessage;
+	private JLabel fullNameErrorMessage;
+	private JLabel emailErrorMessage;
 
 	public CheckoutDialog(ArrayList<MovieScheduleSeat> seatChosenList, List<OrderDetail> chosenProductOrderDetailList,
 			MovieSchedule movieSchedule) {
@@ -135,28 +142,191 @@ public class CheckoutDialog extends JDialog {
 		customerTitleContainer.add(customerInfoTitle);
 		customerTitleContainer.setBorder(commonBorder);
 
-		customerInfoContainer.setLayout(new MigLayout("wrap, fill, insets 0", "[fill]", "[grow 0][top]"));
+		customerInfoContainer.setLayout(new MigLayout("wrap, fill, insets 0", "[fill]", "[grow 0][fill]"));
 
-		customerInforForm = new JPanel(new MigLayout("wrap, fillx", "[fill]", "[]"));
+		customerInforFormContainer = new JPanel(new MigLayout("wrap, fill, insets 0", "[fill]", "[fill]"));
+		customerInforForm = new JPanel(new MigLayout("wrap, fillx", "[fill]", "[al top]"));
 		phoneNumberLabel = new JLabel("Phone number: ");
 		phoneNumberTextField = new JTextField(20);
+		phoneNumberErrorMessage = new JLabel();
 		fullNameLabel = new JLabel("Full name: ");
 		fullNameTextField = new JTextField(20);
+		fullNameErrorMessage = new JLabel();
 		emailLabel = new JLabel("Email: ");
 		emailTextField = new JTextField(20);
-		errorMessageLabel = new JLabel();
-		errorMessageLabel.setForeground(new Color(240, 0, 0));
+		emailErrorMessage = new JLabel();
+
+		String errorMessageStyles = "foreground:$clr-red; font:$errorMessage.font";
+		phoneNumberErrorMessage.putClientProperty(FlatClientProperties.STYLE, errorMessageStyles);
+		fullNameErrorMessage.putClientProperty(FlatClientProperties.STYLE, errorMessageStyles);
+		emailErrorMessage.putClientProperty(FlatClientProperties.STYLE, errorMessageStyles);
+
 		customerInforForm.add(phoneNumberLabel);
-		customerInforForm.add(phoneNumberTextField, "gapbottom 15");
-		customerInforForm.add(fullNameLabel);
-		customerInforForm.add(fullNameTextField, "gapbottom 15");
-		customerInforForm.add(emailLabel);
-		customerInforForm.add(emailTextField, "gapbottom 15");
-		customerInforForm.add(errorMessageLabel);
+		customerInforForm.add(phoneNumberTextField);
+		customerInforForm.add(phoneNumberErrorMessage);
+		customerInforForm.add(fullNameLabel, "gaptop 10");
+		customerInforForm.add(fullNameTextField);
+		customerInforForm.add(fullNameErrorMessage);
+		customerInforForm.add(emailLabel, "gaptop 10");
+		customerInforForm.add(emailTextField);
+		customerInforForm.add(emailErrorMessage);
 		customerInforForm.setBorder(commonBorder);
+		
+		phoneNumberTextField.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				String phoneNumber = phoneNumberTextField.getText().trim();
+				if (phoneNumber.equals("")) {
+					phoneNumberErrorMessage.setText("Phone number must not be empty");
+					return;
+				}
+				if (!phoneNumber.matches("\\d{10}")) {
+					phoneNumberErrorMessage.setText("Phone number must have 10 digits");
+					return;
+				}
+				phoneNumberErrorMessage.setText("*");
+				Customer customer = customerDAO.getCustomerByPhoneNumber(phoneNumber);
+				if (customer != null) {
+					fullNameTextField.setText(customer.getFullName());
+					emailTextField.setText(customer.getEmail());
+				} else {
+					fullNameTextField.setText("");
+					emailTextField.setText("");
+				}
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				String phoneNumber = phoneNumberTextField.getText().trim();
+				if (phoneNumber.equals("")) {
+					phoneNumberErrorMessage.setText("Phone number must not be empty");
+					return;
+				}
+				if (!phoneNumber.matches("\\d{10}")) {
+					phoneNumberErrorMessage.setText("Phone number must have 10 digits");
+					return;
+				}
+				phoneNumberErrorMessage.setText("*");
+				Customer customer = customerDAO.getCustomerByPhoneNumber(phoneNumber);
+				if (customer != null) {
+					fullNameTextField.setText(customer.getFullName());
+					emailTextField.setText(customer.getEmail());
+				} else {
+					fullNameTextField.setText("");
+					emailTextField.setText("");
+				}		
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				String phoneNumber = phoneNumberTextField.getText().trim();
+				if (phoneNumber.equals("")) {
+					phoneNumberErrorMessage.setText("Phone number must not be empty");
+					return;
+				}
+				if (!phoneNumber.matches("\\d{10}")) {
+					phoneNumberErrorMessage.setText("Phone number must have 10 digits");
+					return;
+				}
+				phoneNumberErrorMessage.setText("*");
+				Customer customer = customerDAO.getCustomerByPhoneNumber(phoneNumber);
+				if (customer != null) {
+					fullNameTextField.setText(customer.getFullName());
+					emailTextField.setText(customer.getEmail());
+				} else {
+					fullNameTextField.setText("");
+					emailTextField.setText("");
+				}			
+			}
+		});
+
+
+		fullNameTextField.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				String fullName = fullNameTextField.getText().trim();
+
+				if (!fullName.matches("^[A-Z][a-zA-Z]*(\\s[A-Z][a-zA-Z]*)*$")) {
+					fullNameErrorMessage.setText("Full name must start with capital letters");
+					return;
+				}
+				fullNameErrorMessage.setText("*");
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				String fullName = fullNameTextField.getText().trim();
+
+				if (!fullName.matches("^[A-Z][a-zA-Z]*(\\s[A-Z][a-zA-Z]*)*$")) {
+					fullNameErrorMessage.setText("Full name must start with capital letters");
+					return;
+				}
+				fullNameErrorMessage.setText("*");
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				String fullName = fullNameTextField.getText().trim();
+
+				if (!fullName.matches("^[A-Z][a-zA-Z]*(\\s[A-Z][a-zA-Z]*)*$")) {
+					fullNameErrorMessage.setText("Full name must start with capital letters");
+					return;
+				}
+				fullNameErrorMessage.setText("*");
+			}
+		});
+
+		emailTextField.getDocument().addDocumentListener(new DocumentListener() {
+			
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				String email = emailTextField.getText().trim();
+				if (email.equals("")) {
+					emailErrorMessage.setText("Email must not be empty");
+					return;
+				}
+				if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+					emailErrorMessage.setText("Email must be in the right format");
+					return;
+				}
+				emailErrorMessage.setText("*");				
+			}
+			
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				String email = emailTextField.getText().trim();
+				if (email.equals("")) {
+					emailErrorMessage.setText("Email must not be empty");
+					return;
+				}
+				if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+					emailErrorMessage.setText("Email must be in the right format");
+					return;
+				}
+				emailErrorMessage.setText("*");				
+			}
+			
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				String email = emailTextField.getText().trim();
+				if (email.equals("")) {
+					emailErrorMessage.setText("Email must not be empty");
+					return;
+				}
+				if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
+					emailErrorMessage.setText("Email must be in the right format");
+					return;
+				}
+				emailErrorMessage.setText("*");				
+			}
+		});
+
+		customerInforFormContainer.add(customerInforForm);
 
 		customerInfoContainer.add(customerTitleContainer);
-		customerInfoContainer.add(customerInforForm);
+		customerInfoContainer.add(customerInforFormContainer);
 
 		orderTitleLabel = new JLabel("Order");
 		subtotalLabel = new JLabel("Subtotal: ");
@@ -338,44 +508,42 @@ public class CheckoutDialog extends JDialog {
 			String fullName = fullNameTextField.getText().trim();
 			String email = emailTextField.getText().trim();
 			if (phoneNumber.equals("")) {
-				errorMessageLabel.setText("Phone number must not be empty");
+				phoneNumberErrorMessage.setText("Phone number must not be empty");
 				phoneNumberTextField.requestFocus();
 				return;
 			}
 			if (!phoneNumber.matches("\\d{10}")) {
-				errorMessageLabel.setText("Phone number must have 10 digits");
+				phoneNumberErrorMessage.setText("Phone number must have 10 digits");
 				phoneNumberTextField.requestFocus();
 				return;
 			}
 			if (fullName.equals("")) {
-				errorMessageLabel.setText("Full name must not be empty");
+				fullNameErrorMessage.setText("Full name must not be empty");
 				fullNameTextField.requestFocus();
 				return;
 			}
 			if (!fullName.matches("^[A-Z][a-zA-Z]*(\\s[A-Z][a-zA-Z]*)*$")) {
-				errorMessageLabel.setText("Full name must start with capital letters");
+				fullNameErrorMessage.setText("Full name must start with capital letters");
 				fullNameTextField.requestFocus();
 				return;
 			}
 			if (email.equals("")) {
-				errorMessageLabel.setText("Email must not be empty");
+				emailErrorMessage.setText("Email must not be empty");
 				emailTextField.requestFocus();
 				return;
 			}
 			if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$")) {
-				errorMessageLabel.setText("Email must be in the right format");
+				emailErrorMessage.setText("Email must be in the right format");
 				emailTextField.requestFocus();
 				return;
 			}
-
-			errorMessageLabel.setText("");
 
 			boolean isCustomerExist = customerDAO.checkDuplicatePhoneNumber(phoneNumber);
 			String customerID;
 			if (!isCustomerExist) {
 				customerID = customerDAO.addNewCustomer(new Customer(phoneNumber, fullName, email, LocalDate.now()));
 			} else {
-				customerID = customerDAO.getCustomerByPhoneNumber(phoneNumber);
+				customerID = customerDAO.getCustomerIdByPhoneNumber(phoneNumber);
 			}
 			// update the quantity of the products in the database
 			for (OrderDetail od : chosenProductOrderDetailList) {
@@ -413,7 +581,7 @@ public class CheckoutDialog extends JDialog {
 				productOptionDialog.disposeSeatOptionDialog();
 				JPanel defaultGlassPane = (JPanel) Application.getInstance().getGlassPane();
 				defaultGlassPane.removeAll();
-				Application.getInstance().setGlassPane(defaultGlassPane); 
+				Application.getInstance().setGlassPane(defaultGlassPane);
 				defaultGlassPane.setVisible(false);
 			} else {
 				JOptionPane.showMessageDialog(this, "An error has occurred", "Failure", JOptionPane.ERROR_MESSAGE);
@@ -421,9 +589,9 @@ public class CheckoutDialog extends JDialog {
 		});
 
 		add(container);
-		customerInfoContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
-		checkoutContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
-		movieTitleContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
+//		customerInfoContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
+//		checkoutContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
+//		movieTitleContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
 
 		this.addWindowListener(new WindowAdapter() {
 

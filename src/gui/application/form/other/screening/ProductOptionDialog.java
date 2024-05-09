@@ -100,7 +100,6 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
-		productContainer.setLayout(new MigLayout("wrap, fill, al lead", "[fill][fill][fill]", "[al top]"));
 		// get all the food and drinks from the database
 		List<Product> productList = productDAO.getAllProduct();
 		showProduct(productList);
@@ -112,7 +111,7 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 		checkoutContainer.add(checkOutText);
 		checkoutContainer.add(removeAllButton, "gapleft push");
 		productChosenContainer.setLayout(new MigLayout("wrap, fillx, aligny top", "[fill]", ""));
-		productContainer.setLayout(new MigLayout("wrap, fill, al lead", "[fill][fill][fill]", "[al top]"));
+		productContainer.setLayout(new MigLayout("wrap, fill", "[fill][fill][fill]", "[al top]"));
 
 		totalContainer.setLayout(new MigLayout("wrap, fill", "[][]", "[]"));
 		totalText = new JLabel("Total: ");
@@ -202,18 +201,13 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			JLabel image = new JLabel(resizedIcon);
 			JLabel productName = new JLabel(product.getProductName());
 			productName.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h4.font;");
-			JPanel quantityContainer = new JPanel(new MigLayout("", "[][]", ""));
-			JLabel quantityText = new JLabel("Qty:");
 			JLabel quantity = new JLabel();
-			quantityContainer.add(quantityText);
-			quantityContainer.add(quantity);
-			quantityContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
-			quantity.setText(product.getQuantity() + "");
+			quantity.setText("Qty:" + product.getQuantity() + "");
 			JLabel price = new JLabel("$" + product.getPrice() + "");
 			price.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$primary;");
 			productCard.add(image, "span 2, al center");
 			productCard.add(productName, "span 2, al center");
-			productCard.add(quantityContainer);
+			productCard.add(quantity);
 			productCard.add(price, "gapleft push");
 			productCard.putClientProperty(FlatClientProperties.STYLE,
 					"default.background:$white;default.background:$black");

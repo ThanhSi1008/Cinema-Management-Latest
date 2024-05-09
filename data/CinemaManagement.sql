@@ -1,4 +1,4 @@
-/*
+
 USE Master
 go
 
@@ -7,7 +7,7 @@ go
 
 USE CinemaManagement
 go
-*/
+
 
 /*
 1. Tạo Sequence (MySequence):
