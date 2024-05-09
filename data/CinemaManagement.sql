@@ -889,6 +889,22 @@ RETURN
 );
 go
 
+create or alter view OrderView as
+select o.OrderDate as Time, o.OrderID, o.ScheduleID, sum(o.QuantitySeat) as QuantitySeat, ms.PricePerSeat, 
+	   ms.PricePerSeat * sum(o.QuantitySeat) as TotalSeat, sum(isnull(od.Quantity, 0)) as QuantityProduct, 
+	   sum(isnull(od.LineTotal, 0)) as TotalProduct, o.Total as TotalBill
+from [dbo].[Order] o left join [dbo].[MovieSchedule] ms on ms.ScheduleID = o.ScheduleID
+	   full join [dbo].[OrderDetail] od on od.OrderID = o.OrderID 
+group by o.OrderID, o.ScheduleID, o.OrderDate, o.Total, ms.PricePerSeat
+go
+
+create or alter view OrderSummaryView as
+select CAST(Time AS DATE) AS Date, sum(QuantitySeat) as QuantitySeat, sum(TotalSeat) as TotalSeat, 
+sum(QuantityProduct) as QuantityProduct, sum(TotalProduct) as TotalProduct, sum(TotalBill) as TotalAllBill
+from [dbo].[OrderView] 
+group by CAST(Time AS DATE)
+go
+
 -- Thêm dữ liệu cho bảng Employee
 INSERT INTO Employee (FullName, Gender, DateOfBirth, Email, PhoneNumber, Role, StartingDate, Salary, ImageSource)
 VALUES
@@ -1202,7 +1218,7 @@ VALUES
 ('2023-11-14 16:40:00', 2, N'No notes', 'Cus0004', 'Emp004', 'Sch00002');
 
 -- OrderDetail
- -- Order 1
+-- Order 1
 INSERT INTO OrderDetail (Quantity, OrderID, ProductID)
 VALUES
 (3, 'Ord0001', 'Pro002');
@@ -1259,10 +1275,10 @@ go
 
 ----------------*** MovieSchedule ***
 DECLARE @i INT = 1;
-WHILE @i <= 999
+WHILE @i <= 3999
 BEGIN
     DECLARE @RandomScreeningTime DATETIME;
-    SET @RandomScreeningTime = DATEADD(DAY, -ROUND(RAND() * 365, 0), GETDATE());
+	SET @RandomScreeningTime = DATEADD(DAY, -ROUND(RAND() * 365, 0), GETDATE());
     DECLARE @RandomHour INT = ROUND(RAND() * 23, 0);
     DECLARE @RandomMinute INT = ROUND(RAND() * 59, 0);
     DECLARE @RandomSecond INT = ROUND(RAND() * 59, 0);
@@ -1319,7 +1335,7 @@ BEGIN
     SELECT TOP 1 @RandomScheduleID = ScheduleID
     FROM MovieSchedule
     ORDER BY NEWID();
-    SET @RandomQuantitySeat = 1 + FLOOR(RAND() * 4);
+    SET @RandomQuantitySeat = 1 + FLOOR(RAND() * 7);
     INSERT INTO [Order] (OrderDate, QuantitySeat, Note, CustomerID, EmployeeID, ScheduleID)
     VALUES (@RandomOrderDate, @RandomQuantitySeat, 'No Note', @RandomCustomerID, @RandomEmployeeID, @RandomScheduleID);
     SET @i = @i + 1;
@@ -1328,9 +1344,9 @@ go
 
 -------------------*** OrderDetail ***
 DECLARE @i INT = 1;
-WHILE @i <= 9999
+WHILE @i <= 29999
 BEGIN
-DECLARE @Quantity INT = FLOOR(RAND() * 10) + 10;
+	DECLARE @Quantity INT = FLOOR(RAND() * 11 + 1);
     DECLARE @RandomProductID CHAR(6);
     SELECT TOP 1 @RandomProductID = ProductID
     FROM Product
@@ -1349,18 +1365,30 @@ END;
 go
 
 -------------------*** Importproduct ***
-DECLARE @i INT = 1;
-WHILE @i <= 5
+DECLARE @StartDate DATE;
+DECLARE @EndDate DATE;
+DECLARE @ProductID char(6);
+DECLARE @ImportProductDate DATE;
+DECLARE @QuantityChange INT;
+DECLARE @UnitPurchasePrice MONEY;
+SET @StartDate = DATEADD(YEAR, -1, GETDATE()); 
+SET @EndDate = GETDATE();
+WHILE @StartDate <= @EndDate
 BEGIN
-    DECLARE @RandomProductID CHAR(6);
-    SELECT TOP 1 @RandomProductID = ProductID FROM Product ORDER BY NEWID();
+    -- Set random values for each iteration
+    -- Get a random ProductID from Product table
+    SELECT TOP 1 @ProductID = ProductID
+    FROM Product
+    ORDER BY NEWID();
 
-    DECLARE @RandomQuantityImport INT;
-    SET @RandomQuantityImport = CAST((RAND() * (50 - 10 + 1) + 10) AS INT);
+    SET @ImportProductDate = DATEADD(DAY, ROUND(RAND() * DATEDIFF(DAY, @StartDate, @EndDate), 0), @StartDate);
+    SET @QuantityChange = CAST((RAND() * (50 - 10 + 1) + 10) AS INT); -- Generating a random Quantity between 10 and 50
+    SET @UnitPurchasePrice = (SELECT PurchasePrice FROM Product WHERE ProductID = @ProductID);
 
-    EXECUTE UpdateProductQuantityByID @RandomProductID, @RandomQuantityImport;
+    INSERT INTO OrderImportProduct (ProductID, ImportProductDate, Quantity, UnitPurchasePrice)
+    VALUES (@ProductID, @ImportProductDate, @QuantityChange, @UnitPurchasePrice);
 
-    SET @i = @i + 1;
+	SET @StartDate = DATEADD(DAY, 1, @StartDate);
 END;
 GO
 */
