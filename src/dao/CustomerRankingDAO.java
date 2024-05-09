@@ -1,5 +1,7 @@
 package dao;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.opencsv.CSVWriter;
 
 import connectDB.ConnectDB;
 import entity.CustomerRanking;
@@ -46,6 +50,32 @@ public class CustomerRankingDAO {
 			e.printStackTrace();
 		}
 		return customerRankingList;
+	}
+
+	public boolean exportCustomerRankingToCSV(List<CustomerRanking> customerRankingList, String folderPath) {
+		boolean success = false;
+
+		String filePath = folderPath + "/CustomerRanking.csv";
+
+		try (FileWriter fileWriter = new FileWriter(filePath); CSVWriter csvWriter = new CSVWriter(fileWriter)) {
+
+			String[] columnHeaders = { "CustomerID", "CustomerName", "PhoneNumber", "TotalSpending" };
+			csvWriter.writeNext(columnHeaders);
+
+			for (CustomerRanking customer : customerRankingList) {
+				String[] rowData = { customer.getCustomerID(), customer.getCustomerName(), customer.getPhoneNumber(),
+						String.valueOf(customer.getTotal()) };
+				csvWriter.writeNext(rowData);
+			}
+
+			System.out.println("Export to file CSV at: " + folderPath);
+			success = true;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return success;
 	}
 
 }

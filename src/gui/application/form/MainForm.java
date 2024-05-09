@@ -20,18 +20,18 @@ import com.formdev.flatlaf.util.UIScale;
 
 import entity.Employee;
 import gui.application.Application;
-import gui.application.form.other.FormChangePassword;
-import gui.application.form.other.FormCustomerManagement;
-import gui.application.form.other.FormDrinkManagement;
-import gui.application.form.other.FormFoodManagement;
-import gui.application.form.other.FormMovieManagement;
-import gui.application.form.other.FormProfileInfo;
-import gui.application.form.other.FormScreeningManagement;
-import gui.application.form.other.FormStaffManagement;
-import gui.application.form.other.FormStatisticsCustomer;
-import gui.application.form.other.FormStatisticsGeneral;
-import gui.application.form.other.FormStatisticsMovie;
-import gui.application.form.other.FormStatisticsProduct;
+import gui.application.form.other.customer.FormCustomerManagement;
+import gui.application.form.other.movie.FormMovieManagement;
+import gui.application.form.other.product.FormDrinkManagement;
+import gui.application.form.other.product.FormFoodManagement;
+import gui.application.form.other.profile.FormChangePassword;
+import gui.application.form.other.profile.FormProfileInfo;
+import gui.application.form.other.screening.FormScreeningManagement;
+import gui.application.form.other.staff.FormStaffManagement;
+import gui.application.form.other.statistics.FormStatisticsCustomer;
+import gui.application.form.other.statistics.FormStatisticsGeneral;
+import gui.application.form.other.statistics.FormStatisticsMovie;
+import gui.application.form.other.statistics.FormStatisticsProduct;
 import gui.menu.Menu;
 import gui.menu.MenuAction;
 
@@ -110,17 +110,16 @@ public class MainForm extends JLayeredPane {
 				case 5:
 					switch (subIndex) {
 					case 1:
-//						Application.showMainForm(new FormDashboard());
-						Application.showMainForm(new FormStatisticsGeneral());
+						Application.showMainForm(new FormStatisticsGeneral(employee));
 						break;
 					case 2:
-						Application.showMainForm(new FormStatisticsCustomer());
+						Application.showMainForm(new FormStatisticsCustomer(employee));
 						break;
 					case 3:
-						Application.showMainForm(new FormStatisticsMovie());
+						Application.showMainForm(new FormStatisticsMovie(employee));
 						break;
 					case 4:
-						Application.showMainForm(new FormStatisticsProduct());
+						Application.showMainForm(new FormStatisticsProduct(employee));
 						break;
 					default:
 						action.cancel();
@@ -174,16 +173,16 @@ public class MainForm extends JLayeredPane {
 				case 5:
 					switch (subIndex) {
 					case 1:
-						Application.showMainForm(new FormStatisticsGeneral());
+						Application.showMainForm(new FormStatisticsGeneral(employee));
 						break;
 					case 2:
-						Application.showMainForm(new FormStatisticsCustomer());
+						Application.showMainForm(new FormStatisticsCustomer(employee));
 						break;
 					case 3:
-						Application.showMainForm(new FormStatisticsMovie());
+						Application.showMainForm(new FormStatisticsMovie(employee));
 						break;
 					case 4:
-						Application.showMainForm(new FormStatisticsProduct());
+						Application.showMainForm(new FormStatisticsProduct(employee));
 						break;
 					default:
 						action.cancel();

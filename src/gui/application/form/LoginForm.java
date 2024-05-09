@@ -1,5 +1,6 @@
 package gui.application.form;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -8,6 +9,7 @@ import java.awt.LayoutManager;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.Point2D;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -22,15 +24,21 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatAnimatedLafChange;
 import com.formdev.flatlaf.util.UIScale;
 
-import controller.Ctrl_LoginForm;
 import entity.Employee;
 import gui.application.Application;
-import gui.application.form.other.FormProfileInfo;
+import gui.application.form.other.profile.FormProfileInfo;
+import gui.other.Ctrl_LoginForm;
+import raven.swing.blur.BlurBackground;
+import raven.swing.blur.BlurChild;
+import raven.swing.blur.style.GradientColor;
+import raven.swing.blur.style.Style;
+import raven.swing.blur.style.StyleBorder;
+import raven.swing.blur.style.StyleOverlay;
 import raven.toast.Notifications;
 import raven.toast.Notifications.Location;
 import raven.toast.Notifications.Type;
 
-public class LoginForm extends JPanel {
+public class LoginForm extends BlurBackground {
 	private static final long serialVersionUID = 1L;
 	private JButton cmdLogin;
 	private JLabel lbPass;
@@ -43,6 +51,9 @@ public class LoginForm extends JPanel {
 
 	public LoginForm() {
 		ctrl_LoginForm = new Ctrl_LoginForm();
+//		ImageIcon imageIcon = new ImageIcon("images/background.jpg");
+		setOverlay(new StyleOverlay(new Color(20, 20, 20), 0.1f));
+//		setImage(imageIcon.getImage());
 		initComponents();
 		init();
 		addEvents();
@@ -171,7 +182,20 @@ public class LoginForm extends JPanel {
 						.addContainerGap(179, Short.MAX_VALUE)));
 	}
 
-	private class LoginFormLayout implements LayoutManager {
+	private class LoginFormLayout extends BlurChild implements LayoutManager {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public LoginFormLayout() {
+			super(new Style().setBlur(30)
+					.setBorder(new StyleBorder(10).setOpacity(0.15f).setBorderWidth(1.2f)
+							.setBorderColor(new GradientColor(new Color(200, 200, 200), new Color(150, 150, 150),
+									new Point2D.Float(0, 0), new Point2D.Float(1, 0))))
+					.setOverlay(new StyleOverlay(new Color(0, 0, 0), 0.2f)));
+		}
 
 		@Override
 		public void addLayoutComponent(String name, Component comp) {
@@ -209,12 +233,24 @@ public class LoginForm extends JPanel {
 		}
 	}
 
-	private class LoginLayout implements LayoutManager {
+	private class LoginLayout extends BlurChild implements LayoutManager {
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		private final int titleGap = 10;
 		private final int textGap = 10;
 		private final int labelGap = 5;
 		private final int buttonGap = 50;
+
+		public LoginLayout() {
+			super(new Style().setBlur(30)
+					.setBorder(new StyleBorder(10).setOpacity(0.15f).setBorderWidth(1.2f)
+							.setBorderColor(new GradientColor(new Color(200, 200, 200), new Color(150, 150, 150),
+									new Point2D.Float(0, 0), new Point2D.Float(1, 0))))
+					.setOverlay(new StyleOverlay(new Color(0, 0, 0), 0.2f)));
+		}
 
 		@Override
 		public void addLayoutComponent(String name, Component comp) {

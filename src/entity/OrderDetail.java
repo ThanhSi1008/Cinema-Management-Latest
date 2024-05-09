@@ -14,10 +14,10 @@ public class OrderDetail {
 		this.product = product;
 	}
 
-	public OrderDetail(Product product, int quantity) {
-		this.product = product;
-		this.quantity = quantity;
-	}
+//	public OrderDetail(Product product, int quantity) {
+//		this.product = product;
+//		this.quantity = quantity;
+//	}
 
 	public int getQuantity() {
 		return quantity;

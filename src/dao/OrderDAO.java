@@ -29,8 +29,7 @@ public class OrderDAO {
 			connection = connectDB.getConnection();
 			callableStatement = connection.prepareCall(querySQL);
 
-			callableStatement.setString(1,
-					newOrder.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:00")));
+			callableStatement.setString(1, newOrder.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:00")));
 			callableStatement.setInt(2, newOrder.getQuantityTicket());
 			callableStatement.setString(3, newOrder.getNote());
 			callableStatement.setString(4, newOrder.getCustomer().getCustomerID());
