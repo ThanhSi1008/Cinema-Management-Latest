@@ -34,6 +34,7 @@ import entity.MovieSchedule;
 import entity.MovieScheduleSeat;
 import entity.Order;
 import entity.OrderDetail;
+import gui.application.Application;
 import net.miginfocom.swing.MigLayout;
 
 public class CheckoutDialog extends JDialog {
@@ -410,6 +411,10 @@ public class CheckoutDialog extends JDialog {
 				this.dispose();
 				productOptionDialog.dispose();
 				productOptionDialog.disposeSeatOptionDialog();
+				JPanel defaultGlassPane = (JPanel) Application.getInstance().getGlassPane();
+				defaultGlassPane.removeAll();
+				Application.getInstance().setGlassPane(defaultGlassPane); 
+				defaultGlassPane.setVisible(false);
 			} else {
 				JOptionPane.showMessageDialog(this, "An error has occurred", "Failure", JOptionPane.ERROR_MESSAGE);
 			}

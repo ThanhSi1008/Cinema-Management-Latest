@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ import dao.MovieScheduleSeatDAO;
 import entity.Employee;
 import entity.MovieSchedule;
 import entity.MovieScheduleSeat;
+import gui.application.Application;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
 
@@ -74,17 +77,16 @@ public class SeatingOptionDialog extends JDialog {
 		rightContainer = new JPanel();
 
 		normalButton = new JButton();
+		normalButton.putClientProperty(FlatClientProperties.STYLE, "background:$dark-clr-black; foreground:$dark-clr-white");
 		selectedButton = new JButton();
 		selectedButton.putClientProperty(FlatClientProperties.STYLE,
-				"background:$App.accent.red;foreground:$App.accent.white");
+				"background:$clr-red;foreground:$clr-white");
 
 		leftContainer.setLayout(new MigLayout("wrap, fill, insets 0", "[fill]", "[grow 0]15[fill][grow 0]"));
 		screenLabel = new JLabel("Screen");
-		screenLabel.setFont(new Font(screenLabel.getFont().getFontName(), screenLabel.getFont().getStyle(), 30));
-		screenLabel.setForeground(new Color(255, 0, 0));
-		screenLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		screenLabel.setOpaque(true);
-		screenLabel.setBackground(new Color(50, 50, 50));
+		screenLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h1.font; foreground:$clr-red; background:$clr-black");
+		screenLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		leftContainer.add(screenLabel, "align center, h 50!");
 		seatsContainer = new JPanel();
 		leftContainer.add(new JScrollPane(seatsContainer));
@@ -104,12 +106,14 @@ public class SeatingOptionDialog extends JDialog {
 			JButton button = new JButton(movieScheduleSeat.getSeat().getSeatLocation());
 			if (movieScheduleSeat.isSold()) {
 				button.setOpaque(true);
-				button.putClientProperty(FlatClientProperties.STYLE,
-						"background:$App.accent.red;foreground:$App.accent.white");
+				button.setBackground(selectedButton.getBackground());
+				button.setForeground(selectedButton.getForeground());
 				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 9));
 				seatsContainer.add(button, "width 30!, height 30!, grow"); // Adjust the width and height as needed
 			} else {
 				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 9));
+				button.setBackground(normalButton.getBackground());
+				button.setForeground(normalButton.getForeground());
 				seatsContainer.add(button, "width 30!, height 30!, grow"); // Adjust the width and height as needed
 				// button.putClientProperty("forMovieScheduleSeat", movieScheduleSeat);
 				// action listener
@@ -167,6 +171,8 @@ public class SeatingOptionDialog extends JDialog {
 		JPanel availablePanel = new JPanel(new MigLayout("align center, gap 10, insets 0 10 0 20", "[center]", ""));
 		JLabel availableLabel = new JLabel("Available");
 		JButton whiteButton = new JButton();
+		whiteButton.setForeground(normalButton.getForeground());
+		whiteButton.setBackground(normalButton.getBackground());
 		availablePanel.add(availableLabel);
 		availablePanel.add(whiteButton, "width 35!, height 35!");
 		JPanel takenPanel = new JPanel(new MigLayout("align center, gap 10, insets 0 10 0 10", "[center]", ""));
@@ -215,7 +221,7 @@ public class SeatingOptionDialog extends JDialog {
 
 		continueButton = new JButton("Continue");
 		continueButton.putClientProperty(FlatClientProperties.STYLE,
-				"arc:5;hoverBackground:$primary;hoverForeground:$white");
+				"arc:5;hoverBackground:$primary;hoverForeground:$clr-white");
 
 		card.add(movieNameLabel);
 		card.add(movieName, "gapleft push");
@@ -257,6 +263,16 @@ public class SeatingOptionDialog extends JDialog {
 						JOptionPane.ERROR_MESSAGE);
 			}
 
+		});
+		
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				JPanel defaultGlassPane = (JPanel) Application.getInstance().getGlassPane();
+				defaultGlassPane.removeAll();
+				Application.getInstance().setGlassPane(defaultGlassPane); 
+				defaultGlassPane.setVisible(false);
+			}
 		});
 
 		// style

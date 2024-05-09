@@ -1,5 +1,6 @@
 package gui.application.form.other.screening;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -66,6 +67,8 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 //	private MovieSchedule movieSchedule;
 	private Employee currentEmployee;
 	private SeatingOptionDialog seatingOptionDialog;
+	private String activeButtonStyle;
+	private String normalButtonStyle;
 
 	public ProductOptionDialog(ArrayList<MovieScheduleSeat> seatChosenList, MovieSchedule movieSchedule) {
 //		this.seatChosenList = seatChosenList;
@@ -85,20 +88,6 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 		allButton = new JButton("All");
 		foodButton = new JButton("Food");
 		drinkButton = new JButton("Drink");
-
-		allButton.setHorizontalAlignment(SwingConstants.CENTER);
-		allButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),
-				BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-
-		foodButton.setHorizontalAlignment(SwingConstants.CENTER);
-		foodButton
-				.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),
-						BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-
-		drinkButton.setHorizontalAlignment(SwingConstants.CENTER);
-		drinkButton
-				.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)),
-						BorderFactory.createEmptyBorder(10, 10, 10, 10)));
 
 		container.setLayout(new MigLayout("wrap, fill", "[][]", "[fill]"));
 		container.add(leftContainer, "grow, w 70%");
@@ -154,7 +143,14 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
 
 		total.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h3.font;" + "foreground:$danger;");
-
+		
+		// style
+		activeButtonStyle = "background:$primary; foreground:$white; border:10,0,10,0,$background; hoverBackground:$primary; hoverForeground:$white; font:$h5.font";
+		normalButtonStyle = "background:$white; border:10,0,10,0,$background; hoverBackground:$primary; hoverForeground:$white; font:$h5.font";
+		allButton.putClientProperty(FlatClientProperties.STYLE, activeButtonStyle);
+		foodButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
+		drinkButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
+		
 		// event handlers
 		allButton.addActionListener(this);
 		foodButton.addActionListener(this);
@@ -197,7 +193,7 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 
 	public void showProduct(List<Product> productList) {
 		productContainer.removeAll();
-		productList.forEach(product -> {
+		productList.forEach(product -> {			
 			JButton productCard = new JButton();
 			productCard.setLayout(new MigLayout("wrap, fill", "[][]", "[][][]"));
 			ImageIcon icon = new ImageIcon(product.getImageSource());
@@ -273,8 +269,9 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			JButton removeButton = new JButton();
 			removeButton.setIcon(new ImageIcon("images/delete.png"));
 			JLabel priceLabel = new JLabel();
+			DecimalFormat df = new DecimalFormat("#0.00");
 			priceLabel.setText("$"
-					+ chosenProductOrderDeatail.getProduct().getPrice() * chosenProductOrderDeatail.getQuantity() + "");
+					+df.format(chosenProductOrderDeatail.getProduct().getPrice() * chosenProductOrderDeatail.getQuantity()) + "");
 			productChosenCard.add(chosenImage, "span 1 2");
 			productChosenCard.add(productChosenName);
 			productChosenCard.add(removeButton, "gapleft push");
@@ -287,7 +284,6 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 				od.setTotal();
 				totalDouble += od.getProduct().getPrice() * od.getQuantity();
 			}
-			DecimalFormat df = new DecimalFormat("#0.00");
 			total.setText("$" + df.format(totalDouble) + "");
 			productChosenQuantitySpinner.addChangeListener(e -> {
 				int newQty = (int) productChosenQuantitySpinner.getValue();
@@ -308,15 +304,27 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 		if (e.getSource().equals(allButton)) {
 			List<Product> productList = productDAO.getAllProduct();
 			showProduct(productList);
+			setActive(allButton);
 		}
 		if (e.getSource().equals(foodButton)) {
 			List<Product> productList = productDAO.getAllProductByType("Food");
 			showProduct(productList);
+			setActive(foodButton);
 		}
 		if (e.getSource().equals(drinkButton)) {
 			List<Product> productList = productDAO.getAllProductByType("Drink");
 			showProduct(productList);
+			setActive(drinkButton);
 		}
+	}
+
+	private void setActive(JButton activeButton) {
+		
+		allButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
+		foodButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
+		drinkButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
+		
+		activeButton.putClientProperty(FlatClientProperties.STYLE, activeButtonStyle);
 	}
 
 	public void setCurrentEmployee(Employee currentEmployee) {

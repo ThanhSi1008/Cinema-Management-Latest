@@ -43,7 +43,6 @@ public class MainForm extends JLayeredPane {
 
 	public MainForm(Employee employee) {
 		init(employee);
-		System.out.println(employee);
 	}
 
 	private void init(Employee employee) {
