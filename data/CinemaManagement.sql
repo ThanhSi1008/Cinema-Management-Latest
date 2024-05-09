@@ -1128,16 +1128,16 @@ go
 -- Thêm dữ liệu cho bảng Product
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Popcorn', 80, 60.50, 'images/popcorn.jpg', 'Food');
+('Popcorn', 80, 60.50, 'images/popcorn.png', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Large Popcorn', 90, 80.50, 'images/popcorn.jpg', 'Food');
+('Large Popcorn', 90, 80.50, 'images/popcorn.png', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Medium Popcorn', 85, 80.00, 'images/popcorn.jpg', 'Food');
+('Medium Popcorn', 85, 80.00, 'images/popcorn.png', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Pepsi', 95, 70.99, 'images/pepsi.jpg', 'Drink');
+('Pepsi', 95, 70.99, 'images/pepsi.png', 'Drink');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
 ('Coca-Cola', 90, 80.99, 'images/cocacola.png', 'Drink');
@@ -1146,20 +1146,20 @@ VALUES
 ('Mineral Water', 65, 50.50, 'images/mineral-water.png', 'Drink');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('7 Up', 55, 60.99, 'images/7up.jpg', 'Drink');
+('7 Up', 55, 60.99, 'images/7up.png', 'Drink');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Combo x2 Popcorn', 76, 100.50, 'images/popcorn.jpg', 'Food');
+('Combo x2 Popcorn', 76, 100.50, 'images/popcorn.png', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Combo x2 Large Popcorn', 95, 130.50, 'images/popcorn.jpg', 'Food');
+('Combo x2 Large Popcorn', 95, 130.50, 'images/popcorn.png', 'Food');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Combo x2 Medium Popcorn', 80, 120.00, 'images/popcorn.jpg', 'Food');
+('Combo x2 Medium Popcorn', 80, 120.00, 'images/popcorn.png', 'Food');
 go
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Combo x2 Pepsi', 75, 130.99, 'images/pepsi.jpg', 'Drink');
+('Combo x2 Pepsi', 75, 130.99, 'images/pepsi.png', 'Drink');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
 ('Combo x2 Coca-Cola', 40, 150.99, 'images/cocacola.png', 'Drink');
@@ -1168,7 +1168,7 @@ VALUES
 ('Combo x2 Mineral Water', 95, 20.50, 'images/mineral-water.png', 'Drink');
 INSERT INTO Product (ProductName, Quantity, PurchasePrice, ImageSource, ProductType)
 VALUES
-('Combo x2 7 Up', 85, 100.99, 'images/7up.jpg', 'Drink');
+('Combo x2 7 Up', 85, 100.99, 'images/7up.png', 'Drink');
 go
 
 EXECUTE UpdateProductQuantityByID 'Pro001', 20;
