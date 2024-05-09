@@ -109,6 +109,7 @@ public class CheckoutDialog extends JDialog {
 	private JLabel phoneNumberErrorMessage;
 	private JLabel fullNameErrorMessage;
 	private JLabel emailErrorMessage;
+	private String containerStyles;
 
 	public CheckoutDialog(ArrayList<MovieScheduleSeat> seatChosenList, List<OrderDetail> chosenProductOrderDetailList,
 			MovieSchedule movieSchedule) {
@@ -118,7 +119,6 @@ public class CheckoutDialog extends JDialog {
 		movieScheduleSeatDAO = new MovieScheduleSeatDAO();
 		orderDAO = new OrderDAO();
 
-		Border commonBorder = BorderFactory.createLineBorder(new Color(200, 200, 200));
 		container = new JPanel();
 		leftContainer = new JPanel();
 		rightContainer = new JPanel();
@@ -140,7 +140,6 @@ public class CheckoutDialog extends JDialog {
 		customerTitleContainer = new JPanel(new MigLayout("wrap, fill", "[left]", ""));
 		customerInfoTitle = new JLabel("Customer Info");
 		customerTitleContainer.add(customerInfoTitle);
-		customerTitleContainer.setBorder(commonBorder);
 
 		customerInfoContainer.setLayout(new MigLayout("wrap, fill, insets 0", "[fill]", "[grow 0][fill]"));
 
@@ -170,7 +169,6 @@ public class CheckoutDialog extends JDialog {
 		customerInforForm.add(emailLabel, "gaptop 10");
 		customerInforForm.add(emailTextField);
 		customerInforForm.add(emailErrorMessage);
-		customerInforForm.setBorder(commonBorder);
 		
 		phoneNumberTextField.getDocument().addDocumentListener(new DocumentListener() {
 			
@@ -335,7 +333,6 @@ public class CheckoutDialog extends JDialog {
 		total = new JLabel();
 		checkoutButton = new JButton("Check out");
 		checkoutContainer.setLayout(new MigLayout("wrap 2, fill", "[grow 0][fill]", "[grow]"));
-		checkoutContainer.setBorder(commonBorder);
 		checkoutContainer.add(orderTitleLabel, "span 2, align center");
 		checkoutContainer.add(subtotalLabel);
 		checkoutContainer.add(subtotal, "gapleft push");
@@ -353,12 +350,10 @@ public class CheckoutDialog extends JDialog {
 		movieContainer.setLayout(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill][grow 0]"));
 
 		movieTitleContainer = new JPanel(new MigLayout("fill", "[left]", ""));
-		movieTitleContainer.setBorder(commonBorder);
 		movieTitleLabel = new JLabel("Movie");
 		movieTitleContainer.add(movieTitleLabel);
 
 		movieDetailContainer = new JPanel(new MigLayout("wrap 2, gap 15, fillx", "[grow 0][fill]", "[]"));
-		movieDetailContainer.setBorder(commonBorder);
 		movieLabel = new JLabel("Movie:");
 		movie = new JLabel();
 		dateLabel = new JLabel("Date:");
@@ -393,7 +388,6 @@ public class CheckoutDialog extends JDialog {
 		movieDetailContainer.add(totalTicketPrice, "gapleft push");
 
 		movieTotalContainer = new JPanel(new MigLayout("fill", "[left][right]", "[fill]"));
-		movieTotalContainer.setBorder(commonBorder);
 		movieTotalLabel = new JLabel("Total:");
 		movieTotal = new JLabel();
 		movieTotalContainer.add(movieTotalLabel);
@@ -430,30 +424,27 @@ public class CheckoutDialog extends JDialog {
 		productContainer.setLayout(new MigLayout("wrap, fill", "[fill]", "[grow 0][fill][grow 0]"));
 
 		productTitleContainer = new JPanel(new MigLayout("wrap", "[center]", ""));
-		productTitleContainer.setBorder(commonBorder);
 		productTitleLabel = new JLabel("Food and drinks");
 		productTitleContainer.add(productTitleLabel);
 
 		productOrderDetailContainer = new JPanel(new MigLayout("wrap, gap 10, fillx", "[fill]", ""));
-		productOrderDetailContainer.setBorder(commonBorder);
 
 		for (OrderDetail od : chosenProductOrderDetailList) {
 			JPanel productOrderDetailCard = new JPanel(new MigLayout("wrap, fillx", "[left][right]", "[][]"));
 			productNameLabel = new JLabel();
 			productNameLabel.setText(od.getProduct().getProductName());
 			multiplyLabel = new JLabel();
-			multiplyLabel.setText("$" + od.getQuantity() + " x " + od.getProduct().getPrice());
+			multiplyLabel.setText("$" + od.getQuantity() + " x " + new DecimalFormat("#0.00").format(od.getProduct().getPrice()));
 			productLineTotalLabel = new JLabel();
-			productLineTotalLabel.setText("$" + od.getQuantity() * od.getProduct().getPrice() + "");
+			productLineTotalLabel.setText("$" + new DecimalFormat("#0.00").format(od.getQuantity() * od.getProduct().getPrice()) + "");
 			productOrderDetailCard.add(productNameLabel, "span 2");
 			productOrderDetailCard.add(multiplyLabel);
 			productOrderDetailCard.add(productLineTotalLabel);
 			productOrderDetailContainer.add(productOrderDetailCard);
-			productLineTotalLabel.putClientProperty(FlatClientProperties.STYLE, "" + "font:$p.bold;");
+			productLineTotalLabel.putClientProperty(FlatClientProperties.STYLE, "" + "font:$p.font;");
 		}
 
 		productTotalContainer = new JPanel(new MigLayout("wrap, fillx", "[left][right]", "[fill]"));
-		productTotalContainer.setBorder(commonBorder);
 		productTotalLabel = new JLabel("Total");
 		double productTotalDouble = 0;
 		for (OrderDetail od : chosenProductOrderDetailList) {
@@ -484,7 +475,6 @@ public class CheckoutDialog extends JDialog {
 		noteLabel = new JLabel("Comment");
 		noteContainer.add(noteLabel);
 		noteContainer.add(noteTextArea);
-		noteContainer.setBorder(commonBorder);
 
 		// additional styles
 		JLabel normalLabel = new JLabel();
@@ -500,6 +490,24 @@ public class CheckoutDialog extends JDialog {
 		total.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$danger;");
 		checkoutButton.putClientProperty(FlatClientProperties.STYLE,
 				"arc:5;hoverBackground:$primary;hoverForeground:$white");
+		
+		containerStyles = "background:$white; border:4,6,4,6;";
+		customerTitleContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles + "background:$primary");
+		customerInforForm.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		movieTitleContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		movieDetailContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		productTitleContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		productOrderDetailContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		checkoutContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		noteContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		movieTotalContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		productTotalContainer.putClientProperty(FlatClientProperties.STYLE, containerStyles);
+		
+		customerInfoTitle.setOpaque(true);
+		customerInfoTitle.putClientProperty(FlatClientProperties.STYLE, "background:$primary; foreground:$clr-white");
+		
+		
+
 
 		// handle event listener
 		checkoutButton.addActionListener(e -> {
