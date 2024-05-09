@@ -62,17 +62,13 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 	private JButton continueButton;
 	private List<OrderDetail> chosenProductOrderDetailList;
 	private boolean exist;
-//	private ArrayList<MovieScheduleSeat> seatChosenList;
 	private CheckoutDialog checkoutDialog;
-//	private MovieSchedule movieSchedule;
 	private Employee currentEmployee;
 	private SeatingOptionDialog seatingOptionDialog;
 	private String activeButtonStyle;
 	private String normalButtonStyle;
 
 	public ProductOptionDialog(ArrayList<MovieScheduleSeat> seatChosenList, MovieSchedule movieSchedule) {
-//		this.seatChosenList = seatChosenList;
-//		this.movieSchedule = movieSchedule;
 		chosenProductOrderDetailList = new ArrayList<OrderDetail>();
 		this.productDAO = new ProductDAO();
 		container = new JPanel();
@@ -207,11 +203,11 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			JLabel productName = new JLabel(product.getProductName());
 			productName.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h4.font;");
 			JPanel quantityContainer = new JPanel(new MigLayout("", "[][]", ""));
-			quantityContainer.setBackground(Color.white);
 			JLabel quantityText = new JLabel("Qty:");
 			JLabel quantity = new JLabel();
 			quantityContainer.add(quantityText);
 			quantityContainer.add(quantity);
+			quantityContainer.putClientProperty(FlatClientProperties.STYLE, "background:$white");
 			quantity.setText(product.getQuantity() + "");
 			JLabel price = new JLabel("$" + product.getPrice() + "");
 			price.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h5.font;" + "foreground:$primary;");
@@ -219,9 +215,8 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			productCard.add(productName, "span 2, al center");
 			productCard.add(quantityContainer);
 			productCard.add(price, "gapleft push");
-			productCard.setBackground(new Color(255, 255, 255));
-			productCard.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200)));
-
+			productCard.putClientProperty(FlatClientProperties.STYLE,
+					"default.background:$white;default.background:$black");
 			productCard.addActionListener(e -> {
 				exist = false;
 				chosenProductOrderDetailList.forEach(chosenProductOrderDeatail -> {

@@ -126,7 +126,7 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 					glassPane.setVisible(true);		
 					
 					int selectedRow = table.getSelectedRow();
-					String movieScheduleID = (String) screeningTable.getValueAt(selectedRow, 0);
+					String movieScheduleID = (String) screeningTableModel.getValueAt(selectedRow, 0);
 					MovieSchedule movieSchedule = movieScheduleDAO.getMovieScheduleByID(movieScheduleID);
 					seatingOptioneDialog = new SeatingOptionDialog(movieSchedule);
 					seatingOptioneDialog.setCurrentEmployee(currentEmployee);

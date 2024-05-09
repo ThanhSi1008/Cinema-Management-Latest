@@ -47,7 +47,8 @@ public class RoomDAO {
 	public Room getRoomByID(String roomIDToFind) {
 		Connection connection = connectDB.getConnection();
 		try {
-			PreparedStatement s = connection.prepareStatement("SELECT RoomID, RoomName, NumberOfSeats FROM room where roomId = ?");
+			PreparedStatement s = connection
+					.prepareStatement("SELECT RoomID, RoomName, NumberOfSeats FROM Room where roomid = ?");
 			s.setString(1, roomIDToFind);
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {

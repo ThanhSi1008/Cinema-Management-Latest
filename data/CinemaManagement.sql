@@ -889,18 +889,20 @@ RETURN
 );
 go
 
-CREATE VIEW OrderSummaryView AS
-SELECT CONVERT(date, o.OrderDate) AS Time, 
-       COUNT(DISTINCT o.OrderID) AS TotalOrder, 
-       SUM(o.QuantitySeat) AS TotalSeat, 
-       SUM(o.QuantitySeat * ms.PricePerSeat) AS TotalSeatValue,
-       SUM(od.Quantity) AS TotalProduct, 
-       SUM(od.LineTotal) AS TotalProductValue, 
-       SUM(o.QuantitySeat * ms.PricePerSeat) + SUM(od.LineTotal) AS TotalOrderValue
-FROM [Order] o 
-JOIN OrderDetail od ON o.OrderID = od.OrderID
-JOIN MovieSchedule ms ON o.ScheduleID = ms.ScheduleID
-GROUP BY CONVERT(date, o.OrderDate);
+create or alter view OrderView as
+select o.OrderDate as Time, o.OrderID, o.ScheduleID, sum(o.QuantitySeat) as QuantitySeat, ms.PricePerSeat, 
+	   ms.PricePerSeat * sum(o.QuantitySeat) as TotalSeat, sum(isnull(od.Quantity, 0)) as QuantityProduct, 
+	   sum(isnull(od.LineTotal, 0)) as TotalProduct, o.Total as TotalBill
+from [dbo].[Order] o left join [dbo].[MovieSchedule] ms on ms.ScheduleID = o.ScheduleID
+	   full join [dbo].[OrderDetail] od on od.OrderID = o.OrderID 
+group by o.OrderID, o.ScheduleID, o.OrderDate, o.Total, ms.PricePerSeat
+go
+
+create or alter view OrderSummaryView as
+select CAST(Time AS DATE) AS Date, sum(QuantitySeat) as QuantitySeat, sum(TotalSeat) as TotalSeat, 
+sum(QuantityProduct) as QuantityProduct, sum(TotalProduct) as TotalProduct, sum(TotalBill) as TotalAllBill
+from [dbo].[OrderView] 
+group by CAST(Time AS DATE)
 go
 
 -- Thêm dữ liệu cho bảng Employee
@@ -1342,9 +1344,9 @@ go
 
 -------------------*** OrderDetail ***
 DECLARE @i INT = 1;
-WHILE @i <= 9999
+WHILE @i <= 29999
 BEGIN
-	DECLARE @Quantity INT = FLOOR(RAND() * 11);
+	DECLARE @Quantity INT = FLOOR(RAND() * 11 + 1);
     DECLARE @RandomProductID CHAR(6);
     SELECT TOP 1 @RandomProductID = ProductID
     FROM Product

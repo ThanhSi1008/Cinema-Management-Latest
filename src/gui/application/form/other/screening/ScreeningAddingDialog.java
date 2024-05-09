@@ -80,18 +80,20 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 		movieNameLabel = new JLabel("Movie name: ");
 		movieNameCombobox = new JComboBox<Movie>();
 		movieDAO.getAllMovie().forEach(movie -> {
-			movieNameCombobox.addItem(movie);
+			if (movie.getStatus().equals("Released")) {
+				movieNameCombobox.addItem(movie);
+			}
 		});
 		screeningDateLabel = new JLabel("Screening Date: ");
 		screeningDateTextField = new JTextField();
 		screeningDateDateChooser = new DateChooser();
 		screeningDateDateChooserButton = new JButton();
-		
+
 		screeningTimeLabel = new JLabel("Screen Time: ");
 		screeningTimeTextField = new JTextField(20);
 		screeningTimeTimePicker = new TimePicker();
 		screeningTimeTimePickerButton = new JButton();
-		
+
 		roomLabel = new JLabel("Room: ");
 		roomCombobox = new JComboBox<Room>();
 		roomDAO.getAllRoom().forEach(room -> {
@@ -146,20 +148,21 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 				}
 			}
 		});
-		
+
 		// time picker
 		ImageIcon clockIcon = new ImageIcon("images/clock.png");
 		Image clockImage = clockIcon.getImage();
 		Image newClockImage = clockImage.getScaledInstance(16, 16, java.awt.Image.SCALE_SMOOTH);
 		clockIcon = new ImageIcon(newClockImage);
-		
+
 		screeningTimeTimePicker.setForeground(new Color(138, 48, 191));
 		screeningTimeTimePicker.setDisplayText(screeningTimeTextField);
 		screeningTimeTimePickerButton.setIcon(clockIcon);
 		screeningTimeTimePickerButton.addActionListener(e -> {
-			screeningTimeTimePicker.showPopup(this, (getWidth() - screeningTimeTimePicker.getPreferredSize().width) / 2, (getHeight() - screeningTimeTimePicker.getPreferredSize().height) / 2);
+			screeningTimeTimePicker.showPopup(this, (getWidth() - screeningTimeTimePicker.getPreferredSize().width) / 2,
+					(getHeight() - screeningTimeTimePicker.getPreferredSize().height) / 2);
 		});
-		
+
 		// event listeners
 		saveButton.addActionListener(this);
 
@@ -184,65 +187,68 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 			}
 
 			String screeningTime = screeningTimeTextField.getText().trim();
-			LocalTime screeningTimeLocalTime;	        
-	        if (screeningTime.contains("AM") || screeningTime.contains("PM")) {
-	            DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("hh:mm a");
-	            screeningTimeLocalTime = LocalTime.parse(screeningTime, inputFormat);
-	        } else {
-	            DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("HH:mm");
-	            screeningTimeLocalTime = LocalTime.parse(screeningTime, inputFormat);
-	        }
-	        
-	        LocalDateTime screeningDateTime = LocalDateTime.of(screeningDateLocalDate, screeningTimeLocalTime);
-	        
-	        Room room = (Room) roomCombobox.getSelectedItem();
-	        String perSeatPrice = perSeatPriceTextField.getText().trim();
-	        
-	        LocalDateTime endingDateTime = screeningDateTime.plusMinutes(movie.getDuration());
-	        
-	        // check to see if the room is available or not
-	        // within the same room, if the screeningdatetime lies between screeningtime of other movie schedule, then show an error message
+			LocalTime screeningTimeLocalTime;
+			if (screeningTime.contains("AM") || screeningTime.contains("PM")) {
+				DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("hh:mm a");
+				screeningTimeLocalTime = LocalTime.parse(screeningTime, inputFormat);
+			} else {
+				DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("HH:mm");
+				screeningTimeLocalTime = LocalTime.parse(screeningTime, inputFormat);
+			}
 
-	        List<MovieSchedule> movieScheduleList = movieScheduleDAO.findMovieScheduleByRoom(room.getRoomName());
-	        for (MovieSchedule movieSchedule : movieScheduleList) {
-	        	boolean a1 = screeningDateTime.isAfter(movieSchedule.getScreeningTime());
-	        	boolean a2 = screeningDateTime.isBefore(movieSchedule.getEndTime().plusMinutes(30));
-	        	boolean b1 = endingDateTime.plusMinutes(30).isAfter(movieSchedule.getScreeningTime());
-	        	boolean b2 = endingDateTime.plusMinutes(30).isBefore(movieSchedule.getEndTime().plusMinutes(30));
-	        	boolean c1  = screeningDateTime.isBefore(movieSchedule.getScreeningTime());
-	        	boolean c2 = endingDateTime.plusMinutes(30).isAfter(movieSchedule.getEndTime().plusMinutes(30));
-	        	if ((a1 & a2) || (b1 && b2) || (c1 && c2)) {
-	        		errorMessageLabel.setText("Room is not available in this hour");
-	        		screeningTimeTextField.requestFocus();
-	        		return;
-	        	}
-	        }
-	        
+			LocalDateTime screeningDateTime = LocalDateTime.of(screeningDateLocalDate, screeningTimeLocalTime);
+
+			Room room = (Room) roomCombobox.getSelectedItem();
+			String perSeatPrice = perSeatPriceTextField.getText().trim();
+
+			LocalDateTime endingDateTime = screeningDateTime.plusMinutes(movie.getDuration());
+
+			// check to see if the room is available or not
+			// within the same room, if the screeningdatetime lies between screeningtime of
+			// other movie schedule, then show an error message
+
+			List<MovieSchedule> movieScheduleList = movieScheduleDAO.findMovieScheduleByRoom(room.getRoomName());
+			for (MovieSchedule movieSchedule : movieScheduleList) {
+				boolean a1 = screeningDateTime.isAfter(movieSchedule.getScreeningTime());
+				boolean a2 = screeningDateTime.isBefore(movieSchedule.getEndTime().plusMinutes(30));
+				boolean b1 = endingDateTime.plusMinutes(30).isAfter(movieSchedule.getScreeningTime());
+				boolean b2 = endingDateTime.plusMinutes(30).isBefore(movieSchedule.getEndTime().plusMinutes(30));
+				boolean c1 = screeningDateTime.isBefore(movieSchedule.getScreeningTime());
+				boolean c2 = endingDateTime.plusMinutes(30).isAfter(movieSchedule.getEndTime().plusMinutes(30));
+				if ((a1 & a2) || (b1 && b2) || (c1 && c2)) {
+					errorMessageLabel.setText("Room is not available in this hour");
+					screeningTimeTextField.requestFocus();
+					return;
+				}
+			}
+
 			// check to see if they are valid
-	        if (perSeatPrice.equals("")) {
-	        	errorMessageLabel.setText("Seat price must not be empty");
-	        	perSeatPriceTextField.requestFocus();
-	        	return;
-	        }
-	        if (!perSeatPrice.matches("^\\d+(\\.\\d+)?$")) {
-	        	errorMessageLabel.setText("Seat price must not be a double");
-	        	perSeatPriceTextField.requestFocus();
-	        	return;
-	        }
-	        double perSeatPriceDouble = Double.parseDouble(perSeatPrice);
+			if (perSeatPrice.equals("")) {
+				errorMessageLabel.setText("Seat price must not be empty");
+				perSeatPriceTextField.requestFocus();
+				return;
+			}
+			if (!perSeatPrice.matches("^\\d+(\\.\\d+)?$")) {
+				errorMessageLabel.setText("Seat price must not be a double");
+				perSeatPriceTextField.requestFocus();
+				return;
+			}
+			double perSeatPriceDouble = Double.parseDouble(perSeatPrice);
 			// add them to the database
-	        boolean isSuccessful = movieScheduleDAO.addNewMovieSchedule(new MovieSchedule(screeningDateTime, movie, room, perSeatPriceDouble));
-	        if (isSuccessful) {
-	        	JOptionPane.showMessageDialog(this, "Add new movie schedule successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
-	        	this.dispose();
-	        	formScreeningManagement.handleSearchAndFilter();
-	        } else {
-	        	JOptionPane.showMessageDialog(this, "An error has occured", "Failed", JOptionPane.ERROR_MESSAGE);
-	        }	        
+			boolean isSuccessful = movieScheduleDAO
+					.addNewMovieSchedule(new MovieSchedule(screeningDateTime, movie, room, perSeatPriceDouble));
+			if (isSuccessful) {
+				JOptionPane.showMessageDialog(this, "Add new movie schedule successfully", "Success",
+						JOptionPane.INFORMATION_MESSAGE);
+				this.dispose();
+				formScreeningManagement.handleSearchAndFilter();
+			} else {
+				JOptionPane.showMessageDialog(this, "An error has occured", "Failed", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	}
 
 	public void setFormScreeningManagement(FormScreeningManagement formScreeningManagement) {
-		this.formScreeningManagement = formScreeningManagement;	
+		this.formScreeningManagement = formScreeningManagement;
 	}
 }

@@ -9,15 +9,15 @@ import dao.MovieScheduleDAO;
 import entity.MovieSchedule;
 
 public class ScreeningTableModel extends AbstractTableModel {
-	
+
 	private static final long serialVersionUID = 1L;
 	private List<MovieSchedule> movieScheduleList;
 	private String[] columnNames = { "Movie Schedule ID", "Movie Name", "Duration", "Screening Time" };
-	private MovieScheduleDAO movieScheduleDAO;	
+	private MovieScheduleDAO movieScheduleDAO;
 
 	public ScreeningTableModel() {
 		movieScheduleDAO = new MovieScheduleDAO();
-		movieScheduleList = movieScheduleDAO.getAllMovieSchedule();
+		movieScheduleList = movieScheduleDAO.getAllAvailableMovieSchedule();
 	}
 
 	@Override
@@ -60,21 +60,21 @@ public class ScreeningTableModel extends AbstractTableModel {
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		MovieSchedule movieSchedule = movieScheduleList.get(rowIndex);
 		switch (columnIndex) {
-			case 0:
-				return movieSchedule.getScheduleID();
-			case 1:
-				return movieSchedule.getMovie().getMovieName();
-			case 2:
-				return movieSchedule.getMovie().getDuration();
-			case 3:
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-				return movieSchedule.getScreeningTime().format(formatter);
+		case 0:
+			return movieSchedule.getScheduleID();
+		case 1:
+			return movieSchedule.getMovie().getMovieName();
+		case 2:
+			return movieSchedule.getMovie().getDuration();
+		case 3:
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+			return movieSchedule.getScreeningTime().format(formatter);
 		}
 		return null;
 	}
 
 	public void setMovieScheduleList(List<MovieSchedule> movieScheduleList) {
-		this.movieScheduleList = movieScheduleList;	
+		this.movieScheduleList = movieScheduleList;
 	}
 
 }

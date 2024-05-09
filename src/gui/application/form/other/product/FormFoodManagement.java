@@ -63,7 +63,7 @@ public class FormFoodManagement extends JPanel {
 		searchTextField = new JTextField(15);
 		searchTextField.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
 				new FlatSVGIcon("gui/icon/svg/search.svg", 0.35f));
-		searchTextField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT,  "Search");
+		searchTextField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Search");
 		topPanel.add(searchTextField);
 
 		// Add button
