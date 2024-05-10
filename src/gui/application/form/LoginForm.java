@@ -27,7 +27,7 @@ import com.formdev.flatlaf.util.UIScale;
 import entity.Employee;
 import gui.application.Application;
 import gui.application.form.other.profile.FormProfileInfo;
-import gui.other.Ctrl_LoginForm;
+import gui.other.CtrlLoginForm;
 import raven.swing.blur.BlurBackground;
 import raven.swing.blur.BlurChild;
 import raven.swing.blur.style.GradientColor;
@@ -47,10 +47,10 @@ public class LoginForm extends BlurBackground {
 	private JPanel login;
 	private JPasswordField txtPass;
 	private JTextField txtUser;
-	private Ctrl_LoginForm ctrl_LoginForm;
+	private CtrlLoginForm ctrlLoginForm;
 
 	public LoginForm() {
-		ctrl_LoginForm = new Ctrl_LoginForm();
+		ctrlLoginForm = new CtrlLoginForm();
 //		ImageIcon imageIcon = new ImageIcon("images/background.jpg");
 		setOverlay(new StyleOverlay(new Color(20, 20, 20), 0.1f));
 //		setImage(imageIcon.getImage());
@@ -83,7 +83,7 @@ public class LoginForm extends BlurBackground {
 		cmdLogin.addActionListener(e -> {
 			String username = txtUser.getText().trim();
 			String password = new String(txtPass.getPassword());
-			Employee employee = ctrl_LoginForm.getEmployeeByAccount(username, password);
+			Employee employee = ctrlLoginForm.getEmployeeByAccount(username, password);
 			Application app = Application.getInstance();
 
 			if (employee == null) {

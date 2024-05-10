@@ -6,11 +6,11 @@ import dao.AccountDAO;
 import entity.Account;
 import entity.Employee;
 
-public class Ctrl_LoginForm {
+public class CtrlLoginForm {
 
 	private AccountDAO accountDAO;
 
-	public Ctrl_LoginForm() {
+	public CtrlLoginForm() {
 		accountDAO = new AccountDAO();
 	}
 

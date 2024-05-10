@@ -64,6 +64,7 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 	private JTextField perSeatPriceTextField;
 	private TimePicker screeningTimeTimePicker;
 	private JButton screeningTimeTimePickerButton;
+	private FormScreeningManagement2 formScreeningManagement2;
 
 	public ScreeningAddingDialog() {
 		movieScheduleDAO = new MovieScheduleDAO();
@@ -178,16 +179,13 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 			// get the the value from the text fields
 			Movie movie = (Movie) movieNameCombobox.getSelectedItem();
 			String screeningDate = screeningDateTextField.getText().trim();
+
 			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 			LocalDate screeningDateLocalDate = LocalDate.parse(screeningDate, formatter);
-			if (!screeningDateLocalDate.isAfter(LocalDate.now())) {
-				errorMessageLabel.setText("Screening date must be after today");
-				screeningDateTextField.requestFocus();
-				return;
-			}
 
 			String screeningTime = screeningTimeTextField.getText().trim();
 			LocalTime screeningTimeLocalTime;
+
 			if (screeningTime.contains("AM") || screeningTime.contains("PM")) {
 				DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("hh:mm a");
 				screeningTimeLocalTime = LocalTime.parse(screeningTime, inputFormat);
@@ -197,25 +195,23 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 			}
 
 			LocalDateTime screeningDateTime = LocalDateTime.of(screeningDateLocalDate, screeningTimeLocalTime);
+			LocalDateTime endingDateTime = screeningDateTime.plusMinutes(movie.getDuration());
+
+			if (!screeningDateTime.isAfter(LocalDateTime.now())) {
+				errorMessageLabel.setText("Screening date must be after today");
+				screeningDateTextField.requestFocus();
+				return;
+			}
 
 			Room room = (Room) roomCombobox.getSelectedItem();
 			String perSeatPrice = perSeatPriceTextField.getText().trim();
 
-			LocalDateTime endingDateTime = screeningDateTime.plusMinutes(movie.getDuration());
-
-			// check to see if the room is available or not
-			// within the same room, if the screeningdatetime lies between screeningtime of
-			// other movie schedule, then show an error message
-
 			List<MovieSchedule> movieScheduleList = movieScheduleDAO.findMovieScheduleByRoom(room.getRoomName());
 			for (MovieSchedule movieSchedule : movieScheduleList) {
-				boolean a1 = screeningDateTime.isAfter(movieSchedule.getScreeningTime());
-				boolean a2 = screeningDateTime.isBefore(movieSchedule.getEndTime().plusMinutes(30));
-				boolean b1 = endingDateTime.plusMinutes(30).isAfter(movieSchedule.getScreeningTime());
-				boolean b2 = endingDateTime.plusMinutes(30).isBefore(movieSchedule.getEndTime().plusMinutes(30));
-				boolean c1 = screeningDateTime.isBefore(movieSchedule.getScreeningTime());
-				boolean c2 = endingDateTime.plusMinutes(30).isAfter(movieSchedule.getEndTime().plusMinutes(30));
-				if ((a1 & a2) || (b1 && b2) || (c1 && c2)) {
+				if (screeningDateTime.minusMinutes(30).isBefore(movieSchedule.getEndTime())
+						&& movieSchedule.getEndTime().isBefore(endingDateTime.plusMinutes(30))
+						|| screeningDateTime.minusMinutes(30).isBefore(movieSchedule.getScreeningTime())
+								&& movieSchedule.getScreeningTime().isBefore(endingDateTime.plusMinutes(30))) {
 					errorMessageLabel.setText("Room is not available in this hour");
 					screeningTimeTextField.requestFocus();
 					return;
@@ -250,5 +246,10 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 
 	public void setFormScreeningManagement(FormScreeningManagement formScreeningManagement) {
 		this.formScreeningManagement = formScreeningManagement;
+	}
+
+	public void setFormScreeningManagement(FormScreeningManagement2 formScreeningManagement2) {
+		this.formScreeningManagement2 = formScreeningManagement2;
+
 	}
 }

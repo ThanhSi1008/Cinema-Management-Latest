@@ -100,7 +100,7 @@ public class CreateMovieTickets {
 
 		String defaultFolderPath = "T:\\JavaProject\\Cinema-Java-Project\\data\\";
 
-		Document document = new Document(new Rectangle(333, 850));
+		Document document = new Document(new Rectangle(333, 999));
 		String fileName = orderID + "ticket.pdf";
 
 		try {

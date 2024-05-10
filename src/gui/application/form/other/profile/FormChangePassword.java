@@ -19,7 +19,7 @@ import javax.swing.JTextField;
 import dao.AccountDAO;
 import entity.Employee;
 import gui.application.Application;
-import gui.other.Ctrl_LoginForm;
+import gui.other.CtrlLoginForm;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
 import raven.toast.Notifications;
@@ -40,10 +40,10 @@ public class FormChangePassword extends JPanel {
 	private JLabel imforamtionLabel;
 	private JLabel errorLabel;
 	private AccountDAO accountDAO;
-	private Ctrl_LoginForm control;
+	private CtrlLoginForm control;
 
 	public FormChangePassword(Employee employee) {
-		control = new Ctrl_LoginForm();
+		control = new CtrlLoginForm();
 		initComponents(employee);
 		accountDAO = new AccountDAO();
 	}
