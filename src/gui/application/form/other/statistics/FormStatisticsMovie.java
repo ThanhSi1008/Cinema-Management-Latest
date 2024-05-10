@@ -8,7 +8,8 @@ import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -265,17 +266,30 @@ public class FormStatisticsMovie extends SimpleForm implements ActionListener {
 		panel.add(panel1, "split 2,gap 0 20");
 	}
 
+//	private DefaultPieDataset<String> createData(List<MovieRanking> movieRankingList) {
+//		DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+//
+//		movieRankingList.stream().sorted(Comparator.comparingDouble(MovieRanking::getRevenue).reversed()).limit(5).collect(Collectors.toList()).forEach(movieRanking -> {
+//					dataset.setValue(movieRanking.getMovieName(), movieRanking.getRevenue());
+//				});
+//
+//		return dataset;
+//	}
+
 	private DefaultPieDataset<String> createData(List<MovieRanking> movieRankingList) {
-		DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
-
-		List<MovieRanking> topMovies = movieRankingList.stream()
-				.sorted(Comparator.comparingDouble(MovieRanking::getRevenue).reversed()).limit(7)
-				.collect(Collectors.toList());
-
-		for (MovieRanking movieRanking : topMovies) {
-			dataset.setValue(movieRanking.getMovieName(), movieRanking.getRevenue());
+		TreeMap<Double, String> sortedMovies = new TreeMap<>(Comparator.reverseOrder());
+		for (MovieRanking movieRanking : movieRankingList) {
+			sortedMovies.put(movieRanking.getRevenue(), movieRanking.getMovieName());
 		}
 
+		DefaultPieDataset<String> dataset = new DefaultPieDataset<>();
+		int count = 0;
+		for (Map.Entry<Double, String> entry : sortedMovies.entrySet()) {
+			dataset.setValue(entry.getValue(), entry.getKey());
+			if (++count >= 5) {
+				break;
+			}
+		}
 		return dataset;
 	}
 

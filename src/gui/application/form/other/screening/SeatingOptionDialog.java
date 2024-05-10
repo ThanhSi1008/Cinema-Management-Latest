@@ -1,6 +1,5 @@
 package gui.application.form.other.screening;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -77,15 +76,16 @@ public class SeatingOptionDialog extends JDialog {
 		rightContainer = new JPanel();
 
 		normalButton = new JButton();
-		normalButton.putClientProperty(FlatClientProperties.STYLE, "background:$dark-clr-black; foreground:$dark-clr-white");
+		normalButton.putClientProperty(FlatClientProperties.STYLE,
+				"background:$dark-clr-black; foreground:$dark-clr-white");
 		selectedButton = new JButton();
-		selectedButton.putClientProperty(FlatClientProperties.STYLE,
-				"background:$clr-red;foreground:$clr-white");
+		selectedButton.putClientProperty(FlatClientProperties.STYLE, "background:$clr-red;foreground:$clr-white");
 
 		leftContainer.setLayout(new MigLayout("wrap, fill, insets 0", "[fill]", "[grow 0]15[fill][grow 0]"));
 		screenLabel = new JLabel("Screen");
 		screenLabel.setOpaque(true);
-		screenLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h1.font; foreground:$clr-red; background:$clr-black");
+		screenLabel.putClientProperty(FlatClientProperties.STYLE,
+				"font:$h1.font; foreground:$clr-red; background:$clr-black");
 		screenLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		leftContainer.add(screenLabel, "align center, h 50!");
 		seatsContainer = new JPanel();
@@ -264,13 +264,13 @@ public class SeatingOptionDialog extends JDialog {
 			}
 
 		});
-		
+
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				JPanel defaultGlassPane = (JPanel) Application.getInstance().getGlassPane();
 				defaultGlassPane.removeAll();
-				Application.getInstance().setGlassPane(defaultGlassPane); 
+				Application.getInstance().setGlassPane(defaultGlassPane);
 				defaultGlassPane.setVisible(false);
 			}
 		});

@@ -10,8 +10,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
@@ -118,20 +116,20 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 				JTable table = (JTable) mouseEvent.getSource();
 				// int row = table.rowAtPoint(point);
 				if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-					
+
 					// Setting up the glass pane
 					JPanel glassPane = new BlurGlassPane();
 					Application.getInstance().setGlassPane(glassPane);
 					// Make the glass pane visible
-					glassPane.setVisible(true);		
-					
+					glassPane.setVisible(true);
+
 					int selectedRow = table.getSelectedRow();
 					String movieScheduleID = (String) screeningTableModel.getValueAt(selectedRow, 0);
 					MovieSchedule movieSchedule = movieScheduleDAO.getMovieScheduleByID(movieScheduleID);
 					seatingOptioneDialog = new SeatingOptionDialog(movieSchedule);
 					seatingOptioneDialog.setCurrentEmployee(currentEmployee);
 					seatingOptioneDialog.setModal(true);
-	                seatingOptioneDialog.setVisible(true);
+					seatingOptioneDialog.setVisible(true);
 				}
 			}
 		});
@@ -314,40 +312,48 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 }
 
 class BlurGlassPane extends JPanel {
-    private BufferedImage blurredImage;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private BufferedImage blurredImage;
 
-    public BlurGlassPane() {
-        setOpaque(false); // Making the glass pane transparent
-        // Create a blank translucent image
-        blurredImage = new BufferedImage(Application.getInstance().getRootPane().getWidth(), Application.getInstance().getRootPane().getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2d = blurredImage.createGraphics();
-        g2d.setColor(new Color(0, 0, 0, 128)); // Set color with alpha for translucency
-        g2d.fillRect(0, 0, Application.getInstance().getRootPane().getWidth(), Application.getInstance().getRootPane().getHeight()); // Fill the image with the translucent color
-        g2d.dispose();
+	public BlurGlassPane() {
+		setOpaque(false); // Making the glass pane transparent
+		// Create a blank translucent image
+		blurredImage = new BufferedImage(Application.getInstance().getRootPane().getWidth(),
+				Application.getInstance().getRootPane().getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = blurredImage.createGraphics();
+		g2d.setColor(new Color(0, 0, 0, 128)); // Set color with alpha for translucency
+		g2d.fillRect(0, 0, Application.getInstance().getRootPane().getWidth(),
+				Application.getInstance().getRootPane().getHeight()); // Fill the image with the translucent color
+		g2d.dispose();
 
-        // Apply blur effect
-        blurredImage = blurImage(blurredImage);
-    }
+		// Apply blur effect
+		blurredImage = blurImage(blurredImage);
+	}
 
-    // Method to blur an image
-    private BufferedImage blurImage(BufferedImage image) {
-        // You can implement your own image blurring algorithm or use libraries like JavaFX or Apache Commons Imaging
-        // Here, I'll use a simple averaging algorithm for demonstration purposes
-        int blurRadius = 5;
-        float weight = 1.0f / (blurRadius * blurRadius);
-        float[] blurMatrix = new float[blurRadius * blurRadius];
-        for (int i = 0; i < blurMatrix.length; i++) {
-            blurMatrix[i] = weight;
-        }
-        Kernel kernel = new Kernel(blurRadius, blurRadius, blurMatrix);
-        BufferedImageOp op = new ConvolveOp(kernel);
-        return op.filter(image, null);
-    }
+	// Method to blur an image
+	private BufferedImage blurImage(BufferedImage image) {
+		// You can implement your own image blurring algorithm or use libraries like
+		// JavaFX or Apache Commons Imaging
+		// Here, I'll use a simple averaging algorithm for demonstration purposes
+		int blurRadius = 5;
+		float weight = 1.0f / (blurRadius * blurRadius);
+		float[] blurMatrix = new float[blurRadius * blurRadius];
+		for (int i = 0; i < blurMatrix.length; i++) {
+			blurMatrix[i] = weight;
+		}
+		Kernel kernel = new Kernel(blurRadius, blurRadius, blurMatrix);
+		BufferedImageOp op = new ConvolveOp(kernel);
+		return op.filter(image, null);
+	}
 
-    @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        // Draw the blurred image onto the glass pane
-        g.drawImage(blurredImage, 0, 0, Application.getInstance().getRootPane().getWidth(), Application.getInstance().getRootPane().getHeight(), null);
-    }
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		// Draw the blurred image onto the glass pane
+		g.drawImage(blurredImage, 0, 0, Application.getInstance().getRootPane().getWidth(),
+				Application.getInstance().getRootPane().getHeight(), null);
+	}
 }

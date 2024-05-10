@@ -29,8 +29,11 @@ public class Customer {
 		this.regDate = now;
 	}
 
-	public Customer(String customerID) {
+	public Customer(String customerID, String phoneNumber, String fullName, String email) {
 		this.customerID = customerID;
+		this.phoneNumber = phoneNumber;
+		this.fullName = fullName;
+		this.email = email;
 	}
 
 	public String getCustomerID() {

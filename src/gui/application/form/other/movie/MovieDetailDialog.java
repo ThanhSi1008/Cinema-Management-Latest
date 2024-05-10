@@ -15,10 +15,10 @@ public class MovieDetailDialog extends JDialog {
 		this.movie = movie;
 		setLayout(new MigLayout());
 		container = new JPanel(new MigLayout("wrap, fill", "[][]", "[fill]"));
-		
+
 		add(container, "dock center");
 		pack();
 		setLocationRelativeTo(null);
 	}
-	
+
 }

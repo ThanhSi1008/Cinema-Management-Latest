@@ -1,11 +1,9 @@
 package gui.application;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.time.LocalTime;
 
-import javax.swing.BorderFactory;
 import javax.swing.GroupLayout;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -76,7 +74,7 @@ public class Application extends JFrame {
 
 		GroupLayout layout = new GroupLayout(getContentPane());
 		getContentPane().setLayout(layout);
-		
+
 		layout.setHorizontalGroup(
 				layout.createParallelGroup(GroupLayout.Alignment.LEADING).addGap(0, 719, Short.MAX_VALUE));
 		layout.setVerticalGroup(
@@ -95,9 +93,7 @@ public class Application extends JFrame {
 		} else {
 			FlatMacDarkLaf.setup();
 		}
-		SwingUtilities.invokeLater(() -> {
-			new Application().setVisible(true);
-		});
+		SwingUtilities.invokeLater(() -> new Application().setVisible(true));
 	}
 
 }

@@ -2,8 +2,6 @@ package gui.application.form.other.screening;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.text.DecimalFormat;
@@ -39,6 +37,7 @@ import entity.MovieScheduleSeat;
 import entity.Order;
 import entity.OrderDetail;
 import gui.application.Application;
+import gui.other.CreateMovieTickets;
 import net.miginfocom.swing.MigLayout;
 
 public class CheckoutDialog extends JDialog {
@@ -171,9 +170,9 @@ public class CheckoutDialog extends JDialog {
 		customerInforForm.add(emailTextField);
 		customerInforForm.add(emailErrorMessage);
 		customerInforForm.setBorder(commonBorder);
-		
+
 		phoneNumberTextField.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				String phoneNumber = phoneNumberTextField.getText().trim();
@@ -195,7 +194,7 @@ public class CheckoutDialog extends JDialog {
 					emailTextField.setText("");
 				}
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				String phoneNumber = phoneNumberTextField.getText().trim();
@@ -215,9 +214,9 @@ public class CheckoutDialog extends JDialog {
 				} else {
 					fullNameTextField.setText("");
 					emailTextField.setText("");
-				}		
+				}
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				String phoneNumber = phoneNumberTextField.getText().trim();
@@ -237,10 +236,9 @@ public class CheckoutDialog extends JDialog {
 				} else {
 					fullNameTextField.setText("");
 					emailTextField.setText("");
-				}			
+				}
 			}
 		});
-
 
 		fullNameTextField.getDocument().addDocumentListener(new DocumentListener() {
 
@@ -279,7 +277,7 @@ public class CheckoutDialog extends JDialog {
 		});
 
 		emailTextField.getDocument().addDocumentListener(new DocumentListener() {
-			
+
 			@Override
 			public void removeUpdate(DocumentEvent e) {
 				String email = emailTextField.getText().trim();
@@ -291,9 +289,9 @@ public class CheckoutDialog extends JDialog {
 					emailErrorMessage.setText("Email must be in the right format");
 					return;
 				}
-				emailErrorMessage.setText("*");				
+				emailErrorMessage.setText("*");
 			}
-			
+
 			@Override
 			public void insertUpdate(DocumentEvent e) {
 				String email = emailTextField.getText().trim();
@@ -305,9 +303,9 @@ public class CheckoutDialog extends JDialog {
 					emailErrorMessage.setText("Email must be in the right format");
 					return;
 				}
-				emailErrorMessage.setText("*");				
+				emailErrorMessage.setText("*");
 			}
-			
+
 			@Override
 			public void changedUpdate(DocumentEvent e) {
 				String email = emailTextField.getText().trim();
@@ -319,7 +317,7 @@ public class CheckoutDialog extends JDialog {
 					emailErrorMessage.setText("Email must be in the right format");
 					return;
 				}
-				emailErrorMessage.setText("*");				
+				emailErrorMessage.setText("*");
 			}
 		});
 
@@ -419,7 +417,7 @@ public class CheckoutDialog extends JDialog {
 			movieTotalDouble += movieSchedule.getPerSeatPrice();
 			System.out.println(s);
 		}
-		DecimalFormat df = new DecimalFormat("#0.00");
+		DecimalFormat df = new DecimalFormat("##.00");
 		totalTicketPrice.setText("$" + movieSchedule.getPerSeatPrice() + " x " + seatChosenList.size());
 		movieTotal.setText("$" + df.format(movieTotalDouble) + "");
 
@@ -454,7 +452,7 @@ public class CheckoutDialog extends JDialog {
 
 		productTotalContainer = new JPanel(new MigLayout("wrap, fillx", "[left][right]", "[fill]"));
 		productTotalContainer.setBorder(commonBorder);
-		productTotalLabel = new JLabel("Total");
+		productTotalLabel = new JLabel("Total:");
 		double productTotalDouble = 0;
 		for (OrderDetail od : chosenProductOrderDetailList) {
 			od.setTotal();
@@ -465,8 +463,8 @@ public class CheckoutDialog extends JDialog {
 		productTotalContainer.add(productTotal);
 
 		totalDouble = movieTotalDouble + productTotalDouble;
-		subtotal.setText("$" + df.format(totalDouble) + "");
-		total.setText("$" + df.format(totalDouble) + "");
+		subtotal.setText("$" + df.format(movieTotalDouble) + " + " + "$" + df.format(productTotalDouble));
+		total.setText("$" + df.format(totalDouble));
 
 		productContainer.add(productTitleContainer, "span 2, align center");
 		productContainer.add(new JScrollPane(productOrderDetailContainer));
@@ -507,6 +505,7 @@ public class CheckoutDialog extends JDialog {
 			String phoneNumber = phoneNumberTextField.getText().trim();
 			String fullName = fullNameTextField.getText().trim();
 			String email = emailTextField.getText().trim();
+
 			if (phoneNumber.equals("")) {
 				phoneNumberErrorMessage.setText("Phone number must not be empty");
 				phoneNumberTextField.requestFocus();
@@ -560,7 +559,8 @@ public class CheckoutDialog extends JDialog {
 			String note = noteTextArea.getText().trim();
 			// totalDouble
 			// customerID
-			Order newOrder = new Order(quantitySeat, note, new Customer(customerID), currentEmployee, movieSchedule);
+			Order newOrder = new Order(quantitySeat, note, new Customer(customerID, phoneNumber, fullName, email),
+					currentEmployee, movieSchedule);
 			String newOrderID = orderDAO.addNewOrder(newOrder);
 			newOrder.setTotal(chosenProductOrderDetailList, movieSchedule);
 			newOrder.setOrderID(newOrderID);
@@ -574,6 +574,7 @@ public class CheckoutDialog extends JDialog {
 					orderDetailDAO.addNewOrderDetail(chosenProductOrderDetail);
 				});
 
+				CreateMovieTickets.createTicket(chosenProductOrderDetailList, seatChosenList, newOrder);
 				JOptionPane.showMessageDialog(this, "Order has been added successfully", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
 				this.dispose();

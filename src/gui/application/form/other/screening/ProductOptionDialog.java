@@ -1,7 +1,5 @@
 package gui.application.form.other.screening;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
@@ -23,7 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -138,14 +135,14 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
 
 		total.putClientProperty(FlatClientProperties.STYLE, "" + "font:$h3.font;" + "foreground:$danger;");
-		
+
 		// style
 		activeButtonStyle = "background:$primary; foreground:$white; border:10,0,10,0,$background; hoverBackground:$primary; hoverForeground:$white; font:$h5.font";
 		normalButtonStyle = "background:$white; border:10,0,10,0,$background; hoverBackground:$primary; hoverForeground:$white; font:$h5.font";
 		allButton.putClientProperty(FlatClientProperties.STYLE, activeButtonStyle);
 		foodButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
 		drinkButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
-		
+
 		// event handlers
 		allButton.addActionListener(this);
 		foodButton.addActionListener(this);
@@ -188,7 +185,7 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 
 	public void showProduct(List<Product> productList) {
 		productContainer.removeAll();
-		productList.forEach(product -> {			
+		productList.forEach(product -> {
 			JButton productCard = new JButton();
 			productCard.setLayout(new MigLayout("wrap, fill", "[][]", "[][][]"));
 			ImageIcon icon = new ImageIcon(product.getImageSource());
@@ -260,7 +257,9 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			JLabel priceLabel = new JLabel();
 			DecimalFormat df = new DecimalFormat("#0.00");
 			priceLabel.setText("$"
-					+df.format(chosenProductOrderDeatail.getProduct().getPrice() * chosenProductOrderDeatail.getQuantity()) + "");
+					+ df.format(
+							chosenProductOrderDeatail.getProduct().getPrice() * chosenProductOrderDeatail.getQuantity())
+					+ "");
 			productChosenCard.add(chosenImage, "span 1 2");
 			productChosenCard.add(productChosenName);
 			productChosenCard.add(removeButton, "gapleft push");
@@ -308,11 +307,11 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 	}
 
 	private void setActive(JButton activeButton) {
-		
+
 		allButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
 		foodButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
 		drinkButton.putClientProperty(FlatClientProperties.STYLE, normalButtonStyle);
-		
+
 		activeButton.putClientProperty(FlatClientProperties.STYLE, activeButtonStyle);
 	}
 

@@ -31,9 +31,6 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import dao.MovieDAO;
 import entity.Movie;
-import entity.MovieSchedule;
-import gui.application.Application;
-import gui.application.form.other.screening.SeatingOptionDialog;
 import gui.other.MovieCSVReader;
 import net.miginfocom.swing.MigLayout;
 import raven.toast.Notifications;
@@ -142,7 +139,7 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 			}
 		});
 		// select all the movie with that has that text in it and show it into the table
-		
+
 		movieTable.addMouseListener(new MouseAdapter() {
 			private MovieDetailDialog movieDetailDialog;
 
