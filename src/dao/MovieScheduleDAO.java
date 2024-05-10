@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -224,6 +225,99 @@ public class MovieScheduleDAO {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public List<Movie> getAllMovie() {
+		
+		Connection connection = connectDB.getConnection();
+		List<Movie> movieList = null;
+		
+		try {
+			movieList = new ArrayList<Movie>();
+			PreparedStatement s = connection.prepareStatement("select distinct movieid from movieschedule where CONVERT(DATE, screeningtime) = CONVERT(DATE, GETDATE())");
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				movieList.add(movieDAO.getMovieByID(rs.getString(1)));
+			}
+			return movieList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return movieList;
+	}
+
+	public List<MovieSchedule> getMovieScheduleByMovieID(String movieIDToFind) {
+		Connection connection = connectDB.getConnection();
+		List<MovieSchedule> movieScheduleList = null;
+		
+		try {
+			movieScheduleList = new ArrayList<MovieSchedule>();
+			PreparedStatement s = connection.prepareStatement("SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PricePerSeat from MovieSchedule WHERE movieid = ?");
+			s.setString(1, movieIDToFind);
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				String movieScheduleID = rs.getString(1);
+				LocalDateTime screeningTime = rs.getTimestamp(2).toLocalDateTime();
+				LocalDateTime endTime = rs.getTimestamp(3).toLocalDateTime();
+				Movie movie = movieDAO.getMovieByID(rs.getString(4));
+				Room room = roomDAO.getRoomByID(rs.getString(5));
+				Double perSeatPrice = rs.getDouble(6);
+				movieScheduleList.add(new MovieSchedule(movieScheduleID, screeningTime, endTime, movie, room, perSeatPrice));
+			}
+			return movieScheduleList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+
+	public List<Movie> getAllMovieByDate(LocalDate dateToFind) {
+		Connection connection = connectDB.getConnection();
+		List<Movie> movieList = null;
+		
+		try {
+			movieList = new ArrayList<Movie>();
+			PreparedStatement s = connection.prepareStatement("select distinct movieid from movieschedule where convert(date, ScreeningTime) = convert(date, ?)");
+			s.setString(1, dateToFind.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				movieList.add(movieDAO.getMovieByID(rs.getString(1)));
+			}
+			return movieList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return movieList;
+	}
+
+	public List<MovieSchedule> getMovieScheduleByMovieIDAndByDate(String movieIDToFind, LocalDate dateToFind) {
+		Connection connection = connectDB.getConnection();
+		List<MovieSchedule> movieScheduleList = null;
+		
+		try {
+			movieScheduleList = new ArrayList<MovieSchedule>();
+			PreparedStatement s = connection.prepareStatement("SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PricePerSeat from MovieSchedule WHERE movieid = ? and convert(date, ScreeningTime) = convert(date, ?) order by screeningtime");
+			s.setString(1, movieIDToFind);
+			s.setString(2, dateToFind.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				String movieScheduleID = rs.getString(1);
+				LocalDateTime screeningTime = rs.getTimestamp(2).toLocalDateTime();
+				LocalDateTime endTime = rs.getTimestamp(3).toLocalDateTime();
+				Movie movie = movieDAO.getMovieByID(rs.getString(4));
+				Room room = roomDAO.getRoomByID(rs.getString(5));
+				Double perSeatPrice = rs.getDouble(6);
+				movieScheduleList.add(new MovieSchedule(movieScheduleID, screeningTime, endTime, movie, room, perSeatPrice));
+			}
+			return movieScheduleList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 }

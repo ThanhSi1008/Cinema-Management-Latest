@@ -66,6 +66,7 @@ public class ScreeningUpdateDialog extends JDialog implements ActionListener {
 	private TimePicker screeningTimeTimePicker;
 	private JButton screeningTimeTimePickerButton;
 	private MovieSchedule movieSchedule;
+	private FormScreeningManagement2 formScreeningManagement2;
 
 	public ScreeningUpdateDialog(MovieSchedule movieSchedule) {
 		this.movieSchedule = movieSchedule;
@@ -242,5 +243,9 @@ public class ScreeningUpdateDialog extends JDialog implements ActionListener {
 
 	public void setFormScreeningManagement(FormScreeningManagement formScreeningManagement) {
 		this.formScreeningManagement = formScreeningManagement;
+	}
+
+	public void setFormScreeningManagement(FormScreeningManagement2 formScreeningManagement2) {
+		this.formScreeningManagement2 = formScreeningManagement2;
 	}
 }

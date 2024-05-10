@@ -64,6 +64,7 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 	private JTextField perSeatPriceTextField;
 	private TimePicker screeningTimeTimePicker;
 	private JButton screeningTimeTimePickerButton;
+	private FormScreeningManagement2 formScreeningManagement2;
 
 	public ScreeningAddingDialog() {
 		movieScheduleDAO = new MovieScheduleDAO();
@@ -250,5 +251,10 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 
 	public void setFormScreeningManagement(FormScreeningManagement formScreeningManagement) {
 		this.formScreeningManagement = formScreeningManagement;
+	}
+
+	public void setFormScreeningManagement(FormScreeningManagement2 formScreeningManagement2) {
+		this.formScreeningManagement2 = formScreeningManagement2;
+		
 	}
 }
