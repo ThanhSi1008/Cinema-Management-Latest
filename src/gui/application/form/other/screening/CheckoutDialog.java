@@ -451,7 +451,7 @@ public class CheckoutDialog extends JDialog {
 			od.setTotal();
 			productTotalDouble += od.getTotal();
 		}
-		productTotal = new JLabel("$" + productTotalDouble + "");
+		productTotal = new JLabel("$" + df.format(productTotalDouble) + "");
 		productTotalContainer.add(productTotalLabel);
 		productTotalContainer.add(productTotal);
 
@@ -505,9 +505,6 @@ public class CheckoutDialog extends JDialog {
 		
 		customerInfoTitle.setOpaque(true);
 		customerInfoTitle.putClientProperty(FlatClientProperties.STYLE, "background:$primary; foreground:$clr-white");
-		
-		
-
 
 		// handle event listener
 		checkoutButton.addActionListener(e -> {

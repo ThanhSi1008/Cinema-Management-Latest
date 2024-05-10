@@ -8,10 +8,12 @@ import java.awt.event.ComponentEvent;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import com.formdev.flatlaf.FlatClientProperties;
 

@@ -22,12 +22,18 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.apache.commons.io.FilenameUtils;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import com.raven.datechooser.DateChooser;
 import com.raven.datechooser.EventDateChooser;
 import com.raven.datechooser.SelectedAction;
@@ -82,6 +88,10 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 	private FormMovieManagement formMovieManagement;
 	private JLabel errorMessageLabel;
 	private FileNameExtensionFilter filter;
+	private JPanel imageChooserAndFileChooserContainer;
+	private JPanel releasedDateContainer;
+	private JPanel startDateContainer;
+	private Color textFieldBorderColor;
 
 	public MovieAddingDialog() {
 		movieDAO = new MovieDAO();
@@ -134,11 +144,29 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		descriptionTextArea.setRows(3);
 		descriptionTextArea.setLineWrap(true);
 		descriptionTextArea.setWrapStyleWord(true);
-		descriptionTextArea.setBorder(BorderFactory.createLineBorder(new Color(217, 217, 217), 2));
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.ITALIC));
+		
+		imageChooserAndFileChooserContainer = new JPanel(new MigLayout("wrap, fillx, insets 0", "[grow 0, al trail][grow 0][fill]", "[]0[]0[]"));
+		imageChooserAndFileChooserContainer.add(imageSourceLabel);
+		imageChooserAndFileChooserContainer.add(imageSourceButton, "gapleft 8");
+		imageChooserAndFileChooserContainer.add(displaypPosterLabel, "span 1 3");
+		imageChooserAndFileChooserContainer.add(releasedDateLabel);
+		
+		releasedDateContainer = new JPanel(new MigLayout("wrap", "[][]", "[fill]"));
+		releasedDateContainer.add(releasedDateTextField);
+		releasedDateContainer.add(releasedDateDateChooserButton);
+		imageChooserAndFileChooserContainer.add(releasedDateContainer);
+		
+		imageChooserAndFileChooserContainer.add(startDateLabel);
+		startDateContainer = new JPanel(new MigLayout("wrap", "[][]", "[fill]"));
+		startDateContainer.add(startDateTextField);
+		startDateContainer.add(startDateDateChooserButton);
+		imageChooserAndFileChooserContainer.add(startDateContainer);
+		
 
 		container.setLayout(new MigLayout("wrap 2,fillx,insets 8, gap 8", "[grow 0,trail]15[fill]"));
+		
 
 		container.add(title, "wrap, span, al center, gapbottom 8");
 		container.add(movieNameLabel);
@@ -153,17 +181,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		container.add(countryTextField);
 		container.add(languageLabel);
 		container.add(languageTextField);
-		container.add(imageSourceLabel);
-		container.add(imageSourceButton, "grow 0, split 2");
-		container.add(displaypPosterLabel);
-		container.add(releasedDateLabel);
-		container.add(releasedDateTextField, "grow 0, split 3, gapright 0");
-		container.add(releasedDateDateChooserButton, "grow 0");
-		container.add(new JLabel());
-		container.add(startDateLabel);
-		container.add(startDateTextField, "grow 0, split 3, gapright 0");
-		container.add(startDateDateChooserButton, "grow 0");
-		container.add(new JLabel());
+		container.add(imageChooserAndFileChooserContainer, "span 2, grow");
 		container.add(trailerLabel);
 		container.add(trailerTextField);
 		container.add(genreLabel);
@@ -171,7 +189,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		container.add(statusLabel);
 		container.add(statusComboBox);
 		container.add(descriptionLabel);
-		container.add(descriptionTextArea);
+		container.add(new JScrollPane(descriptionTextArea));
 		container.add(new JLabel(""));
 		container.add(errorMessageLabel, "al left");
 		container.add(saveButton, "span 2, al trail");
@@ -214,8 +232,17 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 
 		imageSourceButton.addActionListener(this);
 		saveButton.addActionListener(this);
-
+		
+		// styles
+		movieNameLabel.setPreferredSize(releasedDateLabel.getPreferredSize());
+		movieNameLabel.setHorizontalAlignment(SwingConstants.TRAILING);
+		descriptionTextArea.putClientProperty(FlatClientProperties.STYLE, "border:5,5,5,5," + "#ddd" + ",2,10");
 		add(container);
+		
+		JScrollPane scroll = (JScrollPane) descriptionTextArea.getParent().getParent();
+		scroll.setBorder(BorderFactory.createEmptyBorder());
+		scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
+				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
 
 		pack();
 		setLocationRelativeTo(null);
