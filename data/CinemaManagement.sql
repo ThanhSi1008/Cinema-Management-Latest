@@ -955,7 +955,7 @@ VALUES ('Pulp Fiction', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'Englis
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Schindler''s List', 'Biography', 'Steven Spielberg', 195, '1994-02-04', 'English', 'USA', '1994-02-04', 'Released', 1103.99, 'images/schindlers_list.jpg', 'https://www.youtube.com/watch?v=gG22XNhtnoY', 'In German-occupied Poland during World War II, industrialist Oskar Schindler gradually becomes concerned for his Jewish workforce after witnessing their persecution by the Nazis.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
-VALUES ('The Lord of the Rings: The Return of the King', 'Adventure', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', '2003-12-17', 'Released', 1160.99, 'images/lotr_return_of_the_king.jpg', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.');
+VALUES ('The Return of the King', 'Adventure', 'Peter Jackson', 201, '2003-12-17', 'English', 'New Zealand', '2003-12-17', 'Released', 1160.99, 'images/lotr_return_of_the_king.jpg', 'https://www.youtube.com/watch?v=r5X-hFf6Bwo', 'Gandalf and Aragorn lead the World of Men against Sauron''s army to draw his gaze from Frodo and Sam as they approach Mount Doom with the One Ring.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Fight Club', 'Drama', 'David Fincher', 139, '1999-10-15', 'English', 'USA', '1999-10-15', 'Unreleased', 1100.49, 'images/fight_club.jpg', 'https://www.youtube.com/watch?v=SUXWAEX2jlg', 'An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into much more.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
@@ -1005,7 +1005,7 @@ VALUES ('The Dark Knight Rises', 'Action, Crime, Drama', 'Christopher Nolan', 16
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('12 Angry Men', 'Crime, Drama', 'Sidney Lumet', 89, '1957-07-15', 'English', 'USA', '1957-07-15', 'Released', 1190.99, 'images/12_angry_men.jpg', 'https://www.youtube.com/watch?v=V7Dt-y4oWxA', 'A jury in New York City is tasked with deciding the fate of a young man accused of murder. As the jurors deliberate, their personal biases and prejudices emerge, leading to a tense and dramatic confrontation.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
-VALUES ('The Lord of the Rings: The Fellowship of the Ring', 'Adventure, Drama, Fantasy', 'Peter Jackson', 178, '2001-12-19', 'English', 'New Zealand', '2001-12-19', 'Released', 160.99, 'images/lotr_fellowship_of_the_ring.jpg', 'https://www.youtube.com/watch?v=h0E2v5z_ZSs', 'A hobbit named Frodo inherits the One Ring from his uncle Bilbo, and with the help of a fellowship embarks on a quest to destroy it in the fires of Mount Doom.');
+VALUES ('The Fellowship of the Ring', 'Adventure, Drama, Fantasy', 'Peter Jackson', 178, '2001-12-19', 'English', 'New Zealand', '2001-12-19', 'Released', 160.99, 'images/lotr_fellowship_of_the_ring.jpg', 'https://www.youtube.com/watch?v=h0E2v5z_ZSs', 'A hobbit named Frodo inherits the One Ring from his uncle Bilbo, and with the help of a fellowship embarks on a quest to destroy it in the fires of Mount Doom.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('Casablanca', 'Drama, Romance, War', 'Michael Curtiz', 102, '1942-11-25', 'English', 'USA', '1942-11-25', 'Released', 1190.99, 'images/casablanca.jpg', 'https://www.youtube.com/watch?v=0618_pHRL4c', 'Rick Blaine, an American expatriate who runs a nightclub in Casablanca during World War II, must choose between his love for a woman and helping her husband, a Czech resistance leader, escape from the Nazis.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
@@ -1017,10 +1017,18 @@ VALUES ('Apocalypse Now', 'Drama, War', 'Francis Ford Coppola', 153, '1979-08-03
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
 VALUES ('The Good, the Bad and the Ugly', 'Western', 'Sergio Leone', 178, '1966-12-30', 'Italian', 'Italy', '1966-12-30', 'Released', 1160.99, 'images/the_good_the_bad_and_the_ugly.jpg', 'https://www.youtube.com/watch?v=3_6z-AOz1UA', 'During the Civil War, three gunslingers compete to find a hidden cache of Confederate gold.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
-VALUES ('Pulp Fiction (1994)', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', '1994-10-14', 'Released', 1210.99, 'images/pulp_fiction.jpg', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.');
+VALUES ('Pulp Fiction', 'Crime', 'Quentin Tarantino', 154, '1994-10-14', 'English', 'USA', '1994-10-14', 'Released', 1210.99, 'images/pulp_fiction.jpg', 'https://www.youtube.com/watch?v=s7EdQ4FqbhY', 'The lives of two mob hitmen, a boxer, a gangster and his wife, and a pair of diner bandits intertwine in four tales of violence and redemption.');
 INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description)
-VALUES ('The Lord of the Rings: The Two Towers', 'Adventure, Drama, Fantasy', 'Peter Jackson', 179, '2002-12-18', 'English', 'New Zealand', '2002-12-18', 'Released', 1160.99, 'images/lotr_the_two_towers.jpg', 'https://www.youtube.com/watch?v=L9sfz2_5N9s', 'Frodo and Sam continue their journey to Mordor to destroy the One Ring, while Aragorn, Legolas, and Gimli track Merry and Pippin who have been captured by Orcs.');
-go
+VALUES ('The Two Towers', 'Adventure, Drama, Fantasy', 'Peter Jackson', 179, '2002-12-18', 'English', 'New Zealand', '2002-12-18', 'Released', 1160.99, 'images/lotr_the_two_towers.jpg', 'https://www.youtube.com/watch?v=L9sfz2_5N9s', 'Frodo and Sam continue their journey to Mordor to destroy the One Ring, while Aragorn, Legolas, and Gimli track Merry and Pippin who have been captured by Orcs.');
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description) 
+VALUES ('Interstellar', 'Science Fiction, Drama', 'Christopher Nolan', 169, '2014-09-05', 'English', 'United States', '2014-10-01', 'Released', 15000, 'images/interstellar_image.jpg', 'https://youtu.be/zSWdZVtXT7E', 'In a future where Earth is becoming uninhabitable, a team of astronauts embarks on a daring mission through a wormhole to find a new habitable planet for humanity. As they venture into the depths of space, they encounter mind-bending phenomena like time dilation and gravitational anomalies, challenging their understanding of reality and the limits of human exploration.')
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description) 
+VALUES ('Oppenheimer', 'Biography, Drama', 'Christopher Nolan', 180, '2023-07-21', 'English', 'United States', '2023-07-29', 'Released', 20000, 'images/oppenheimer_image.jpg', 'https://youtu.be/uYPbbksJxIg', 'Directed by Christopher Nolan, "Oppenheimer" is a biographical drama that explores the life of J. Robert Oppenheimer, the American physicist who played a pivotal role in the development of the atomic bomb during World War II. The film delves into Oppenheimers complex personality, his ethical dilemmas, and his contributions to one of the most significant scientific endeavors in history.')
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description) 
+VALUES ('Avatar', 'Action, Adventure, Fantasy', 'James Cameron', 162, '2009-12-18', 'English', 'United States', '2009-11-26', 'Released', '25000', 'images/avatar_image.jpg', 'https://youtu.be/5PSNL1qE6VY', 'Directed by James Cameron, "Avatar" is an epic science fiction film set in the mid-22nd century on the lush alien world of Pandora.')
+INSERT INTO Movie (MovieName, Genre, Director, Duration, ReleasedDate, Language, Country, StartDate, Status, ImportPrice, ImageSource, Trailer, Description) 
+VALUES ('Manchester by the Sea', 'Drama', 'Kenneth Lonergan', 137, '2016-09-18', 'English', 'United States', '2016-09-20', 'Released', 10000, 'images/manchester-by-the-sea_image.jpg', 'https://youtu.be/gsVoD0pTge0', 'Revolving around the themes of depression, guilt, grief, responsibility, dysfunctional families, and post-traumatic stress disorder, the plot follows a depressed and grief-stricken man who becomes the legal guardian of his teenage nephew after the death of his brother.')
+
 
 
 -- movieschedule
@@ -1223,16 +1231,16 @@ go
 
 ----------------*** MovieSchedule ***
 DECLARE @i INT = 1;
-WHILE @i <= 100000
+WHILE @i <= 10000000
 BEGIN
-    DECLARE @RandomScreeningTime DATETIME;
-	SET @RandomScreeningTime = DATEADD(DAY, -ROUND(RAND() * 365, 0), GETDATE());
-    DECLARE @RandomHour INT = ROUND(RAND() * 23, 0);
-    DECLARE @RandomMinute INT = ROUND(RAND() * 59, 0);
-    DECLARE @RandomSecond INT = ROUND(RAND() * 59, 0);
-    SET @RandomScreeningTime = DATEADD(HOUR, @RandomHour, @RandomScreeningTime);
-    SET @RandomScreeningTime = DATEADD(MINUTE, @RandomMinute, @RandomScreeningTime);
-    SET @RandomScreeningTime = DATEADD(SECOND, @RandomSecond, @RandomScreeningTime);
+	DECLARE @RandomScreeningTime DATETIME;
+	SET @RandomScreeningTime = DATEADD(MONTH, +ROUND(RAND() * 3, 0), GETDATE());
+	DECLARE @RandomHour INT = ROUND(RAND() * 23, 0);
+	DECLARE @RandomMinute INT = ROUND(RAND() * 59, 0);
+	DECLARE @RandomSecond INT = ROUND(RAND() * 59, 0);
+	SET @RandomScreeningTime = DATEADD(HOUR, @RandomHour, @RandomScreeningTime);
+	SET @RandomScreeningTime = DATEADD(MINUTE, @RandomMinute, @RandomScreeningTime);
+	SET @RandomScreeningTime = DATEADD(SECOND, @RandomSecond, @RandomScreeningTime);
     DECLARE @RandomMovieID CHAR(6);
     SELECT TOP 1 @RandomMovieID = MovieID FROM Movie ORDER BY NEWID();
     DECLARE @RandomRoomID CHAR(6);
@@ -1260,7 +1268,7 @@ go
 
 -------------*** Order *** 
 DECLARE @i INT = 1;
-WHILE @i <= 9999
+WHILE @i <= 54999
 BEGIN
 	DECLARE @RandomCustomerID CHAR(9);
 	DECLARE @RandomEmployeeID CHAR(6);
@@ -1293,7 +1301,7 @@ go
 
 -------------------*** OrderDetail ***
 DECLARE @i INT = 1;
-WHILE @i <= 4999
+WHILE @i <= 14999
 BEGIN
 	DECLARE @Quantity INT = FLOOR(RAND() * 11 + 1);
     DECLARE @RandomProductID CHAR(6);
@@ -1338,4 +1346,33 @@ BEGIN
 	SET @StartDate = DATEADD(DAY, 1, @StartDate);
 END;
 GO
+
+--********************OrderAddProduct**************************
+DECLARE @Counter INT = 1;
+WHILE @Counter <= 100
+BEGIN
+    INSERT INTO OrderAddProduct (AddProductDate, Quantity, UnitPurchasePrice, ProductID)
+    VALUES 
+    (
+        DATEADD(DAY, -ROUND(RAND() * 365, 0), GETDATE()), -- Ngày thêm sản phẩm (ngẫu nhiên trong vòng một năm trước)
+        ROUND(RAND() * 100, 0),                           -- Số lượng (ngẫu nhiên từ 0 đến 100)
+        ROUND(RAND() * 50 + 50, 2),                       -- Giá mua đơn vị (ngẫu nhiên từ 50 đến 100)
+        'Pro' + RIGHT('00' + CAST(ROUND(RAND() * 13 + 1, 0) AS VARCHAR(2)), 3) -- ID sản phẩm (ngẫu nhiên từ Pro001 đến Pro014)
+    );
+    
+    SET @Counter = @Counter + 1;
+END;
+go
+
+--*******************************OrderAddMovie*******************************
+DECLARE @Counter INT = 1;
+WHILE @Counter <= 100
+BEGIN
+    DECLARE @RandomMovieID CHAR(6);
+    SELECT TOP 1 @RandomMovieID = MovieID FROM Movie ORDER BY NEWID();
+    INSERT INTO OrderAddMovie (AddMovieDate, Total, MovieID)
+    VALUES (DATEADD(DAY, -ROUND(RAND() * 365, 0), GETDATE()), ROUND(RAND() * 500 + 1000, 2), @RandomMovieID);  
+    SET @Counter = @Counter + 1;
+END;
+go
 */
