@@ -64,7 +64,6 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 	private JTextField perSeatPriceTextField;
 	private TimePicker screeningTimeTimePicker;
 	private JButton screeningTimeTimePickerButton;
-	private FormScreeningManagement2 formScreeningManagement2;
 
 	public ScreeningAddingDialog() {
 		movieScheduleDAO = new MovieScheduleDAO();
@@ -208,10 +207,10 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 
 			List<MovieSchedule> movieScheduleList = movieScheduleDAO.findMovieScheduleByRoom(room.getRoomName());
 			for (MovieSchedule movieSchedule : movieScheduleList) {
-				if (screeningDateTime.minusMinutes(30).isBefore(movieSchedule.getEndTime())
-						&& movieSchedule.getEndTime().isBefore(endingDateTime.plusMinutes(30))
-						|| screeningDateTime.minusMinutes(30).isBefore(movieSchedule.getScreeningTime())
-								&& movieSchedule.getScreeningTime().isBefore(endingDateTime.plusMinutes(30))) {
+				if ((screeningDateTime.minusMinutes(30).isBefore(movieSchedule.getEndTime())
+						&& movieSchedule.getEndTime().isBefore(endingDateTime.plusMinutes(30)))
+						|| (screeningDateTime.minusMinutes(30).isBefore(movieSchedule.getScreeningTime())
+								&& movieSchedule.getScreeningTime().isBefore(endingDateTime.plusMinutes(30)))) {
 					errorMessageLabel.setText("Room is not available in this hour");
 					screeningTimeTextField.requestFocus();
 					return;
@@ -237,7 +236,7 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Add new movie schedule successfully", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
 				this.dispose();
-				formScreeningManagement.handleSearchAndFilter();
+				formScreeningManagement.handleSearch();
 			} else {
 				JOptionPane.showMessageDialog(this, "An error has occured", "Failed", JOptionPane.ERROR_MESSAGE);
 			}
@@ -246,10 +245,5 @@ public class ScreeningAddingDialog extends JDialog implements ActionListener {
 
 	public void setFormScreeningManagement(FormScreeningManagement formScreeningManagement) {
 		this.formScreeningManagement = formScreeningManagement;
-	}
-
-	public void setFormScreeningManagement(FormScreeningManagement2 formScreeningManagement2) {
-		this.formScreeningManagement2 = formScreeningManagement2;
-
 	}
 }

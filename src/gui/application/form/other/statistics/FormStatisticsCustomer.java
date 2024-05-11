@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.HashMap;
@@ -44,7 +45,6 @@ public class FormStatisticsCustomer extends SimpleForm implements ActionListener
 	private JPanel bottomContainer;
 	private JPanel topTitleContainer;
 	private JPanel topMainContainer;
-//	private JPanel bottomMainContainer;
 	private JLabel rankTitleLabel;
 	private JComboBox<String> filterByCombobox;
 	private JComboBox<String> filterCombobox;
@@ -260,6 +260,7 @@ public class FormStatisticsCustomer extends SimpleForm implements ActionListener
 
 	private void createLineChart(JPanel bottomMainContainer, int year, int month) {
 		lineChart = new LineChart();
+		lineChart.setValuesFormat(new DecimalFormat("#,##0"));
 		lineChart.setChartType(LineChart.ChartType.CURVE);
 		lineChart.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
 		bottomMainContainer.add(lineChart);

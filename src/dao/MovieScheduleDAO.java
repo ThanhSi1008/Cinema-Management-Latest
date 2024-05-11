@@ -282,7 +282,7 @@ public class MovieScheduleDAO {
 		try {
 			movieList = new ArrayList<Movie>();
 			PreparedStatement s = connection.prepareStatement(
-					"select distinct movieid from movieschedule where convert(date, ScreeningTime) = convert(date, ?)");
+					"select distinct movieid from movieschedule where convert(date, ScreeningTime) = convert(date, ?) and endtime >= getdate()");
 			s.setString(1, dateToFind.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			ResultSet rs = s.executeQuery();
 			while (rs.next()) {
@@ -303,7 +303,7 @@ public class MovieScheduleDAO {
 		try {
 			movieScheduleList = new ArrayList<MovieSchedule>();
 			PreparedStatement s = connection.prepareStatement(
-					"SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PricePerSeat from MovieSchedule WHERE movieid = ? and convert(date, ScreeningTime) = convert(date, ?) order by screeningtime");
+					"SELECT ScheduleID, ScreeningTime, EndTime, MovieID, RoomID, PricePerSeat from MovieSchedule WHERE movieid = ? and convert(date, ScreeningTime) = convert(date, ?) and endtime >= getdate() order by screeningtime");
 			s.setString(1, movieIDToFind);
 			s.setString(2, dateToFind.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
 			ResultSet rs = s.executeQuery();
@@ -323,6 +323,22 @@ public class MovieScheduleDAO {
 		}
 
 		return null;
+	}
+
+	public boolean checkMovieInScreening(String movieID) {
+		Connection connection = connectDB.getConnection();
+		try {
+			PreparedStatement s = connection.prepareStatement("SELECT 1 FROM MovieSchedule WHERE MovieID = ?");
+			s.setString(1, movieID);
+			ResultSet rs = s.executeQuery();
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return false;
 	}
 
 }

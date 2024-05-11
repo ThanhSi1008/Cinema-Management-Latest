@@ -76,7 +76,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 	private JButton saveButton;
 	private JTextArea descriptionTextArea;
 	private JButton imageSourceButton;
-	private JLabel displaypPosterLabel;
+	private JLabel displayPosterLabel;
 	private JButton releasedDateDateChooserButton;
 	private JButton startDateDateChooserButton;
 	private DateChooser releasedDateDateChooser;
@@ -114,7 +114,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 		languageTextField = new JTextField(20);
 		imageSourceLabel = new JLabel("Image: ");
 		imageSourceButton = new JButton("Choose Image");
-		displaypPosterLabel = new JLabel();
+		displayPosterLabel = new JLabel();
 		releasedDateLabel = new JLabel("Released Date: ");
 		releasedDateTextField = new JTextField();
 		statusLabel = new JLabel("Status: ");
@@ -148,7 +148,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 				new MigLayout("wrap, fillx, insets 0", "[grow 0, al trail][grow 0][fill]", "[]0[]0[]"));
 		imageChooserAndFileChooserContainer.add(imageSourceLabel);
 		imageChooserAndFileChooserContainer.add(imageSourceButton, "gapleft 8");
-		imageChooserAndFileChooserContainer.add(displaypPosterLabel, "span 1 3");
+		imageChooserAndFileChooserContainer.add(displayPosterLabel, "span 1 3");
 		imageChooserAndFileChooserContainer.add(releasedDateLabel);
 
 		releasedDateContainer = new JPanel(new MigLayout("wrap", "[][]", "[fill]"));
@@ -261,7 +261,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 				selectedFile = fileChooser.getSelectedFile();
 				String path = String.format("images/%s", selectedFile.getName());
 				Image icon = new ImageIcon(path).getImage();
-				displaypPosterLabel.setIcon(new ImageIcon(icon.getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
+				displayPosterLabel.setIcon(new ImageIcon(icon.getScaledInstance(150, 150, Image.SCALE_SMOOTH)));
 			}
 		}
 		if (e.getSource().equals(saveButton)) {
@@ -273,7 +273,7 @@ public class MovieAddingDialog extends JDialog implements ActionListener {
 			String country = countryTextField.getText().trim();
 			String language = languageTextField.getText().trim();
 			String imagePath = "";
-			Icon icon = displaypPosterLabel.getIcon();
+			Icon icon = displayPosterLabel.getIcon();
 			if (icon == null) {
 				System.out.println("icon is null");
 			} else {

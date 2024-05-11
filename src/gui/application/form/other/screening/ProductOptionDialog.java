@@ -186,6 +186,9 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 	public void showProduct(List<Product> productList) {
 		productContainer.removeAll();
 		productList.forEach(product -> {
+			if (product.getQuantity() <= 0) {
+				return;
+			}
 			JButton productCard = new JButton();
 			productCard.setLayout(new MigLayout("wrap, fill", "[][]", "[][][]"));
 			ImageIcon icon = new ImageIcon(product.getImageSource());
@@ -240,25 +243,28 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			DecimalFormat df = new DecimalFormat("#0.00");
 			total.setText("$" + df.format(totalDouble) + "");
 		}
-		chosenProductOrderDetailList.forEach(chosenProductOrderDeatail -> {
+		chosenProductOrderDetailList.forEach(chosenProductOrderDetail -> {
+			if (chosenProductOrderDetail.getProduct().getQuantity() <= 0) {
+				return;
+			}
 			JPanel productChosenCard = new JPanel();
 			productChosenCard.setLayout(new MigLayout("wrap, fill", "[grow0][grow 0][fill]", "[][]"));
-			ImageIcon chosenIcon = new ImageIcon(chosenProductOrderDeatail.getProduct().getImageSource());
+			ImageIcon chosenIcon = new ImageIcon(chosenProductOrderDetail.getProduct().getImageSource());
 			Image chosenImg = chosenIcon.getImage();
 			Image chosenResizedImg = chosenImg.getScaledInstance(80, -1, Image.SCALE_SMOOTH);
 			ImageIcon chosenResizedIcon = new ImageIcon(chosenResizedImg);
 			JLabel chosenImage = new JLabel(chosenResizedIcon);
-			JLabel productChosenName = new JLabel(chosenProductOrderDeatail.getProduct().getProductName());
-			SpinnerModel spinnerModel = new SpinnerNumberModel(0, 0, 100, 1);
+			JLabel productChosenName = new JLabel(chosenProductOrderDetail.getProduct().getProductName());
+			SpinnerModel spinnerModel = new SpinnerNumberModel(1, 1, chosenProductOrderDetail.getProduct().getQuantity() , 1);;
 			JSpinner productChosenQuantitySpinner = new JSpinner(spinnerModel);
-			productChosenQuantitySpinner.setValue(chosenProductOrderDeatail.getQuantity());
+			productChosenQuantitySpinner.setValue(chosenProductOrderDetail.getQuantity());
 			JButton removeButton = new JButton();
 			removeButton.setIcon(new ImageIcon("images/delete.png"));
 			JLabel priceLabel = new JLabel();
 			DecimalFormat df = new DecimalFormat("#0.00");
 			priceLabel.setText("$"
 					+ df.format(
-							chosenProductOrderDeatail.getProduct().getPrice() * chosenProductOrderDeatail.getQuantity())
+							chosenProductOrderDetail.getProduct().getPrice() * chosenProductOrderDetail.getQuantity())
 					+ "");
 			productChosenCard.add(chosenImage, "span 1 2");
 			productChosenCard.add(productChosenName);
@@ -275,11 +281,12 @@ public class ProductOptionDialog extends JDialog implements ActionListener {
 			total.setText("$" + df.format(totalDouble) + "");
 			productChosenQuantitySpinner.addChangeListener(e -> {
 				int newQty = (int) productChosenQuantitySpinner.getValue();
-				chosenProductOrderDeatail.setQuantity(newQty);
+				
+				chosenProductOrderDetail.setQuantity(newQty);
 				showChosenProductOrderDetail();
 			});
 			removeButton.addActionListener(e -> {
-				chosenProductOrderDetailList.remove(chosenProductOrderDeatail);
+				chosenProductOrderDetailList.remove(chosenProductOrderDetail);
 				showChosenProductOrderDetail();
 			});
 		});

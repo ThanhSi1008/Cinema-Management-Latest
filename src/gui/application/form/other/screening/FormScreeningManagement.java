@@ -3,9 +3,11 @@ package gui.application.form.other.screening;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -22,18 +24,16 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
@@ -43,11 +43,11 @@ import com.raven.datechooser.SelectedAction;
 import com.raven.datechooser.SelectedDate;
 
 import dao.MovieScheduleDAO;
-import dao.RoomDAO;
 import entity.Employee;
+import entity.Movie;
 import entity.MovieSchedule;
-import entity.Room;
 import gui.application.Application;
+import gui.application.form.other.movie.MovieDetailDialog;
 import net.miginfocom.swing.MigLayout;
 
 public class FormScreeningManagement extends JPanel implements ActionListener {
@@ -55,26 +55,24 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 	// in movie adding dialog, show the image when the user choose the image
 	private static final long serialVersionUID = 1L;
 	private JButton addNewButton;
-	private JButton updateButton;
-	private JButton deleteButton;
-	private JComboBox<String> filterComboBox;
 	private JPanel container0;
 	private JPanel container1;
 
-	private MovieScheduleDAO movieScheduleDAO;
-	private RoomDAO roomDAO;
-	private ScreeningTableModel screeningTableModel;
-	private JTable screeningTable;
 	private JTextField searchByDateTextField;
 	private DateChooser searchByDateDateChooser;
 	private JButton searchByDateDateChooserButton;
+	private MovieScheduleDAO movieScheduleDAO;
+	private JPanel container2;
+	private JPanel movieScheduleCardContainer;
 	private ScreeningAddingDialog screeningAddingDialog;
-	private ScreeningUpdateDialog screeningUpdateDialog;
+	private SeatingOptionDialog seatingOptioneDialog;
+	private Employee currentEmployee;
+	private MovieDetailDialog movieDetailDialog;
 
 	public FormScreeningManagement(Employee currentEmployee) {
 
 		movieScheduleDAO = new MovieScheduleDAO();
-		roomDAO = new RoomDAO();
+		this.currentEmployee = currentEmployee;
 
 		setLayout(new BorderLayout());
 		container0 = new JPanel();
@@ -84,99 +82,45 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 		searchByDateDateChooserButton = new JButton();
 
 		addNewButton = new JButton("Add New");
-		updateButton = new JButton("Update");
-		deleteButton = new JButton("Delete");
-		filterComboBox = new JComboBox<String>();
-		filterComboBox.addItem("All");
-		List<Room> roomList = roomDAO.getAllRoom();
-		roomList.forEach(room -> {
-			filterComboBox.addItem(room.getRoomName());
-		});
-		container1.setLayout(new MigLayout("", "[][]push[][][][]", ""));
+		container1.setLayout(new MigLayout("", "[][]push[]", ""));
 		container1.add(searchByDateTextField, "w 200!");
 		container1.add(searchByDateDateChooserButton);
-		container1.add(filterComboBox);
 		container1.add(addNewButton);
-		container1.add(updateButton);
-		container1.add(deleteButton);
 
 		addNewButton.setIcon(new FlatSVGIcon("gui/icon/svg/add.svg", 0.35f));
-		updateButton.setIcon(new FlatSVGIcon("gui/icon/svg/edit.svg", 0.35f));
-		deleteButton.setIcon(new FlatSVGIcon("gui/icon/svg/delete.svg", 0.35f));
 		searchByDateTextField.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
 				new FlatSVGIcon("gui/icon/svg/search.svg", 0.35f));
 
-		// table
-		screeningTableModel = new ScreeningTableModel();
-		screeningTable = new JTable(screeningTableModel);
-		screeningTable.addMouseListener(new MouseAdapter() {
-			private SeatingOptionDialog seatingOptioneDialog;
-
-			public void mousePressed(MouseEvent mouseEvent) {
-				JTable table = (JTable) mouseEvent.getSource();
-				// int row = table.rowAtPoint(point);
-				if (mouseEvent.getClickCount() == 2 && table.getSelectedRow() != -1) {
-
-					// Setting up the glass pane
-					JPanel glassPane = new BlurGlassPane();
-					Application.getInstance().setGlassPane(glassPane);
-					// Make the glass pane visible
-					glassPane.setVisible(true);
-
-					int selectedRow = table.getSelectedRow();
-					String movieScheduleID = (String) screeningTableModel.getValueAt(selectedRow, 0);
-					MovieSchedule movieSchedule = movieScheduleDAO.getMovieScheduleByID(movieScheduleID);
-					seatingOptioneDialog = new SeatingOptionDialog(movieSchedule);
-					seatingOptioneDialog.setCurrentEmployee(currentEmployee);
-					seatingOptioneDialog.setModal(true);
-					seatingOptioneDialog.setVisible(true);
-				}
-			}
-		});
 		container0.setLayout(new MigLayout("wrap, fill, insets 15", "[fill]", "[grow 0][fill]"));
 		container0.add(container1);
+		container2 = new JPanel(new MigLayout("wrap, fill", "[fill]", "[fill]"));
+		movieScheduleCardContainer = new JPanel(
+				new MigLayout("wrap, fillx, aligny top", "[sizegroup main, grow][sizegroup main, grow]", ""));
+//		movieScheduleCardContainer = new JPanel(new MigLayout("wrap, fillx, aligny top", "[grow, shrink, 0!][grow, shrink, 0!]", ""));
 
-		if (screeningTable.getColumnModel().getColumnCount() > 0) {
-			screeningTable.getColumnModel().getColumn(1).setPreferredWidth(300);
-		}
+		container0.add(new JScrollPane(container2));
+		container2.add(movieScheduleCardContainer);
 
-		container0.add(new JScrollPane(screeningTable));
-		// Change scroll style
-		JScrollPane scroll = (JScrollPane) screeningTable.getParent().getParent();
-		scroll.setBorder(BorderFactory.createEmptyBorder());
-		scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
-				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
-
-		screeningTable.getTableHeader().putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");
-		screeningTable.putClientProperty(FlatClientProperties.STYLE_CLASS, "table_style");
-
-		// To Create table alignment
-		screeningTable.getTableHeader()
-				.setDefaultRenderer(getAlignmentCellRender(screeningTable.getTableHeader().getDefaultRenderer(), true));
-		screeningTable.setDefaultRenderer(Object.class,
-				getAlignmentCellRender(screeningTable.getDefaultRenderer(Object.class), false));
+		loadMovieSchedule(LocalDate.now());
 
 		// event handlers
 		addNewButton.addActionListener(this);
-		updateButton.addActionListener(this);
-		deleteButton.addActionListener(this);
-		filterComboBox.addActionListener(this);
 
 		searchByDateTextField.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				handleSearchAndFilter();
+				handleSearch();
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				handleSearchAndFilter();
+				handleSearch();
 			}
 
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				handleSearchAndFilter();
+				handleSearch();
 			}
 		});
 
@@ -209,39 +153,8 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 
 	}
 
-	@SuppressWarnings("serial")
-	private TableCellRenderer getAlignmentCellRender(TableCellRenderer oldRender, boolean header) {
-		return new DefaultTableCellRenderer() {
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				Component com = oldRender.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-						column);
-				if (com instanceof JLabel) {
-					JLabel label = (JLabel) com;
-					if (column == 2 || column == 3) {
-						label.setHorizontalAlignment(SwingConstants.CENTER);
-					} else {
-						label.setHorizontalAlignment(SwingConstants.LEADING);
-					}
-					if (header == false) {
-						if (isSelected) {
-							com.setForeground(table.getSelectionForeground());
-						} else {
-							com.setForeground(table.getForeground());
-						}
-					}
-				}
-				return com;
-			}
-		};
-	};
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource().equals(filterComboBox)) {
-			handleSearchAndFilter();
-		}
 		if (e.getSource().equals(addNewButton)) {
 			Thread thread = new Thread(() -> {
 				screeningAddingDialog = new ScreeningAddingDialog();
@@ -251,64 +164,234 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 			});
 			thread.start();
 		}
-		if (e.getSource().equals(updateButton)) {
-			Thread thread = new Thread(() -> {
-				int selectedRow = screeningTable.getSelectedRow();
-				if (selectedRow == -1) {
-					JOptionPane.showMessageDialog(this, "Please select a row to update.");
-				} else {
-					String movieScheduleID = (String) screeningTable.getValueAt(selectedRow, 0);
-					MovieSchedule movieSchedule = movieScheduleDAO.getMovieScheduleByID(movieScheduleID);
-					screeningUpdateDialog = new ScreeningUpdateDialog(movieSchedule);
-					screeningUpdateDialog.setFormScreeningManagement(this);
-					screeningUpdateDialog.setModal(true);
-					screeningUpdateDialog.setVisible(true);
-				}
-			});
-			thread.start();
-		}
-		if (e.getSource().equals(deleteButton)) {
-			int selectedRow = screeningTable.getSelectedRow();
-			if (selectedRow == -1) {
-				JOptionPane.showMessageDialog(this, "Please select a row to delete.");
-			} else {
-				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this movie schedule?",
-						"Warning", JOptionPane.YES_NO_OPTION);
-				if (option == JOptionPane.YES_OPTION) {
-					String scheduleID = (String) screeningTable.getValueAt(selectedRow, 0);
-					boolean isSuccessful = movieScheduleDAO.deleteMovieScheduleByID(scheduleID);
-					if (isSuccessful) {
-						handleSearchAndFilter();
-					} else {
-						JOptionPane.showMessageDialog(this, "Cannot delete movie", "Failed", JOptionPane.ERROR_MESSAGE);
-					}
-				}
-			}
-		}
 	}
 
-	public void handleSearchAndFilter() {
-		String roomNameToFind = (String) filterComboBox.getSelectedItem();
+	public void loadMovieSchedule(LocalDate dateToFind) {
+		movieScheduleCardContainer.removeAll();
+		List<Movie> movieList = movieScheduleDAO.getAllMovieByDate(dateToFind);
+		movieList.forEach(movie -> {
+			JPanel filler = new JPanel(new MigLayout("wrap, fill", "[fill]"));
+			JPanel movieScheduleCard = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][grow 0][fill]"));
+			JPanel movieNameContainer = new JPanel(new MigLayout("wrap, fill", "[]push[]", "[fill]"));
+			JPanel generalInfoContainer = new JPanel(new MigLayout("", "[left]", ""));
+			JPanel movieScheduleCardBottomContainer = new JPanel(
+					new MigLayout("wrap, fill", "[grow 0][fill]", "[fill]"));
+			JPanel movieScheduleCardBottomLeftContainer = new JPanel(
+					new MigLayout("wrap, fill", "[fill]", "[fill][grow 0]"));
+			JPanel movieScheduleCardBottomRightContainer = new JPanel(new MigLayout("wrap, fill", "[fill]", "[fill]"));
+
+			movieScheduleCard.add(movieNameContainer);
+			movieScheduleCard.add(generalInfoContainer);
+			movieScheduleCard.add(movieScheduleCardBottomContainer);
+			movieScheduleCardBottomContainer.add(movieScheduleCardBottomLeftContainer);
+			movieScheduleCardBottomContainer.add(movieScheduleCardBottomRightContainer);
+
+			JLabel movieName = new JLabel(movie.getMovieName());
+			JButton viewDetailButton = new JButton("View details");
+			movieNameContainer.add(movieName);
+			movieNameContainer.add(viewDetailButton);
+
+			viewDetailButton.addActionListener(e -> {
+				movieDetailDialog = new MovieDetailDialog(movie);
+				movieDetailDialog.setModal(true);
+				movieDetailDialog.setVisible(true);
+			});
+
+			JLabel generalInfo = new JLabel(
+					movie.getGenre() + "  |  " + movie.getCountry() + "  |  " + movie.getDuration() + " minutes");
+			generalInfoContainer.add(generalInfo);
+
+			ImageIcon icon = new ImageIcon(movie.getImageSource());
+			if (icon.getImageLoadStatus() == MediaTracker.ERRORED) {
+				icon = new ImageIcon("images/movie-poster-not-found.jpg");
+			}
+			Image img = icon.getImage();
+			Image resizedImg = img.getScaledInstance(150, -1, Image.SCALE_SMOOTH);
+			ImageIcon resizedIcon = new ImageIcon(resizedImg);
+			JLabel movieImage = new JLabel(resizedIcon);
+			JButton trailerButton = new JButton("Trailer");
+
+			trailerButton.addActionListener(e -> {
+			});
+
+			movieScheduleCardBottomLeftContainer.add(movieImage);
+			movieScheduleCardBottomLeftContainer.add(trailerButton);
+
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+			List<MovieSchedule> movieScheduleList = movieScheduleDAO
+					.getMovieScheduleByMovieIDAndByDate(movie.getMovieID(), dateToFind);
+
+			JPanel screeningContainer = new JPanel(new MigLayout("wrap, fillx", "[][]", ""));
+			movieScheduleList.forEach(movieSchedule -> {
+				JButton screeningButton = new JButton(movieSchedule.getScreeningTime().format(formatter) + " ~ "
+						+ movieSchedule.getEndTime().format(formatter));
+				screeningContainer.add(screeningButton);
+				screeningButton.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseClicked(MouseEvent e) {
+						if (SwingUtilities.isRightMouseButton(e)) {
+							showPopupMenu(screeningButton, e.getX(), e.getY(), movieSchedule);
+						}
+					}
+
+					public void showPopupMenu(Component invoker, int x, int y, MovieSchedule movieSchedule) {
+						JPopupMenu popupMenu = new JPopupMenu();
+
+						JMenuItem updateMenuItem = new JMenuItem("Update");
+						JMenuItem deleteMenuItem = new JMenuItem("Delete");
+
+						updateMenuItem.setIcon(new FlatSVGIcon("gui/icon/svg/edit.svg", 0.35f));
+						deleteMenuItem.setIcon(new FlatSVGIcon("gui/icon/svg/delete.svg", 0.35f));
+
+						MovieSchedule temp = movieSchedule;
+
+						updateMenuItem.addActionListener(new ActionListener() {
+							private ScreeningUpdateDialog screeningUpdateDialog;
+
+							public void actionPerformed(ActionEvent e) {
+								MovieSchedule movieSchedule = movieScheduleDAO
+										.getMovieScheduleByID(temp.getScheduleID());
+								screeningUpdateDialog = new ScreeningUpdateDialog(movieSchedule);
+								screeningUpdateDialog.setFormScreeningManagement(FormScreeningManagement.this);
+								screeningUpdateDialog.setModal(true);
+								screeningUpdateDialog.setVisible(true);
+							}
+						});
+
+						deleteMenuItem.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent e) {
+								int option = JOptionPane.showConfirmDialog(invoker,
+										"Are you sure you want to delete this movie schedule?", "Warning",
+										JOptionPane.YES_NO_OPTION);
+								if (option == JOptionPane.YES_OPTION) {
+									boolean isSuccessful = movieScheduleDAO
+											.deleteMovieScheduleByID(temp.getScheduleID());
+									if (isSuccessful) {
+										handleSearch();
+									} else {
+										JOptionPane.showMessageDialog(invoker, "Cannot delete movie", "Failed",
+												JOptionPane.ERROR_MESSAGE);
+									}
+								}
+							}
+						});
+
+						popupMenu.add(updateMenuItem);
+						popupMenu.add(deleteMenuItem);
+
+						popupMenu.show(invoker, x, y);
+					}
+				});
+
+				// styles
+				screeningButton.putClientProperty(FlatClientProperties.STYLE,
+						"hoverBackground:$primary;hoverForeground:$clr-white");
+				screeningButton.addMouseListener(new MouseAdapter() {
+					@Override
+					public void mouseEntered(MouseEvent e) {
+						screeningButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+					}
+
+					@Override
+					public void mouseExited(MouseEvent e) {
+						screeningButton.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+					}
+				});
+				// action listener
+				screeningButton.addActionListener(e -> {
+					// Setting up the glass pane
+					JPanel glassPane = new BlurGlassPane();
+					Application.getInstance().setGlassPane(glassPane);
+					// Make the glass pane visible
+					glassPane.setVisible(true);
+					seatingOptioneDialog = new SeatingOptionDialog(movieSchedule);
+					seatingOptioneDialog.setCurrentEmployee(currentEmployee);
+					seatingOptioneDialog.setModal(true);
+					seatingOptioneDialog.setVisible(true);
+				});
+			});
+
+			// styles
+
+			movieScheduleCardBottomRightContainer.add(screeningContainer);
+
+			movieScheduleCard.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
+			movieNameContainer.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
+			generalInfoContainer.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
+			movieScheduleCardBottomContainer.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
+			movieScheduleCardBottomLeftContainer.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
+			movieScheduleCardBottomRightContainer.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
+			screeningContainer.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
+			movieImage.putClientProperty(FlatClientProperties.STYLE, "background:$white;border:0,0,0,0,$white,0");
+
+			movieName.putClientProperty(FlatClientProperties.STYLE, "font:$h3.font");
+
+			filler.add(movieScheduleCard);
+
+			movieScheduleCardContainer.add(filler, "growx, shrinkx, aligny top, width 0");
+
+			JScrollPane scroll = (JScrollPane) container2.getParent().getParent();
+			scroll.setBorder(BorderFactory.createEmptyBorder());
+			scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
+					"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
+
+			trailerButton.putClientProperty(FlatClientProperties.STYLE,
+					"hoverBackground:$primary;hoverForeground:$clr-white");
+			viewDetailButton.putClientProperty(FlatClientProperties.STYLE,
+					"hoverBackground:$primary;hoverForeground:$clr-white");
+
+			generalInfo.putClientProperty(FlatClientProperties.STYLE, "foreground:$muted");
+
+			// event handler
+
+			trailerButton.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					trailerButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					trailerButton.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+			});
+
+			viewDetailButton.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					viewDetailButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					viewDetailButton.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+			});
+
+		});
+		this.revalidate();
+		this.repaint();
+	}
+
+	public void handleSearch() {
 		String searchedDate = searchByDateTextField.getText().trim();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		LocalDate searchedDateLocalDate;
 		try {
 			searchedDateLocalDate = LocalDate.parse(searchedDate, formatter);
+			loadMovieSchedule(searchedDateLocalDate);
 		} catch (DateTimeParseException e) {
 			searchedDateLocalDate = LocalDate.now();
 		}
-
-		List<MovieSchedule> movieScheduleList = null;
-		if (roomNameToFind.equals("All")) {
-			movieScheduleList = movieScheduleDAO.getAllMovieScheduleByDate(searchedDateLocalDate);
-		} else {
-			movieScheduleList = movieScheduleDAO.findMovieScheduleByRoomNameAndDate(roomNameToFind,
-					searchedDateLocalDate);
-		}
-		screeningTableModel.setMovieScheduleList(movieScheduleList);
-		screeningTableModel.fireTableDataChanged();
 	}
-
 }
 
 class BlurGlassPane extends JPanel {

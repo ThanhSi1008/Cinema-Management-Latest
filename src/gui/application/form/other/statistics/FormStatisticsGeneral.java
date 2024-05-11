@@ -53,8 +53,8 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 	private TotalIncomeDAO totalIncomeDAO;
 	private JPanel southContainer;
 	private HorizontalBarChart barChart;
-	private JButton totalIncome;
-	private JButton totalSpending;
+	private JButton totalIncomeButton;
+	private JButton totalSpendingButton;
 	private JButton exportButton;
 
 	public FormStatisticsGeneral(Employee emp) {
@@ -95,8 +95,8 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 
 		totalIncomeLabel = new JLabel("Total Income: ");
 		totalSpendingLabel = new JLabel("Total Spending: ");
-		totalIncome = new JButton();
-		totalSpending = new JButton();
+		totalIncomeButton = new JButton();
+		totalSpendingButton = new JButton();
 		exportButton = new JButton("Export Statistical");
 
 		if (emp.getRole().equals("Manager")) {
@@ -107,8 +107,8 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 
 		dataContainer.add(totalIncomeLabel);
 		dataContainer.add(totalSpendingLabel);
-		dataContainer.add(totalIncome);
-		dataContainer.add(totalSpending);
+		dataContainer.add(totalIncomeButton);
+		dataContainer.add(totalSpendingButton);
 
 		incomeTitleLabel = new JLabel("Income Pie Chart");
 
@@ -117,23 +117,20 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 		// style
 		totalIncomeLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h5.font");
 		totalSpendingLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h5.font");
-		totalIncome.setHorizontalAlignment(SwingConstants.CENTER);
-		totalSpending.setHorizontalAlignment(SwingConstants.CENTER);
+		totalIncomeButton.setHorizontalAlignment(SwingConstants.CENTER);
+		totalSpendingButton.setHorizontalAlignment(SwingConstants.CENTER);
 
-		totalIncome.setOpaque(true);
-		totalSpending.setOpaque(true);
-		totalIncome.putClientProperty(FlatClientProperties.STYLE,
+		totalIncomeButton.setOpaque(true);
+		totalSpendingButton.setOpaque(true);
+		totalIncomeButton.putClientProperty(FlatClientProperties.STYLE,
 				"font:$h1.font; background:#3b934b; arc:10; margin:10,20,10,20; foreground:#fff;");
-		totalSpending.putClientProperty(FlatClientProperties.STYLE,
+		totalSpendingButton.putClientProperty(FlatClientProperties.STYLE,
 				"font:$h1.font; background:#b44244; arc:10; margin:10,20,10,20; foreground:#fff;");
 
 		incomeTitleLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h4.font;");
 		spendingTitleLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h4.font;");
 
-		createLeftPieChart(bottomRightMainContainer);
-		createRightPieChart(bottomLeftMainContainer);
 		createBarChart(southContainer);
-		formRefresh();
 
 		// action listener
 		filterByCombobox.addActionListener(this);
@@ -155,7 +152,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 		panel.add(panel1, "split 2,gap 0 20");
 	}
 
-	private void createLeftPieChart(JPanel panel) {
+	private void createLeftPieChart(JPanel panel, TotalSpending totalSpending) {
 		pieChart1 = new PieChart();
 		JLabel header1 = new JLabel("Total Spending");
 		header1.putClientProperty(FlatClientProperties.STYLE, "font:$h5.font");
@@ -164,10 +161,11 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 				Color.decode("#fb923c"), Color.decode("#fbbf24"), Color.decode("#818cf8"), Color.decode("#34d399"),
 				Color.decode("#a3e635"));
 		pieChart1.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
+		pieChart1.setDataset(createPieDataForTotalSpending(totalSpending));
 		panel.add(pieChart1, "split 3,height 290");
 	}
 
-	private void createRightPieChart(JPanel panel) {
+	private void createRightPieChart(JPanel panel, TotalIncome totalIncome) {
 		pieChart2 = new PieChart();
 		JLabel header2 = new JLabel("Total Income");
 		header2.putClientProperty(FlatClientProperties.STYLE, "" + "font:+1");
@@ -177,6 +175,7 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 				Color.decode("#a3e635"), Color.decode("#34d399"), Color.decode("#22d3ee"), Color.decode("#818cf8"),
 				Color.decode("#c084fc"));
 		pieChart2.putClientProperty(FlatClientProperties.STYLE, "" + "border:5,5,5,5,$Component.borderColor,,20");
+		pieChart2.setDataset(createPieDataForTotalIncome(totalIncome));
 		panel.add(pieChart2, "height 290");
 	}
 
@@ -207,7 +206,6 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource().equals(filterByCombobox)) {
-			formRefresh();
 			// if "by month" is selected, change the items of filter to january to december
 			// if "by year" is selected, change the items of filter to 2023 and 2024
 			for (ActionListener al : filterCombobox.getActionListeners()) {
@@ -216,7 +214,6 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 			String selectedItem = (String) filterByCombobox.getSelectedItem();
 			filterCombobox.removeAllItems();
 			if (selectedItem.equals("By month")) {
-				formRefresh();
 				filterCombobox.addItem("January");
 				filterCombobox.addItem("Feburary");
 				filterCombobox.addItem("March");
@@ -238,18 +235,20 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 							filterCombobox.getSelectedIndex() + 1);
 					TotalSpending returnedTotalSpending = totalSpendingDAO.getTotalSpending(LocalDate.now().getYear(),
 							filterCombobox.getSelectedIndex() + 1);
+					BigDecimal totalIncomeValue = returnedTotalIncome.getTotalProduct()
+							.add(returnedTotalIncome.getTotalSeat());
+					BigDecimal totalSpendingValue = returnedTotalSpending.getTotalAddMovie().add(returnedTotalSpending
+							.getTotalAddProdcut().add(returnedTotalSpending.getTotalImportProduct()));
 
-					totalIncome.setText(
-							"$" + returnedTotalIncome.getTotalProduct().add(returnedTotalIncome.getTotalSeat()) + "");
-					totalSpending
-							.setText("$"
-									+ returnedTotalSpending.getTotalAddMovie().add(returnedTotalSpending
-											.getTotalAddProdcut().add(returnedTotalSpending.getTotalImportProduct()))
-									+ "");
+					totalIncomeButton.setText("$" + totalIncomeValue);
+					totalSpendingButton.setText("$" + totalSpendingValue);
 
-					pieChart1.setDataset(createPieDataForTotalSpending(returnedTotalSpending));
-					pieChart2.setDataset(createPieDataForTotalIncome(returnedTotalIncome));
+					bottomRightMainContainer.removeAll();
+					bottomLeftMainContainer.removeAll();
+					createLeftPieChart(bottomRightMainContainer, returnedTotalSpending);
+					createRightPieChart(bottomLeftMainContainer, returnedTotalIncome);
 					barChart.setDataset(createData(returnedTotalIncome, returnedTotalSpending));
+
 					if (returnedTotalSpending.getTotalAddMovie().compareTo(BigDecimal.valueOf(0)) == 0
 							&& returnedTotalSpending.getTotalAddProdcut().compareTo(BigDecimal.valueOf(0)) == 0
 							&& returnedTotalSpending.getTotalImportProduct().compareTo(BigDecimal.valueOf(0)) == 0) {
@@ -269,7 +268,6 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 				});
 				filterCombobox.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
 			} else {
-				formRefresh();
 				filterCombobox.addItem(LocalDate.now().getYear() - 1 + "");
 				filterCombobox.addItem(LocalDate.now().getYear() + "");
 				for (ActionListener al : filterCombobox.getActionListeners()) {
@@ -282,13 +280,15 @@ public class FormStatisticsGeneral extends SimpleForm implements ActionListener 
 								.getTotalIncome(Integer.parseInt((String) selectedYearString), 0);
 						TotalSpending returnedTotalSpending = totalSpendingDAO
 								.getTotalSpending(Integer.parseInt((String) selectedYearString), 0);
-						totalIncome.setText("$"
+						totalIncomeButton.setText("$"
 								+ returnedTotalIncome.getTotalProduct().add(returnedTotalIncome.getTotalSeat()) + "");
-						totalSpending.setText("$" + returnedTotalSpending.getTotalAddMovie()
+						totalSpendingButton.setText("$" + returnedTotalSpending.getTotalAddMovie()
 								.add(returnedTotalSpending.getTotalAddProdcut())
 								.add(returnedTotalSpending.getTotalImportProduct()) + "");
-						pieChart1.setDataset(createPieDataForTotalSpending(returnedTotalSpending));
-						pieChart2.setDataset(createPieDataForTotalIncome(returnedTotalIncome));
+						bottomRightMainContainer.removeAll();
+						bottomLeftMainContainer.removeAll();
+						createLeftPieChart(bottomRightMainContainer, returnedTotalSpending);
+						createRightPieChart(bottomLeftMainContainer, returnedTotalIncome);
 						barChart.setDataset(createData(returnedTotalIncome, returnedTotalSpending));
 						if (returnedTotalIncome.getTotalProduct().compareTo(BigDecimal.valueOf(0)) == 0
 								&& returnedTotalIncome.getTotalSeat().compareTo(BigDecimal.valueOf(0)) == 0) {

@@ -409,7 +409,7 @@ public class CheckoutDialog extends JDialog {
 			movieTotalDouble += movieSchedule.getPerSeatPrice();
 			System.out.println(s);
 		}
-		DecimalFormat df = new DecimalFormat("##.00");
+		DecimalFormat df = new DecimalFormat("##0.00");
 		totalTicketPrice.setText("$" + movieSchedule.getPerSeatPrice() + " x " + seatChosenList.size());
 		movieTotal.setText("$" + df.format(movieTotalDouble) + "");
 
@@ -439,7 +439,7 @@ public class CheckoutDialog extends JDialog {
 			productOrderDetailCard.add(multiplyLabel);
 			productOrderDetailCard.add(productLineTotalLabel);
 			productOrderDetailContainer.add(productOrderDetailCard);
-			productLineTotalLabel.putClientProperty(FlatClientProperties.STYLE, "" + "font:$p.bold;");
+			productLineTotalLabel.putClientProperty(FlatClientProperties.STYLE,  "font:$p.font;");
 		}
 
 		productTotalContainer = new JPanel(new MigLayout("wrap, fillx", "[left][right]", "[fill]"));
@@ -454,7 +454,7 @@ public class CheckoutDialog extends JDialog {
 		productTotalContainer.add(productTotal);
 
 		totalDouble = movieTotalDouble + productTotalDouble;
-		subtotal.setText("$" + df.format(movieTotalDouble) + " + " + "$" + df.format(productTotalDouble));
+		subtotal.setText("$" + df.format(totalDouble));
 		total.setText("$" + df.format(totalDouble));
 
 		productContainer.add(productTitleContainer, "span 2, align center");
@@ -546,7 +546,7 @@ public class CheckoutDialog extends JDialog {
 			if (!isCustomerExist) {
 				customerID = customerDAO.addNewCustomer(new Customer(phoneNumber, fullName, email, LocalDate.now()));
 			} else {
-				customerID = customerDAO.getCustomerIdByPhoneNumber(phoneNumber);
+				customerID = customerDAO.updateCustomerByPhoneNumber(phoneNumber, fullName, email);
 			}
 			// update the quantity of the products in the database
 			for (OrderDetail od : chosenProductOrderDetailList) {

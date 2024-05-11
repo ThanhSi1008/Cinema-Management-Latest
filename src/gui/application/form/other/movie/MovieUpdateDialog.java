@@ -39,6 +39,7 @@ import com.raven.datechooser.SelectedAction;
 import com.raven.datechooser.SelectedDate;
 
 import dao.MovieDAO;
+import dao.MovieScheduleDAO;
 import entity.Movie;
 import net.miginfocom.swing.MigLayout;
 import raven.crazypanel.CrazyPanel;
@@ -92,8 +93,10 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 	private JPanel imageChooserAndFileChooserContainer;
 	private JPanel releasedDateContainer;
 	private JPanel startDateContainer;
+	private MovieScheduleDAO movieScheduleDAO;
 
 	public MovieUpdateDialog(Movie movie) {
+		this.movieScheduleDAO = new MovieScheduleDAO();
 		this.movie = movie;
 		movieDAO = new MovieDAO();
 		setLayout(new BorderLayout());
@@ -276,6 +279,10 @@ public class MovieUpdateDialog extends JDialog implements ActionListener {
 		scroll.setBorder(BorderFactory.createEmptyBorder());
 		scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
 				"" + "background:$Table.background;" + "track:$Table.background;" + "trackArc:999");
+
+		if (movieScheduleDAO.checkMovieInScreening(movie.getMovieID())) {
+			statusComboBox.setEnabled(false);
+		}
 
 		add(container);
 

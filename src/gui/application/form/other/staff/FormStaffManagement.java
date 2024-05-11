@@ -42,9 +42,12 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 	private JTable employeeTable;
 	private StaffAddingDialog staffAddingDialog;
 	private StaffUpdateDialog staffUpdateDialog;
+	private Employee currentEmployee;
 
-	public FormStaffManagement() {
-
+	public FormStaffManagement(Employee currentEmployee) {
+		
+		this.currentEmployee = currentEmployee;
+		
 		employeeDAO = new EmployeeDAO();
 
 		setLayout(new BorderLayout());
@@ -177,11 +180,18 @@ public class FormStaffManagement extends JPanel implements ActionListener {
 			int selectedRow = employeeTable.getSelectedRow();
 			if (selectedRow == -1) {
 				JOptionPane.showMessageDialog(this, "Please select a row to delete.");
-			} else {
+			} else {				
+				
+				// if employee that is being requested to be deleted is the current employee, show an error message that says "You can not delete yourself"
+				String employeeID = (String) employeeTable.getValueAt(selectedRow, 0);
+				if (currentEmployee.getEmployeeID().equals(employeeID)) {
+					JOptionPane.showMessageDialog(this, "You can not delete yourself!!!", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this employee?",
 						"Warning", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
-					String employeeID = (String) employeeTable.getValueAt(selectedRow, 0);
 					boolean isSuccessful = employeeDAO.removeEmployeeByID(employeeID);
 					if (isSuccessful) {
 						handleSearch();

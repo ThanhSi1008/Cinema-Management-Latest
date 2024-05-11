@@ -30,6 +30,7 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import dao.MovieDAO;
+import dao.MovieScheduleDAO;
 import entity.Movie;
 import gui.other.MovieCSVReader;
 import net.miginfocom.swing.MigLayout;
@@ -54,10 +55,13 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 	private MovieDAO movieDAO;
 	private MovieUpdateDialog movieUpdateDialog;
 	private JButton importMovieByCSV;
+	
+	private MovieScheduleDAO movieScheduleDAO;
 
 	public FormMovieManagement() {
 
 		movieDAO = new MovieDAO();
+		movieScheduleDAO = new MovieScheduleDAO();
 
 		setLayout(new BorderLayout());
 		container0 = new JPanel();
@@ -205,10 +209,16 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 			if (selectedRow == -1) {
 				JOptionPane.showMessageDialog(this, "Please select a row to delete.");
 			} else {
+				String movieID = (String) movieTable.getValueAt(selectedRow, 0);
+				
+				if (movieScheduleDAO.checkMovieInScreening(movieID)) {
+					JOptionPane.showMessageDialog(this, "This movie is being screened", "Error", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+				
 				int option = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this movie?",
 						"Warning", JOptionPane.YES_NO_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
-					String movieID = (String) movieTable.getValueAt(selectedRow, 0);
 					System.out.println(movieID);
 					int rowsAffected = movieDAO.deleteMovieByID(movieID);
 					if (rowsAffected > 0) {
@@ -222,6 +232,7 @@ public class FormMovieManagement extends JPanel implements ActionListener {
 		if (e.getSource().equals(updateButton)) {
 			Thread thread = new Thread(() -> {
 				int selectedRow = movieTable.getSelectedRow();
+
 				if (selectedRow == -1) {
 					JOptionPane.showMessageDialog(this, "Please select a row to update.");
 				} else {

@@ -88,7 +88,7 @@ public class MainForm extends JLayeredPane {
 					Application.showMainForm(new FormScreeningManagement(employee));
 					break;
 				case 2:
-					Application.showMainForm(new FormStaffManagement());
+					Application.showMainForm(new FormStaffManagement(employee));
 					break;
 				case 3:
 					Application.showMainForm(new FormCustomerManagement());

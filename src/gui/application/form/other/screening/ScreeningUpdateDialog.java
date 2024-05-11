@@ -67,7 +67,6 @@ public class ScreeningUpdateDialog extends JDialog implements ActionListener {
 	private TimePicker screeningTimeTimePicker;
 	private JButton screeningTimeTimePickerButton;
 	private MovieSchedule movieSchedule;
-	private FormScreeningManagement2 formScreeningManagement2;
 
 	public ScreeningUpdateDialog(MovieSchedule movieSchedule) {
 		this.movieSchedule = movieSchedule;
@@ -252,7 +251,7 @@ public class ScreeningUpdateDialog extends JDialog implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Udpate movie schedule successfully", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
 				this.dispose();
-				formScreeningManagement.handleSearchAndFilter();
+				formScreeningManagement.handleSearch();
 			} else {
 				JOptionPane.showMessageDialog(this, "An error has occured", "Failed", JOptionPane.ERROR_MESSAGE);
 			}
@@ -261,9 +260,5 @@ public class ScreeningUpdateDialog extends JDialog implements ActionListener {
 
 	public void setFormScreeningManagement(FormScreeningManagement formScreeningManagement) {
 		this.formScreeningManagement = formScreeningManagement;
-	}
-
-	public void setFormScreeningManagement(FormScreeningManagement2 formScreeningManagement2) {
-		this.formScreeningManagement2 = formScreeningManagement2;
 	}
 }

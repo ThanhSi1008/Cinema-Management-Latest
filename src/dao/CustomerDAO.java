@@ -217,4 +217,21 @@ public class CustomerDAO {
 		return customer;
 	}
 
+	public String updateCustomerByPhoneNumber(String phoneNumber, String fullName, String email) {
+		Connection connection = connectDB.getConnection();
+		try {
+			PreparedStatement s = connection.prepareStatement("update customer set fullname = ?, email = ? output inserted.customerid where phonenumber = ?");
+			s.setString(1, fullName);
+			s.setString(2, email);
+			s.setString(3, phoneNumber);
+			ResultSet rs = s.executeQuery();
+			if (rs.next()) {
+				return rs.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 }
