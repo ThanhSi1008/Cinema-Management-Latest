@@ -19,11 +19,13 @@ import java.awt.image.Kernel;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -53,6 +55,7 @@ import net.miginfocom.swing.MigLayout;
 public class FormScreeningManagement extends JPanel implements ActionListener {
 
 	// in movie adding dialog, show the image when the user choose the image
+
 	private static final long serialVersionUID = 1L;
 	private JButton addNewButton;
 	private JPanel container0;
@@ -68,6 +71,10 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 	private SeatingOptionDialog seatingOptioneDialog;
 	private Employee currentEmployee;
 	private MovieDetailDialog movieDetailDialog;
+	private JComboBox<String> searchByNameCombobox;
+
+	private LocalDate searchedDateLocalDate;
+	private List<Movie> movieList;
 
 	public FormScreeningManagement(Employee currentEmployee) {
 
@@ -81,10 +88,13 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 		searchByDateDateChooser = new DateChooser();
 		searchByDateDateChooserButton = new JButton();
 
+		searchByNameCombobox = new JComboBox<String>();
+
 		addNewButton = new JButton("Add New");
-		container1.setLayout(new MigLayout("", "[][]push[]", ""));
+		container1.setLayout(new MigLayout("", "[][]push[][]", ""));
 		container1.add(searchByDateTextField, "w 200!");
 		container1.add(searchByDateDateChooserButton);
+		container1.add(searchByNameCombobox);
 		container1.add(addNewButton);
 
 		addNewButton.setIcon(new FlatSVGIcon("gui/icon/svg/add.svg", 0.35f));
@@ -100,8 +110,6 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 
 		container0.add(new JScrollPane(container2));
 		container2.add(movieScheduleCardContainer);
-
-		loadMovieSchedule(LocalDate.now());
 
 		// event handlers
 		addNewButton.addActionListener(this);
@@ -166,10 +174,10 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 		}
 	}
 
-	public void loadMovieSchedule(LocalDate dateToFind) {
+	public void loadMovieSchedule(List<Movie> movieList) {
 		movieScheduleCardContainer.removeAll();
-		List<Movie> movieList = movieScheduleDAO.getAllMovieByDate(dateToFind);
 		movieList.forEach(movie -> {
+
 			JPanel filler = new JPanel(new MigLayout("wrap, fill", "[fill]"));
 			JPanel movieScheduleCard = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][grow 0][fill]"));
 			JPanel movieNameContainer = new JPanel(new MigLayout("wrap, fill", "[]push[]", "[fill]"));
@@ -191,7 +199,7 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 			movieNameContainer.add(movieName);
 			movieNameContainer.add(viewDetailButton);
 
-			viewDetailButton.addActionListener(e -> {
+			viewDetailButton.addActionListener(e1 -> {
 				movieDetailDialog = new MovieDetailDialog(movie);
 				movieDetailDialog.setModal(true);
 				movieDetailDialog.setVisible(true);
@@ -211,21 +219,28 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 			JLabel movieImage = new JLabel(resizedIcon);
 			JButton trailerButton = new JButton("Trailer");
 
-			trailerButton.addActionListener(e -> {
+			trailerButton.addActionListener(e1 -> {
 			});
 
 			movieScheduleCardBottomLeftContainer.add(movieImage);
 			movieScheduleCardBottomLeftContainer.add(trailerButton);
 
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+			DateTimeFormatter hourFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
 			List<MovieSchedule> movieScheduleList = movieScheduleDAO
-					.getMovieScheduleByMovieIDAndByDate(movie.getMovieID(), dateToFind);
+					.getMovieScheduleByMovieIDAndByDate(movie.getMovieID(), searchedDateLocalDate);
 
 			JPanel screeningContainer = new JPanel(new MigLayout("wrap, fillx", "[][]", ""));
 			movieScheduleList.forEach(movieSchedule -> {
-				JButton screeningButton = new JButton(movieSchedule.getScreeningTime().format(formatter) + " ~ "
-						+ movieSchedule.getEndTime().format(formatter));
+				JLabel screeningTimeLabel = new JLabel(movieSchedule.getScreeningTime().format(hourFormatter));
+				JLabel endTimeLabel = new JLabel("~ " + movieSchedule.getEndTime().format(hourFormatter));
+				JButton screeningButton = new JButton();
+				screeningButton.setLayout(new MigLayout("wrap, fill, insets 0", "[][]", "[fill]"));
+				screeningButton.add(screeningTimeLabel);
+				screeningTimeLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h5.font");
+				endTimeLabel.putClientProperty(FlatClientProperties.STYLE, "foreground:$muted; font:-4");
+				screeningButton.add(endTimeLabel);	
+				// JButton screeningButton = new JButton(movieSchedule.getScreeningTime().format(hourFormatter) + " ~ " + movieSchedule.getEndTime().format(hourFormatter));
 				screeningContainer.add(screeningButton);
 				screeningButton.addMouseListener(new MouseAdapter() {
 					@Override
@@ -290,16 +305,20 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 				screeningButton.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseEntered(MouseEvent e) {
-						screeningButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+						screeningButton.setCursor(new Cursor(Cursor.HAND_CURSOR));						
+						screeningTimeLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h5.font;foreground:$clr-white");
+						endTimeLabel.putClientProperty(FlatClientProperties.STYLE, "foreground:$muted;foreground:$clr-white; font:-4");
 					}
 
 					@Override
 					public void mouseExited(MouseEvent e) {
 						screeningButton.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						screeningTimeLabel.putClientProperty(FlatClientProperties.STYLE, "font:$h5.font");
+						endTimeLabel.putClientProperty(FlatClientProperties.STYLE, "foreground:$muted; font:-4");
 					}
 				});
 				// action listener
-				screeningButton.addActionListener(e -> {
+				screeningButton.addActionListener(e1 -> {
 					// Setting up the glass pane
 					JPanel glassPane = new BlurGlassPane();
 					Application.getInstance().setGlassPane(glassPane);
@@ -346,7 +365,7 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 			trailerButton.putClientProperty(FlatClientProperties.STYLE,
 					"hoverBackground:$primary;hoverForeground:$clr-white");
 			viewDetailButton.putClientProperty(FlatClientProperties.STYLE,
-					"hoverBackground:$primary;hoverForeground:$clr-white");
+					"background:$primary;foreground:$clr-white");
 
 			generalInfo.putClientProperty(FlatClientProperties.STYLE, "foreground:$muted");
 
@@ -377,17 +396,43 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 			});
 
 		});
-		this.revalidate();
-		this.repaint();
+		repaint();
+		revalidate();
 	}
 
 	public void handleSearch() {
+		for (ActionListener al : searchByNameCombobox.getActionListeners()) {
+			searchByNameCombobox.removeActionListener(al);
+		}
 		String searchedDate = searchByDateTextField.getText().trim();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		LocalDate searchedDateLocalDate;
 		try {
+			searchByNameCombobox.removeAllItems();
+			searchByNameCombobox.addItem("All");
+
 			searchedDateLocalDate = LocalDate.parse(searchedDate, formatter);
-			loadMovieSchedule(searchedDateLocalDate);
+			movieList = movieScheduleDAO.getAllMovieByDate(searchedDateLocalDate);
+			loadMovieSchedule(movieList);
+			movieList = movieList.stream().sorted(Comparator.comparing(Movie::getMovieName)).toList();
+			movieList.forEach(movie -> {
+				searchByNameCombobox.addItem(movie.getMovieName());
+			});
+
+			searchByNameCombobox.addActionListener(e -> {
+				String movieNameToFind = (String) searchByNameCombobox.getSelectedItem();
+				System.out.println(movieNameToFind);
+				if (movieNameToFind.equals("All")) {
+					movieList = movieScheduleDAO.getAllMovieByDate(searchedDateLocalDate);
+					loadMovieSchedule(movieList);
+				} else {
+					movieList = movieScheduleDAO.getAllMovieByDateAndByMovieName(searchedDateLocalDate,
+							movieNameToFind);
+					loadMovieSchedule(movieList);
+				}
+			});
+
+			this.revalidate();
+			this.repaint();
 		} catch (DateTimeParseException e) {
 			searchedDateLocalDate = LocalDate.now();
 		}

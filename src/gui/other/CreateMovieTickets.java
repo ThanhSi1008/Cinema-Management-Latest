@@ -98,7 +98,8 @@ public class CreateMovieTickets {
 			qrContent += "; " + pid;
 		}
 
-		String defaultFolderPath = "T:\\JavaProject\\Cinema-Java-Project\\data\\";
+		// String defaultFolderPath = "T:\\JavaProject\\Cinema-Java-Project\\data\\";
+		String defaultFolderPath = "data/";
 
 		Document document = new Document(new Rectangle(333, 999));
 		String fileName = orderID + "ticket.pdf";

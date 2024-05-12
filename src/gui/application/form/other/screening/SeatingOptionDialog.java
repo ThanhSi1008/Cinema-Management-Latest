@@ -80,7 +80,7 @@ public class SeatingOptionDialog extends JDialog {
 				"background:$dark-clr-black; foreground:$dark-clr-white");
 		selectedButton = new JButton();
 		selectedButton.putClientProperty(FlatClientProperties.STYLE, "background:$clr-red;foreground:$clr-white");
-
+		
 		leftContainer.setLayout(new MigLayout("wrap, fill, insets 0", "[fill]", "[grow 0]15[fill][grow 0]"));
 		screenLabel = new JLabel("Screen");
 		screenLabel.setOpaque(true);
@@ -103,14 +103,14 @@ public class SeatingOptionDialog extends JDialog {
 				.getAllMovieScheduleSeatByMovieScheduleID(movieSchedule.getScheduleID());
 		seatChosenList = new ArrayList<>();
 		movieScheduleSeatList.forEach(movieScheduleSeat -> {
-			JButton button = new JButton(movieScheduleSeat.getSeat().getSeatLocation());
 			if (movieScheduleSeat.isSold()) {
-				button.setOpaque(true);
-				button.setBackground(selectedButton.getBackground());
-				button.setForeground(selectedButton.getForeground());
-				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 9));
+				JButton button = new JButton();
+				button.setOpaque(true);				
+				button.putClientProperty(FlatClientProperties.STYLE, "font:-7;background:#808080");
+				button.setIcon(new ImageIcon("images/close.png"));
 				seatsContainer.add(button, "width 30!, height 30!, grow"); // Adjust the width and height as needed
 			} else {
+				JButton button = new JButton(movieScheduleSeat.getSeat().getSeatLocation());
 				button.setFont(new Font(button.getFont().getFontName(), button.getFont().getStyle(), 9));
 				button.setBackground(normalButton.getBackground());
 				button.setForeground(normalButton.getForeground());
@@ -178,7 +178,10 @@ public class SeatingOptionDialog extends JDialog {
 		JPanel takenPanel = new JPanel(new MigLayout("align center, gap 10, insets 0 10 0 10", "[center]", ""));
 		JLabel takenLabel = new JLabel("Taken");
 		JButton redButton = new JButton();
-		redButton.putClientProperty(FlatClientProperties.STYLE, "background:$App.accent.red");
+		redButton.setOpaque(true);				
+		redButton.putClientProperty(FlatClientProperties.STYLE, "font:-7;background:#808080");
+		redButton.setIcon(new ImageIcon("images/close.png"));
+		
 		takenPanel.add(takenLabel);
 		takenPanel.add(redButton, "width 35!, height 35!");
 		noteContainer.add(availablePanel);

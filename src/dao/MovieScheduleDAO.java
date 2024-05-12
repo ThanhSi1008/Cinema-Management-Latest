@@ -341,4 +341,26 @@ public class MovieScheduleDAO {
 		return false;
 	}
 
+	public List<Movie> getAllMovieByDateAndByMovieName(LocalDate dateToFind, String movieNameToFind) {
+		Connection connection = connectDB.getConnection();
+		List<Movie> movieList = null;
+
+		try {
+			movieList = new ArrayList<Movie>();
+			PreparedStatement s = connection.prepareStatement(
+					"select distinct ms.movieid from movieschedule ms join movie m on ms.movieid = m.movieid where convert(date, ScreeningTime) = convert(date, ?) and endtime >= getdate() and moviename = ?");
+			s.setString(1, dateToFind.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+			s.setString(2, movieNameToFind);
+			ResultSet rs = s.executeQuery();
+			while (rs.next()) {
+				movieList.add(movieDAO.getMovieByID(rs.getString(1)));
+			}
+			return movieList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return movieList;
+	}
+
 }

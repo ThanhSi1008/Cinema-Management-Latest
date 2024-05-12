@@ -578,9 +578,9 @@ public class CheckoutDialog extends JDialog {
 					orderDetailDAO.addNewOrderDetail(chosenProductOrderDetail);
 				});
 
-				CreateMovieTickets.createTicket(chosenProductOrderDetailList, seatChosenList, newOrder);
 				JOptionPane.showMessageDialog(this, "Order has been added successfully", "Success",
 						JOptionPane.INFORMATION_MESSAGE);
+				CreateMovieTickets.createTicket(chosenProductOrderDetailList, seatChosenList, newOrder);
 				this.dispose();
 				productOptionDialog.dispose();
 				productOptionDialog.disposeSeatOptionDialog();
