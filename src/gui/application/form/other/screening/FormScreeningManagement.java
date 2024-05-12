@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -75,6 +76,8 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 
 	private LocalDate searchedDateLocalDate;
 	private List<Movie> movieList;
+	private JButton goLeftButton;
+	private JButton goRightButton;
 
 	public FormScreeningManagement(Employee currentEmployee) {
 
@@ -86,20 +89,68 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 		container1 = new JPanel();
 		searchByDateTextField = new JTextField();
 		searchByDateDateChooser = new DateChooser();
+		goLeftButton = new JButton();
 		searchByDateDateChooserButton = new JButton();
+		goRightButton = new JButton();
 
 		searchByNameCombobox = new JComboBox<String>();
 
 		addNewButton = new JButton("Add New");
-		container1.setLayout(new MigLayout("", "[][]push[][]", ""));
+		container1.setLayout(new MigLayout("", "[][]0[]0[]push[][]", ""));
 		container1.add(searchByDateTextField, "w 200!");
+		container1.add(goLeftButton);
 		container1.add(searchByDateDateChooserButton);
+		container1.add(goRightButton);
 		container1.add(searchByNameCombobox);
 		container1.add(addNewButton);
 
 		addNewButton.setIcon(new FlatSVGIcon("gui/icon/svg/add.svg", 0.35f));
+		goLeftButton.setIcon(new FlatSVGIcon("gui/icon/svg/menu_left.svg", 0.7f));
+		goRightButton.setIcon(new FlatSVGIcon("gui/icon/svg/menu_right.svg", 0.7f));
 		searchByDateTextField.putClientProperty(FlatClientProperties.TEXT_FIELD_TRAILING_ICON,
 				new FlatSVGIcon("gui/icon/svg/search.svg", 0.35f));
+		goLeftButton.putClientProperty(FlatClientProperties.STYLE, "border:0,0,0,0,$white,0,0;");
+		searchByDateDateChooserButton.putClientProperty(FlatClientProperties.STYLE, "border:0,0,0,0,$white,0,0");
+		goRightButton.putClientProperty(FlatClientProperties.STYLE, "border:0,0,0,0,$white,0,0");
+		
+		goLeftButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				goLeftButton.setCursor(new Cursor(Cursor.HAND_CURSOR));						
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				goLeftButton.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+		
+		searchByDateDateChooserButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				searchByDateDateChooserButton.setCursor(new Cursor(Cursor.HAND_CURSOR));						
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				searchByDateDateChooserButton.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+		
+		goRightButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				goRightButton.setCursor(new Cursor(Cursor.HAND_CURSOR));						
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				goRightButton.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
+		});
+		
+		goLeftButton.addActionListener(this);
+		goRightButton.addActionListener(this);
 
 		container0.setLayout(new MigLayout("wrap, fill, insets 15", "[fill]", "[grow 0][fill]"));
 		container0.add(container1);
@@ -171,6 +222,16 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 				screeningAddingDialog.setVisible(true);
 			});
 			thread.start();
+		}
+		if (e.getSource().equals(goLeftButton)) {
+			SelectedDate currentSelectedDate = searchByDateDateChooser.getSelectedDate();
+			LocalDate currentLocalDate = LocalDate.of(currentSelectedDate.getYear(), currentSelectedDate.getMonth(), currentSelectedDate.getDay()).minusDays(1);
+			searchByDateDateChooser.setSelectedDate(new SelectedDate(currentLocalDate.getDayOfMonth(), currentLocalDate.getMonthValue(), currentLocalDate.getYear()));
+		}
+		if (e.getSource().equals(goRightButton)) {
+			SelectedDate currentSelectedDate = searchByDateDateChooser.getSelectedDate();
+			LocalDate currentLocalDate = LocalDate.of(currentSelectedDate.getYear(), currentSelectedDate.getMonth(), currentSelectedDate.getDay()).plusDays(1);
+			searchByDateDateChooser.setSelectedDate(new SelectedDate(currentLocalDate.getDayOfMonth(), currentLocalDate.getMonthValue(), currentLocalDate.getYear()));
 		}
 	}
 
