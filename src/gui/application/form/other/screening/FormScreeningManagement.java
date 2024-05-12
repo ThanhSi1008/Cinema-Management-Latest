@@ -178,7 +178,7 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 		movieScheduleCardContainer.removeAll();
 		movieList.forEach(movie -> {
 
-			JPanel filler = new JPanel(new MigLayout("wrap, fill", "[fill]"));
+			JPanel filler = new JPanel(new MigLayout("wrap, fillx", "[fill]"));
 			JPanel movieScheduleCard = new JPanel(new MigLayout("wrap, fill", "[fill]", "[grow 0][grow 0][fill]"));
 			JPanel movieNameContainer = new JPanel(new MigLayout("wrap, fill", "[]push[]", "[fill]"));
 			JPanel generalInfoContainer = new JPanel(new MigLayout("", "[left]", ""));
@@ -335,6 +335,8 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 
 			movieScheduleCardBottomRightContainer.add(screeningContainer);
 
+			filler.putClientProperty(FlatClientProperties.STYLE,
+					"background:$white;border:0,0,0,0,$white,0,10");
 			movieScheduleCard.putClientProperty(FlatClientProperties.STYLE,
 					"background:$white;border:0,0,0,0,$white,0,10");
 			movieNameContainer.putClientProperty(FlatClientProperties.STYLE,
@@ -355,8 +357,9 @@ public class FormScreeningManagement extends JPanel implements ActionListener {
 
 			filler.add(movieScheduleCard);
 
-			movieScheduleCardContainer.add(filler, "growx, shrinkx, aligny top, width 0");
-
+			// movieScheduleCardContainer.add(filler, "growx, shrinkx, aligny top, width 0");
+			movieScheduleCardContainer.add(filler, "growx, growy");
+			
 			JScrollPane scroll = (JScrollPane) container2.getParent().getParent();
 			scroll.setBorder(BorderFactory.createEmptyBorder());
 			scroll.getVerticalScrollBar().putClientProperty(FlatClientProperties.STYLE,
