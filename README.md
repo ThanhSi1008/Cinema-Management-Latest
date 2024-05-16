@@ -13,7 +13,7 @@
 **Thành Viên Nhóm**
 
 - 22639301 - Lai Thanh Sĩ - [GitHub](https://github.com/ThanhSi1008)
-- 22 - Phạm Đức Tài - [GitHub](https://github.com)
+- 22634631 - Phạm Đức Tài - [GitHub](https://github.com/Tai-Lionel)
 
 > # IV. Danh Sách Tính Năng:
 
