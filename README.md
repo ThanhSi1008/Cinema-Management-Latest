@@ -2,7 +2,7 @@
 
 > # I. Mô Tả
 
-**MyCinema** là phần mềm được dùng trong quy trình quản lý và vận hành của rạp chiếu phim.
+**MyCinema** là phần mềm được dùng trong quy trình quản lý và vận hành của rạp chiếu phim tại rạp chỉ dành cho nhân viên.
 
 > # II. Thực Hiện Bởi:
 
